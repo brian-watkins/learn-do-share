@@ -1,23 +1,27 @@
-import { h, init, VNode } from "snabbdom"
-import { LearningArea, LearningAreasRequested, learningAreasRequested, LearningAreasResponse, viewLearningArea } from "./requestLearningAreas"
+import { h, init, propsModule, VNode } from "snabbdom"
+import { LearningAreasRequested, learningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
 import { createStore, applyMiddleware } from "redux"
+import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "./learningAreas"
+
 
 interface AppState {
-  learningAreas: Array<LearningArea>
+  learningAreas: LearningAreasState
 }
 
 function initialState(): AppState {
   return {
-    learningAreas: []
+    learningAreas: learningAreasLoading()
   }
 }
 
 type ActionMessage = LearningAreasResponse | LearningAreasRequested
 
 function update(state: AppState = initialState(), action: ActionMessage): AppState {
-  switch(action.type) {
+  switch (action.type) {
     case "learningAreasResponse":
-      return Object.assign({}, state, { learningAreas: action.learningAreas })
+      return {
+        learningAreas: learningAreasLoaded(action.learningAreas)
+      }
     default:
       return state
   }
@@ -44,28 +48,37 @@ const requestMiddleware = (store: any) => (next: any) => (action: any) => {
 
 const store = createStore(update, applyMiddleware(requestMiddleware))
 
-const patch = init([])
+const patch = init([
+  propsModule
+])
 
 const appRoot = document.getElementById("app")
 
 if (appRoot) {
   let oldNode: Element | VNode = appRoot
-  store.subscribe(() => {
-    console.log("Updating view with state")
+  const handleUpdate = () => {
     oldNode = patch(oldNode, view(store.getState()))
-  })
+  }
+  store.subscribe(handleUpdate)
+  handleUpdate()
   store.dispatch(learningAreasRequested())
 }
 
 
 // View
 
-function view(model: AppState) {
-  if (model.learningAreas.length == 0) {
-    return h("h1", {}, 'There is nothing to learn!')
+function view(model: AppState): VNode {
+  switch (model.learningAreas.type) {
+    case "learningAreasLoading":
+      return h("div", { props: { id: "loading-indicator" } }, 'Loading ...')
+    case "learningAreasLoaded":
+      const learningAreas = model.learningAreas.areas
+      if (learningAreas.length == 0) {
+        return h("h1", {}, 'There is nothing to learn!')
+      }
+
+      return h("ul", {}, learningAreas.map(viewLearningArea).map(asListItem))
   }
-  
-  return h("ul", {}, model.learningAreas.map(viewLearningArea).map(asListItem))
 }
 
 function asListItem(node: VNode): VNode {

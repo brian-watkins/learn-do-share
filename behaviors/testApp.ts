@@ -1,7 +1,8 @@
 import { Context } from "esbehavior"
 import { Server } from "http"
 import { Page } from "playwright"
-import { LearningArea, LearningAreasReader } from "../src/requestLearningAreas"
+import { LearningArea } from "../src/learningAreas"
+import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/requests"
 import { createServerApp } from "../src/server"
 import { newBrowserPage } from "./browser"
@@ -20,20 +21,20 @@ export function testContext(): Context<TestContext> {
 export class TestContext {
   display = new TestDisplay()
   server = new TestServer()
-  learningAreas: Array<LearningArea> = []
+  learningAreasReader = new FakeLearningAreasReader()
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
-    this.learningAreas = learningAreas.map(tla => {
-      return {
-        title: tla.title
-      }
-    })
+    this.learningAreasReader.resolveImmediatelyWith(learningAreas)
     return this
+  }
+
+  resolveLearningAreasRequestWith(learningAreas: Array<TestLearningArea>) {
+    this.learningAreasReader.resolveWith(learningAreas)
   }
 
   async start(): Promise<void> {
     await this.server.start({
-      learningAreasReader: new FakeLearningAreasReader(this.learningAreas)
+      learningAreasReader: this.learningAreasReader
     })
     await this.display.start()
   }
@@ -45,10 +46,27 @@ export class TestContext {
 }
 
 class FakeLearningAreasReader implements LearningAreasReader {
-  constructor (private learningAreas: Array<LearningArea>) {}
+  private resolver: (areas: LearningArea[]) => void = () => {}
+  private areas: LearningArea[] | null = null
+  
+  constructor () {}
 
   async read(): Promise<Array<LearningArea>> {
-    return this.learningAreas
+    if (this.areas == null) {
+      return new Promise((resolve) => {
+        this.resolver = resolve
+      })  
+    } else {
+      return this.areas
+    }
+  }
+
+  resolveWith(areas: Array<LearningArea>) {
+    this.resolver(areas)
+  }
+
+  resolveImmediatelyWith(areas: Array<LearningArea>) {
+    this.areas = areas
   }
 }
 
@@ -95,13 +113,17 @@ class TestDisplay {
   async pageText(): Promise<string | null> {
     return this.page?.textContent("body") ?? null
   }
+
+  async isVisible(selector: string): Promise<boolean> {
+    return this.page?.isVisible(selector) ?? false
+  }
 }
 
-class TestLearningArea {
-  constructor(public testId: number) {}
+class TestLearningArea implements LearningArea {
+  title: string
 
-  get title(): string {
-    return `Learning Area ${this.testId}`
+  constructor(public testId: number) {
+    this.title = `Learning Area ${testId}`
   }
 }
 

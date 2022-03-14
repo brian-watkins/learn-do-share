@@ -1,18 +1,8 @@
-import { h, VNode } from "snabbdom"
-
-export interface LearningArea {
-  title: string
-}
-
-export function viewLearningArea(learningArea: LearningArea): VNode {
-  return h("div", {}, `Title: ${learningArea.title}`)
-}
-
+import { LearningArea } from "./learningAreas"
 
 export interface RequestMessage {
   meta: "request"
 }
-
 
 export interface LearningAreasRequested extends RequestMessage {
   type: "learningAreasRequested"
