@@ -41,32 +41,44 @@ export class TestContext {
 
   async stop(): Promise<void> {
     await this.display.stop()
+    this.learningAreasReader.stop()
     await this.server.stop()
   }
 }
 
 class FakeLearningAreasReader implements LearningAreasReader {
-  private resolver: (areas: LearningArea[]) => void = () => {}
+  private resolver: ((areas: LearningArea[]) => void) | null = null
   private areas: LearningArea[] | null = null
-  
-  constructor () {}
+
+  constructor() { }
 
   async read(): Promise<Array<LearningArea>> {
     if (this.areas == null) {
       return new Promise((resolve) => {
         this.resolver = resolve
-      })  
+      })
     } else {
       return this.areas
     }
   }
 
   resolveWith(areas: Array<LearningArea>) {
-    this.resolver(areas)
+    if (this.resolver != null) {
+      this.resolver(areas)
+      this.resolver = null
+    }
   }
 
   resolveImmediatelyWith(areas: Array<LearningArea>) {
     this.areas = areas
+  }
+
+  stop() {
+    // this avoids having the test hang if there was a failure in the middle of a script
+    // that only later resolves the learning areas request
+    if (this.resolver != null) {
+      this.resolveWith([])
+    }
   }
 }
 
@@ -99,7 +111,7 @@ class TestServer {
 
 class TestDisplay {
   private page: Page | null = null
-  
+
   async start(): Promise<void> {
     this.page = await newBrowserPage()
     await this.page.goto("http://localhost:7777")
