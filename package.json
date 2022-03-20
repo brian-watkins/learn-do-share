@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
+    "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
   },
   "author": "Brian Watkins",
   "license": "MIT",
