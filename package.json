@@ -5,6 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build:server": "tsc -p ./server",
+    "start:server": "node ./build-server/server/index.js",
+    "start:client": "wait-on tcp:7664 && vite",
+    "start": "nf start -p 7664",
     "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
   },
   "author": "Brian Watkins",
@@ -17,10 +21,12 @@
     "esbehavior": "^1.2.3",
     "esbuild-node-loader": "^0.8.0",
     "express": "^4.17.3",
+    "foreman": "^3.0.1",
     "playwright": "^1.19.2",
     "redux": "^4.1.2",
     "snabbdom": "^3.3.1",
     "typescript": "^4.6.2",
-    "vite": "^2.8.6"
+    "vite": "^2.8.6",
+    "wait-on": "^6.0.1"
   }
 }
