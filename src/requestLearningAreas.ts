@@ -1,4 +1,4 @@
-import { LearningArea } from "./learningAreas"
+import { LearningArea } from "./learningAreas.js"
 
 export interface RequestMessage {
   meta: "request"

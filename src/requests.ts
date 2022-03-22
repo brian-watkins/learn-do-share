@@ -1,4 +1,4 @@
-import { LearningAreasReader, requestLearningAreas } from "./requestLearningAreas";
+import { LearningAreasReader, requestLearningAreas } from "./requestLearningAreas.js";
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader

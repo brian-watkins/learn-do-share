@@ -1,5 +1,5 @@
 import express, { Express } from 'express'
-import { Adapters, registry } from './requests'
+import { Adapters, registry } from './requests.js'
 
 export function createServerApp(adapters: Adapters): Express {
   const app = express()
