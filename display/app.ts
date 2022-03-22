@@ -1,7 +1,7 @@
 import { h, init, propsModule, VNode } from "snabbdom"
-import { LearningAreasRequested, learningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
+import { LearningAreasRequested, learningAreasRequested, LearningAreasResponse } from "../src/requestLearningAreas"
 import { createStore, applyMiddleware } from "redux"
-import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "./learningAreas"
+import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "../src/learningAreas"
 
 
 interface AppState {

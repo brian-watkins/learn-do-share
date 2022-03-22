@@ -5,7 +5,7 @@ import { startBrowser, stopBrowser } from "./browser"
 
 const devServer = await createServer({
   configFile: false,
-  root: "./src",
+  root: "./display",
   server: {
     port: 7777, // We need to pass this in somehow to the browser?
     proxy: {
