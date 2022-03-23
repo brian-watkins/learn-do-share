@@ -9,10 +9,10 @@
     "validate:display": "tsc --noEmit -p ./display",
     "validate": "npm run validate:server && npm run validate:display",
     "build:server": "node ./scripts/buildServer.js",
-    "build:client": "vite build",
-    "build": "npm run validate && npm run build:server && npm run build:client",
+    "build:display": "vite build",
+    "build": "npm run validate && npm run build:server && npm run build:display",
     "start:server": "node ./build/server/index.js",
-    "start:client": "vite",
+    "start:display": "vite",
     "waitFor:server": "wait-on tcp:7664",
     "start": "nf start -p 7664",
     "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"

@@ -11,7 +11,7 @@ const config = {
         }
     },
     build: {
-        outDir: "../build/client",
+        outDir: "../build/display",
         emptyOutDir: true
     }
 }
