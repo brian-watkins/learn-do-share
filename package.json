@@ -5,7 +5,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:client": "wait-on tcp:7664 && vite",
     "validate:server": "tsc --noEmit -p ./server",
     "validate:display": "tsc --noEmit -p ./display",
     "validate": "npm run validate:server && npm run validate:display",
@@ -13,6 +12,8 @@
     "build:client": "vite build",
     "build": "npm run validate && npm run build:server && npm run build:client",
     "start:server": "node ./build/server/index.js",
+    "start:client": "vite",
+    "waitFor:server": "wait-on tcp:7664",
     "start": "nf start -p 7664",
     "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
   },
