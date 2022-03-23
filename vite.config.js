@@ -9,6 +9,10 @@ const config = {
         proxy: {
             "/messages": "http://localhost:7664"
         }
+    },
+    build: {
+        outDir: "../build/client",
+        emptyOutDir: true
     }
 }
 

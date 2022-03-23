@@ -5,22 +5,30 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build:server": "tsc -p ./server",
-    "start:server": "node ./build-server/server/index.js",
     "start:client": "wait-on tcp:7664 && vite",
+    "validate:server": "tsc --noEmit -p ./server",
+    "validate:display": "tsc --noEmit -p ./display",
+    "validate": "npm run validate:server && npm run validate:display",
+    "build:server": "node ./scripts/buildServer.js",
+    "build:client": "vite build",
+    "build": "npm run validate && npm run build:server && npm run build:client",
+    "start:server": "node ./build/server/index.js",
     "start": "nf start -p 7664",
     "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
   },
   "author": "Brian Watkins",
   "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.21",
     "chai": "^4.3.6",
     "esbehavior": "^1.2.3",
+    "esbuild": "^0.14.27",
     "esbuild-node-loader": "^0.8.0",
-    "express": "^4.17.3",
     "foreman": "^3.0.1",
     "playwright": "^1.19.2",
     "redux": "^4.1.2",
