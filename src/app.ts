@@ -1,5 +1,5 @@
 import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "./learningAreas"
-import { learningAreasRequested, LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
+import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
 import { Program } from "../display/program"
 import { h, VNode } from "snabbdom"
 
@@ -27,7 +27,7 @@ function update(state: AppState = initialState(), action: ActionMessage): AppSta
 }
 
 function initialCommand(): ActionMessage {
-  return learningAreasRequested()
+  return new LearningAreasRequested()
 }
 
 // View
