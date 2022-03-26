@@ -5,14 +5,17 @@
     "main": "build/backstage/index.mjs",
     "type": "module",
     "scripts": {
+        "validate": "tsc --noEmit",
+        "build": "node build.mjs"
     },
     "author": "Brian Watkins",
     "license": "MIT",
     "devDependencies": {
-      "@azure/functions": "^3.0.0"
+        "@azure/functions": "^3.0.0",
+        "esbuild": "^0.14.28",
+        "typescript": "^4.6.3"
     },
     "engines": {
-      "node": "^16.0.0"
+        "node": "^16.0.0"
     }
-  }
-  
+}
