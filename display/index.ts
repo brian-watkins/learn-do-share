@@ -1,7 +1,7 @@
 import { init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import program from "../src/app"
-import { BackstageMessage, isBackstageMessage, ProgramMessage } from "./program"
+import { isBackstageMessage, ProgramMessage } from "./program"
 
 
 const requestMiddleware = (store: any) => (next: any) => <T extends ProgramMessage> (action: T) => {
