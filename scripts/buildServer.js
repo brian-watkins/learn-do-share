@@ -8,7 +8,7 @@ await esbuild.build({
     format: "esm",
     target: "node16",
     bundle: true,
-    outdir: "./api/build/backstage",
+    outfile: "./api/build/backstage/index.mjs",
     external: [
         "@azure/functions"
     ],

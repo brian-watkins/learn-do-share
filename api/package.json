@@ -2,7 +2,7 @@
     "name": "lds-backstage",
     "version": "1.0.0",
     "description": "Track what you're learning, doing, and sharing",
-    "main": "build/backstage/index.js",
+    "main": "build/backstage/index.mjs",
     "type": "module",
     "scripts": {
     },

@@ -16,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../build/backstage/index.js"
+  "scriptFile": "../build/backstage/index.mjs"
 }
