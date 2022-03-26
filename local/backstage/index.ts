@@ -1,4 +1,4 @@
-import { Adapters } from "../../src/requests.js";
+import { Adapters } from "../../src/backstage.js";
 import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader.js"
 import { createServer } from "./app.js";
 

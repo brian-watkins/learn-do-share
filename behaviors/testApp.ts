@@ -4,7 +4,7 @@ import { Page } from "playwright"
 import { createServer } from "../local/backstage/app"
 import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
-import { Adapters } from "../src/requests"
+import { Adapters } from "../src/backstage"
 import { newBrowserPage } from "./browser"
 
 export function testContext(): Context<TestContext> {

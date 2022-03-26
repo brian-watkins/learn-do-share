@@ -1,18 +1,20 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
-import { Adapters } from "../../src/requests.js"
+import { Adapters } from "../../src/backstage.js"
 import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader"
-import { createMessageHandler } from "../../src/server"
+import { createBackstage } from "../../src/backstage"
 
 const adapters: Adapters = {
     learningAreasReader: new StaticLearningAreasReader()
 }
 
-const handleMessage = createMessageHandler(adapters)
+const backstage = createBackstage(adapters)
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('Backstage function processed a request.');
 
-    const result = await handleMessage(req.body)
+    const message = req.body
+    const handler = backstage.messageRegistry[message.type]
+    const result = await handler(message)
 
     context.res = {
         body: result

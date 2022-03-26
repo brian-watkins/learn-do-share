@@ -1,17 +1,17 @@
 import express, { Express } from "express"
-import { Adapters } from "../../src/requests"
-import { createMessageHandler } from "../../src/server"
+import { Adapters, createBackstage } from "../../src/backstage"
 
 export function createServer(adapters: Adapters): Express {
     const app = express()
     app.use(express.json())
     
-    const handleMessage = createMessageHandler(adapters)
+    const backstage = createBackstage(adapters)
     
     app.post('/api/backstage', async (req, res) => {
         const message = req.body
     
-        const result = await handleMessage(message)
+        const handler = backstage.messageRegistry[message.type]
+        const result = await handler(message)
     
         res.send(result)
     })
