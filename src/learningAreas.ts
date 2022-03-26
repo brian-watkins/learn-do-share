@@ -1,4 +1,4 @@
-import { h, VNode } from "snabbdom"
+import * as Html from "../display/markup"
 
 export interface LearningAreasLoaded {
   type: "learningAreasLoaded"
@@ -28,7 +28,7 @@ export interface LearningArea {
   title: string
 }
 
-export function viewLearningArea(learningArea: LearningArea): VNode {
-  return h("div", {}, `Title: ${learningArea.title}`)
+export function viewLearningArea(learningArea: LearningArea): Html.View {
+  return Html.div([], [Html.text(`Title: ${learningArea.title}`)])
 }
 

@@ -1,7 +1,7 @@
 import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "./learningAreas"
 import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
 import { Program } from "../display/program"
-import { h, VNode } from "snabbdom"
+import * as Html from "../display/markup"
 
 interface AppState {
   learningAreas: LearningAreasState
@@ -32,22 +32,22 @@ function initialCommand(): ActionMessage {
 
 // View
 
-function view(model: AppState): VNode {
+function view(model: AppState): Html.View {
   switch (model.learningAreas.type) {
     case "learningAreasLoading":
-      return h("div", { props: { id: "loading-indicator" } }, 'Loading ...')
+      return Html.div([Html.id("loading-indicator")], [Html.text("Loading ...")])
     case "learningAreasLoaded":
       const learningAreas = model.learningAreas.areas
       if (learningAreas.length == 0) {
-        return h("h1", {}, 'There is nothing to learn!')
+        return Html.h1([], [Html.text("There is nothing to learn!")])
       }
 
-      return h("ul", {}, learningAreas.map(viewLearningArea).map(asListItem))
+      return Html.ul([], learningAreas.map(viewLearningArea).map(asListItem))
   }
 }
 
-function asListItem(node: VNode): VNode {
-  return h("li", {}, node)
+function asListItem(node: Html.ViewChild): Html.ViewChild {
+  return Html.li([], [node])
 }
 
 const ldsProgram: Program<AppState, ActionMessage> = {

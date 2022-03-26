@@ -1,9 +1,9 @@
-import { VNode } from "snabbdom"
+import { View } from "./markup"
 
 export interface Program<T, M extends ProgramMessage> {
   initialCommand(): M
   update(state: T | undefined, message: M): T
-  view(state: T): VNode
+  view(state: T): View
 }
 
 export interface ProgramMessage {
