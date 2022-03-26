@@ -7,7 +7,7 @@
   "scripts": {
     "validate:display": "tsc --noEmit -p ./display",
     "build:display": "npm run validate:display && vite build",
-    "start:server": "node --loader esbuild-node-loader --no-warnings ./server/index.ts",
+    "start:server": "node --loader esbuild-node-loader --no-warnings ./local/backstage/index.ts",
     "start:display": "vite",
     "waitFor:server": "wait-on tcp:7664",
     "start": "nf start -p 7664",

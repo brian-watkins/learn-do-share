@@ -1,6 +1,6 @@
 import express, { Express } from "express"
-import { Adapters } from "../src/requests"
-import { createMessageHandler } from "../src/server"
+import { Adapters } from "../../src/requests"
+import { createMessageHandler } from "../../src/server"
 
 export function createServer(adapters: Adapters): Express {
     const app = express()
