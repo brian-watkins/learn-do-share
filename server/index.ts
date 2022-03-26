@@ -1,6 +1,7 @@
 import { Adapters } from "../src/requests.js";
-import { createServerApp } from "../src/server.js";
 import { StaticLearningAreasReader } from "../src/staticLearningAreasReader.js"
+import { createServer } from "./app.js";
+
 
 console.log("PORT", process.env.PORT)
 
@@ -10,7 +11,7 @@ const adapters: Adapters = {
     learningAreasReader: new StaticLearningAreasReader()
 }
 
-const app = createServerApp(adapters)
+const app = createServer(adapters)
 
 app.listen(port, () => {
     console.log("Server listening on port", port)

@@ -9,7 +9,7 @@ const devServer = await createServer({
   server: {
     port: 7777, // We need to pass this in somehow to the browser?
     proxy: {
-      "/messages": "http://localhost:7778" // How do we know this is the right port?
+      "/api/backstage": "http://localhost:7778" // How do we know this is the right port?
     }
   }
 })

@@ -1,10 +1,10 @@
 import { Context } from "esbehavior"
 import { Server } from "http"
 import { Page } from "playwright"
+import { createServer } from "../server/app"
 import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/requests"
-import { createServerApp } from "../src/server"
 import { newBrowserPage } from "./browser"
 
 export function testContext(): Context<TestContext> {
@@ -86,7 +86,7 @@ class TestServer {
   private server: Server | null = null
 
   start(adapters: Adapters): Promise<void> {
-    const app = createServerApp(adapters)
+    const app = createServer(adapters)
 
     return new Promise((resolve) => {
       this.server = app.listen(7778, () => {

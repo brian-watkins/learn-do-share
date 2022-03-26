@@ -29,7 +29,7 @@ function update(state: AppState = initialState(), action: ActionMessage): AppSta
 
 const requestMiddleware = (store: any) => (next: any) => (action: any) => {
   if (action.meta == "request") {
-    fetch("/messages", {
+    fetch("/api/backstage", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

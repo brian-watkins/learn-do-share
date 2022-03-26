@@ -11,7 +11,7 @@
     "build:server": "node ./scripts/buildServer.js",
     "build:display": "vite build",
     "build": "npm run validate && npm run build:server && npm run build:display",
-    "start:server": "node ./build/server/index.js",
+    "start:server": "node --loader esbuild-node-loader --no-warnings ./server/index.ts",
     "start:display": "vite",
     "waitFor:server": "wait-on tcp:7664",
     "start": "nf start -p 7664",
@@ -19,10 +19,8 @@
   },
   "author": "Brian Watkins",
   "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.3"
-  },
   "devDependencies": {
+    "@azure/functions": "^3.0.0",
     "@types/chai": "^4.3.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.21",
@@ -30,6 +28,7 @@
     "esbehavior": "^1.2.3",
     "esbuild": "^0.14.27",
     "esbuild-node-loader": "^0.8.0",
+    "express": "^4.17.3",
     "foreman": "^3.0.1",
     "playwright": "^1.19.2",
     "redux": "^4.1.2",

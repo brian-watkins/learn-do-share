@@ -7,7 +7,7 @@ const config = {
         port: 7663,
         open: true,
         proxy: {
-            "/messages": "http://localhost:7664"
+            "/api/backstage": "http://localhost:7664"
         }
     },
     build: {

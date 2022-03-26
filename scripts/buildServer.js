@@ -2,15 +2,15 @@ import esbuild from "esbuild"
 
 await esbuild.build({
     entryPoints: [
-        "./server/index.ts"
+        "./api/backstage/index.ts"
     ],
     platform: "node",
     format: "esm",
     target: "node16",
     bundle: true,
-    outdir: "./build/server",
+    outdir: "./api/build/backstage",
     external: [
-        "express"
+        "@azure/functions"
     ],
     logLevel: "info"
 })
