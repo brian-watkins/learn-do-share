@@ -1,4 +1,6 @@
 
+export type MessageHandler = (message: any) => Promise<any>
+
 export interface Backstage {
-  messageRegistry: { [key:string]: (message: any) => Promise<any> }
+  messageHandler: MessageHandler
 }

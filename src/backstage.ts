@@ -5,10 +5,22 @@ export interface Adapters {
   learningAreasReader: LearningAreasReader
 }
 
-export function createBackstage(adapters: Adapters): Backstage {
+interface TypedMessage {
+  type: string
+}
+
+export function initBackstage(adapters: Adapters): Backstage {
+  let handlers = new Map()
+  handlers.set("learningAreasRequested", requestLearningAreas(adapters.learningAreasReader))
+
   return {
-    messageRegistry:   {
-      "learningAreasRequested": requestLearningAreas(adapters.learningAreasReader)
-    }  
+    messageHandler: async (message: TypedMessage) => {
+      const handler = handlers.get(message.type)
+      if (handler) {
+        return await handler(message)
+      } else {
+        return { type: "unknown-backstage-message" }
+      }
+    }
   }
 }
