@@ -1,15 +1,16 @@
-import { learningAreasLoaded, learningAreasLoading, LearningAreasState, viewLearningArea } from "./learningAreas"
+import { LearningAreasLoaded, LearningAreasLoading, LearningAreasContent, learningAreasView } from "./learningAreas"
 import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
 import { Program } from "../display/program"
 import * as Html from "../display/markup"
+import { loadingIndicatorView } from "./loadingIndicatorView"
 
 interface AppState {
-  learningAreas: LearningAreasState
+  learningAreasContent: LearningAreasContent
 }
 
 function initialState(): AppState {
   return {
-    learningAreas: learningAreasLoading()
+    learningAreasContent: new LearningAreasLoading()
   }
 }
 
@@ -19,7 +20,7 @@ function update(state: AppState = initialState(), action: ActionMessage): AppSta
   switch (action.type) {
     case "learningAreasResponse":
       return {
-        learningAreas: learningAreasLoaded(action.learningAreas)
+        learningAreasContent: new LearningAreasLoaded(action.learningAreas)
       }
     default:
       return state
@@ -33,22 +34,14 @@ function initialCommand(): ActionMessage {
 // View
 
 function view(model: AppState): Html.View {
-  switch (model.learningAreas.type) {
+  switch (model.learningAreasContent.type) {
     case "learningAreasLoading":
-      return Html.div([Html.id("loading-indicator")], [Html.text("Loading ...")])
+      return loadingIndicatorView()
     case "learningAreasLoaded":
-      const learningAreas = model.learningAreas.areas
-      if (learningAreas.length == 0) {
-        return Html.h1([], [Html.text("There is nothing to learn!")])
-      }
-
-      return Html.ul([], learningAreas.map(viewLearningArea).map(asListItem))
+      return learningAreasView(model.learningAreasContent.areas)
   }
 }
 
-function asListItem(node: Html.ViewChild): Html.ViewChild {
-  return Html.li([], [node])
-}
 
 const ldsProgram: Program<AppState, ActionMessage> = {
   initialCommand,

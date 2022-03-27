@@ -1,34 +1,31 @@
 import * as Html from "../display/markup"
+import { asListItem } from "./viewHelpers"
 
-export interface LearningAreasLoaded {
-  type: "learningAreasLoaded"
-  areas: Array<LearningArea>
+export class LearningAreasLoaded {
+  type: "learningAreasLoaded" = "learningAreasLoaded"
+  constructor(public areas: Array<LearningArea>) {}
 }
 
-export function learningAreasLoaded(areas: Array<LearningArea>): LearningAreasLoaded {
-  return {
-    type: "learningAreasLoaded",
-    areas
-  }
+export class LearningAreasLoading {
+  type: "learningAreasLoading" = "learningAreasLoading"
 }
 
-export interface LearningAreasLoading {
-  type: "learningAreasLoading"
-}
-
-export function learningAreasLoading(): LearningAreasLoading {
-  return {
-    type: "learningAreasLoading"
-  }
-}
-
-export type LearningAreasState = LearningAreasLoaded | LearningAreasLoading
+export type LearningAreasContent = LearningAreasLoaded | LearningAreasLoading
 
 export interface LearningArea {
   title: string
 }
 
-export function viewLearningArea(learningArea: LearningArea): Html.View {
+function viewLearningArea(learningArea: LearningArea): Html.View {
   return Html.div([], [Html.text(`Title: ${learningArea.title}`)])
 }
 
+export function learningAreasView(learningAreas: Array<LearningArea>): Html.View {
+  if (learningAreas.length == 0) {
+    return Html.h1([], [
+      Html.text("There is nothing to learn!")
+    ])
+  }
+
+  return Html.ul([], learningAreas.map(viewLearningArea).map(asListItem))
+}
