@@ -1,8 +1,9 @@
 import { LearningAreasLoaded, LearningAreasLoading, LearningAreasContent, learningAreasView } from "./learningAreas"
 import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
-import { Program } from "../display/program"
+import { BackstageMessage, Display } from "../display/display"
 import * as Html from "../display/markup"
 import { loadingIndicatorView } from "./loadingIndicatorView"
+import { DataMessage } from "./backstage"
 
 interface AppState {
   learningAreasContent: LearningAreasContent
@@ -14,9 +15,9 @@ function initialState(): AppState {
   }
 }
 
-type ActionMessage = LearningAreasResponse | LearningAreasRequested
+type DisplayMessage = LearningAreasResponse
 
-function update(state: AppState = initialState(), action: ActionMessage): AppState {
+function update(state: AppState = initialState(), action: DisplayMessage): AppState {
   switch (action.type) {
     case "learningAreasResponse":
       return {
@@ -27,8 +28,8 @@ function update(state: AppState = initialState(), action: ActionMessage): AppSta
   }
 }
 
-function initialCommand(): ActionMessage {
-  return new LearningAreasRequested()
+function initialCommand() {
+  return new BackstageMessage(new LearningAreasRequested())
 }
 
 // View
@@ -43,10 +44,10 @@ function view(model: AppState): Html.View {
 }
 
 
-const ldsProgram: Program<AppState, ActionMessage> = {
+const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>> = {
   initialCommand,
   update,
   view
 }
 
-export default ldsProgram
+export default display

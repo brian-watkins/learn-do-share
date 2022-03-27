@@ -1,6 +1,7 @@
+import { BackstageMessage } from "../../display/display"
 
-export type MessageHandler = (message: any) => Promise<any>
+export type MessageHandler<T> = (message: BackstageMessage<T>) => Promise<any>
 
-export interface Backstage {
-  messageHandler: MessageHandler
+export interface Backstage<T> {
+  messageHandler: MessageHandler<T>
 }

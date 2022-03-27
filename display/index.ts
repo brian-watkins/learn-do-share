@@ -1,10 +1,10 @@
 import { init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import program from "../src/app"
-import { isBackstageMessage, ProgramMessage } from "./program"
+import { isBackstageMessage, DisplayMessage } from "./display"
 
 
-const requestMiddleware = (store: any) => (next: any) => <T extends ProgramMessage> (action: T) => {
+const requestMiddleware = (store: any) => (next: any) => <T extends DisplayMessage> (action: T) => {
   if (isBackstageMessage(action)) {
     fetch("/api/backstage", {
       method: "POST",

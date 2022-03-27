@@ -1,26 +1,21 @@
 import { Backstage } from "../api/backstage/backstage.js";
-import { LearningAreasReader, requestLearningAreas } from "./requestLearningAreas.js";
+import { LearningAreasReader, LearningAreasRequested, requestLearningAreas } from "./requestLearningAreas.js";
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader
 }
 
-interface TypedMessage {
-  type: string
+export type DataMessage = LearningAreasRequested
+
+const update = (adapters: Adapters) => async (message: DataMessage) => {
+  switch (message.type) {
+    case "learningAreasRequested":
+      return requestLearningAreas(adapters.learningAreasReader)
+  }
 }
 
-export function initBackstage(adapters: Adapters): Backstage {
-  let handlers = new Map()
-  handlers.set("learningAreasRequested", requestLearningAreas(adapters.learningAreasReader))
-
+export function initBackstage(adapters: Adapters): Backstage<DataMessage> {
   return {
-    messageHandler: async (message: TypedMessage) => {
-      const handler = handlers.get(message.type)
-      if (handler) {
-        return await handler(message)
-      } else {
-        return { type: "unknown-backstage-message" }
-      }
-    }
+    messageHandler: (msg) => update(adapters)(msg.message)
   }
 }
