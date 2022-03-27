@@ -1,11 +1,10 @@
-import { DisplayMessage } from "../display/display.js"
 import { LearningArea } from "./learningAreas.js"
 
 export class LearningAreasRequested {
   type: "learningAreasRequested" = "learningAreasRequested"
 }
 
-export class LearningAreasResponse implements DisplayMessage {
+export class LearningAreasResponse {
   type: "learningAreasResponse" = "learningAreasResponse"
   constructor(public learningAreas: Array<LearningArea>) { }
 }

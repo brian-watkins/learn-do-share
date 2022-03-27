@@ -1,4 +1,4 @@
-import { BackstageMessage } from "../../display/display"
+import { BackstageMessage } from "../../display/backstage"
 
 export type MessageHandler<T> = (message: BackstageMessage<T>) => Promise<any>
 

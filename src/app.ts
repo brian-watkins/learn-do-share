@@ -1,9 +1,10 @@
 import { LearningAreasLoaded, LearningAreasLoading, LearningAreasContent, learningAreasView } from "./learningAreas"
 import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
-import { BackstageMessage, Display } from "../display/display"
 import * as Html from "../display/markup"
 import { loadingIndicatorView } from "./loadingIndicatorView"
 import { DataMessage } from "./backstage"
+import { BackstageMessage } from "../display/backstage"
+import { Display } from "../display/display"
 
 interface AppState {
   learningAreasContent: LearningAreasContent

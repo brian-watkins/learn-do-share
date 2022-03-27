@@ -1,28 +1,17 @@
 import { init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
+import { EffectHandler, effectMiddleware } from "./effect"
 import program from "../src/app"
-import { isBackstageMessage, DisplayMessage } from "./display"
+import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 
-
-const requestMiddleware = (store: any) => (next: any) => <T extends DisplayMessage> (action: T) => {
-  if (isBackstageMessage(action)) {
-    fetch("/api/backstage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(action)
-    }).then((response) => {
-      return response.json()
-    }).then((responseMessage) => {
-      store.dispatch(responseMessage)
-    })
-  } else {
-    next(action)
-  }
+function effectHandlers(): Map<string, EffectHandler> {
+  const handlers = new Map<string, EffectHandler>()
+  handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
+ 
+  return handlers
 }
 
-const store = createStore(program.update, applyMiddleware(requestMiddleware))
+const store = createStore(program.update, applyMiddleware(effectMiddleware(effectHandlers())))
 
 const patch = init([
   propsModule
