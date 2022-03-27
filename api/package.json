@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "validate": "tsc --noEmit",
-        "build": "node build.mjs"
+        "build": "npm run validate && node build.mjs"
     },
     "author": "Brian Watkins",
     "license": "MIT",
