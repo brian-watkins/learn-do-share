@@ -7,13 +7,13 @@ export class BackstageMessage<T> {
   constructor(public wrapped: T) { }
 }
 
-export function handleBackstageMessage(dispatch: MessageDispatcher, message: any) {
+export function handleBackstageMessage(dispatch: MessageDispatcher, message: BackstageMessage<any>) {
   fetch("/api/backstage", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(message)
+    body: JSON.stringify(message.wrapped)
   }).then((response) => {
     return response.json()
   }).then((responseMessage) => {

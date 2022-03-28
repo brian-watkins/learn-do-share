@@ -16,6 +16,6 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
 
 export function initBackstage(adapters: Adapters): Backstage<DataMessage> {
   return {
-    messageHandler: (msg) => update(adapters)(msg.wrapped)
+    messageHandler: update(adapters)
   }
 }
