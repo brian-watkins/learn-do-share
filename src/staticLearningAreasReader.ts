@@ -24,6 +24,9 @@ export class StaticLearningAreasReader implements LearningAreasReader {
       },
       {
         title: "Explain the Principles and Values Behind XP"
+      },
+      {
+        title: "Explain the Principles and Values Behind TDD"
       }
     ]
   }
