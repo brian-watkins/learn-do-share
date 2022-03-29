@@ -1,4 +1,4 @@
-import { init, propsModule, VNode } from "snabbdom"
+import { classModule, init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import { EffectHandler, effectMiddleware } from "./effect"
 import program from "../src/app"
@@ -14,7 +14,8 @@ function effectHandlers(): Map<string, EffectHandler> {
 const store = createStore(program.update, applyMiddleware(effectMiddleware(effectHandlers())))
 
 const patch = init([
-  propsModule
+  propsModule,
+  classModule
 ])
 
 const appRoot = document.getElementById("app")
