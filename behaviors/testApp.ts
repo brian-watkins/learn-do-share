@@ -135,7 +135,7 @@ class TestDisplay {
   }
 }
 
-class TestLearningArea implements LearningArea {
+export class TestLearningArea implements LearningArea {
   title: string
   content: string
 

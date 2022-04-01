@@ -38,5 +38,13 @@
   },
   "engines": {
     "node": "^16.0.0"
+  },
+  "dependencies": {
+    "hast-util-to-dom": "^3.1.0",
+    "rehype-add-classes": "^1.0.0",
+    "rehype-stringify": "^9.0.3",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
+    "unified": "^10.1.2"
   }
 }

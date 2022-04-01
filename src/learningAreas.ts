@@ -1,3 +1,8 @@
+import rehypeStringify from "rehype-stringify/lib"
+import remarkParse from "remark-parse/lib"
+import remarkRehype from "remark-rehype"
+import addClasses from "rehype-add-classes"
+import { unified } from "unified"
 import * as Html from "../display/markup"
 import { asListItem } from "./viewHelpers"
 
@@ -46,9 +51,9 @@ function viewLearningArea(selected: LearningArea | null): (learningArea: Learnin
   return (learningArea) => {
     if (learningArea.title === selected?.title) {
       return Html.article([cardStyle()], [
-          viewTitle(learningArea),
-          viewContent(learningArea)
-        ]) 
+        viewTitle(learningArea),
+        viewContent(learningArea)
+      ])
     } else {
       return Html.article([cardStyle(), Html.onClick(learningAreaOpened(learningArea))], [
         viewTitle(learningArea)
@@ -59,8 +64,10 @@ function viewLearningArea(selected: LearningArea | null): (learningArea: Learnin
 
 function viewTitle(area: LearningArea): Html.ViewChild {
   return Html.h3([Html.cssClassList([
+    { "p-4": true },
     { "font-bold": true },
-    { "text-sky-800": true }
+    { "text-sky-800": true },
+    { "text-lg": true }
   ])], [
     Html.text(area.title)
   ])
@@ -69,16 +76,34 @@ function viewTitle(area: LearningArea): Html.ViewChild {
 function viewContent(area: LearningArea): Html.ViewChild {
   return Html.p([
     Html.cssClassList([
-      { "pt-2": true },
-    ])
-  ], [
-    Html.text(area.content)
-  ])
+      { "p-4": true },
+      { "border-solid": true },
+      { "border-sky-800": true },
+      { "border-t-2": true }
+    ]),
+    Html.withHTMLContent(getHtmlContent(area))
+  ], [])
+}
+
+function getHtmlContent(area: LearningArea): string {
+  const vfile = unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(addClasses, {
+      h1: "font-bold text-lg",
+      p: "pt-4 pb-4 max-w-lg",
+      h3: "font-bold",
+      ul: "list-disc ml-8",
+      a: "text-sky-800 underline visited:text-sky-600",
+    })
+    .use(rehypeStringify)
+    .processSync(area.content)
+
+  return String(vfile)
 }
 
 function cardStyle(): Html.Attribute {
   return Html.cssClassList([
-    { "p-4": true },
     { "m-4": true },
     { "rounded": true },
     { "border-2": true },

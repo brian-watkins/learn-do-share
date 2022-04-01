@@ -59,6 +59,10 @@ export function onClick(message: any): Attribute {
   return new EventHandler("click", message)
 }
 
+export function withHTMLContent(content: string): Attribute {
+  return new Property("innerHTML", content)
+}
+
 export function div(attributes: Array<Attribute>, children: Array<ViewChild>): View {
   return h("div", makeAttributes(attributes), children)
 }

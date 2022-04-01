@@ -6,7 +6,7 @@ export class StaticLearningAreasReader implements LearningAreasReader {
     return [
       {
         title: "Test-Driven Development",
-        content: "Some stuff about TDD"
+        content: "# Some stuff about TDD\n\nHere is some great stuff about test-driven development that you should learn and memorize immediately!\n\n### Further Reading\n- One\n- With a [link](http://somewhere.com/something.html)\n- Three\n"
       },
       {
         title: "Pair Programming Techniques",
