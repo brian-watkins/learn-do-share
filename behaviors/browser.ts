@@ -1,10 +1,11 @@
 import { Browser, chromium, Page } from "playwright"
+import { isDebug } from "./helpers"
 
 let browser: Browser
 
 export async function startBrowser(): Promise<void> {
   browser = await chromium.launch({
-    headless: true
+    headless: !isDebug()
   })
 }
 
@@ -18,6 +19,12 @@ export async function newBrowserPage(): Promise<Page> {
   })
   page.on("pageerror", console.log)
   return page
+}
+
+export async function resetBrowser(page: Page | null): Promise<void> {
+  if (!isDebug()) {
+    return page?.close()
+  }
 }
 
 export async function stopBrowser(): Promise<void> {

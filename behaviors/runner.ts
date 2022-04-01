@@ -3,6 +3,7 @@ import { createServer } from 'vite'
 import { startBrowser, stopBrowser } from "./browser"
 import viewBehavior from "./view.behavior"
 import contentBehavior from "./content.behavior"
+import { isDebug } from "./helpers"
 
 const devServer = await createServer({
   configFile: false,
@@ -28,6 +29,7 @@ if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1
 }
 
-await stopBrowser()
-
-await devServer.close()
+if (!isDebug()) {
+  await stopBrowser()
+  await devServer.close()
+}

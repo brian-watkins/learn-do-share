@@ -5,7 +5,7 @@ import { createServer } from "../local/backstage/app"
 import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/backstage"
-import { newBrowserPage } from "./browser"
+import { newBrowserPage, resetBrowser } from "./browser"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -118,7 +118,7 @@ class TestDisplay {
   }
 
   async stop(): Promise<void> {
-    await this.page?.close()
+    await resetBrowser(this.page)
     this.page = null
   }
 

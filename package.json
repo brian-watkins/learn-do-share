@@ -11,7 +11,8 @@
     "start:display": "vite",
     "waitFor:server": "wait-on tcp:7664",
     "start": "nf start -p 7664",
-    "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts"
+    "test": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts",
+    "test:debug": "DEBUG=true npm run test"
   },
   "author": "Brian Watkins",
   "license": "MIT",
