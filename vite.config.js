@@ -12,7 +12,8 @@ const config = {
     },
     build: {
         outDir: "../build/display",
-        emptyOutDir: true
+        emptyOutDir: true,
+        sourcemap: true
     }
 }
 
