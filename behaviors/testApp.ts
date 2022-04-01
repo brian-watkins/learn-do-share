@@ -129,13 +129,24 @@ class TestDisplay {
   async isVisible(selector: string): Promise<boolean> {
     return this.page?.isVisible(selector) ?? false
   }
+
+  async clickElementWithText(text: string): Promise<void> {
+    await this.page?.locator(`text="${text}"`).click({ timeout: 1000 })
+  }
 }
 
 class TestLearningArea implements LearningArea {
   title: string
+  content: string
 
   constructor(public testId: number) {
     this.title = `Learning Area ${testId}`
+    this.content = `Here is some content for learning Area ${testId}!`
+  }
+
+  withContent(content: string): TestLearningArea {
+    this.content = content
+    return this
   }
 }
 

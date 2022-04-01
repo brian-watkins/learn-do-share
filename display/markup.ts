@@ -3,18 +3,18 @@ import { h, VNode, VNodeChildElement } from "snabbdom";
 export type View = VNode
 export type ViewChild = VNodeChildElement
 
-type Attribute = Property | CSSClass | CSSClassList
+export type Attribute = Property | CSSClass | CSSClassList | EventHandler
 
 class Property {
   type: "property" = "property"
 
-  constructor(public key: string, public value: string) {}
+  constructor(public key: string, public value: string) { }
 }
 
 class CSSClass {
   type: "css-class" = "css-class"
 
-  constructor(public value: string) {}
+  constructor(public value: string) { }
 }
 
 export function id(value: string): Attribute {
@@ -29,12 +29,12 @@ export function cssClass(value: string): Attribute {
   return new CSSClass(value)
 }
 
-export type CssClassToggle = { [key:string]: boolean }
+export type CssClassToggle = { [key: string]: boolean }
 
 class CSSClassList {
   type: "css-class-list" = "css-class-list"
 
-  constructor(private classes: Array<CssClassToggle>) {}
+  constructor(private classes: Array<CssClassToggle>) { }
 
   toObject(): any {
     const classObject = {}
@@ -49,8 +49,22 @@ export function cssClassList(classes: Array<CssClassToggle>): Attribute {
   return new CSSClassList(classes)
 }
 
+class EventHandler {
+  type: "event" = "event"
+
+  constructor(public event: string, public message: any) { }
+}
+
+export function onClick(message: any): Attribute {
+  return new EventHandler("click", message)
+}
+
 export function div(attributes: Array<Attribute>, children: Array<ViewChild>): View {
   return h("div", makeAttributes(attributes), children)
+}
+
+export function p(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+  return h("p", makeAttributes(attributes), children)
 }
 
 export function article(attributes: Array<Attribute>, children: Array<ViewChild>): View {
@@ -80,7 +94,8 @@ export function li(attributes: Array<Attribute>, children: Array<ViewChild>): Vi
 function makeAttributes(attributes: Array<Attribute>): any {
   const dict: any = {
     props: {},
-    class: {}
+    class: {},
+    on: {}
   }
   for (const attr of attributes) {
     switch (attr.type) {
@@ -92,6 +107,15 @@ function makeAttributes(attributes: Array<Attribute>): any {
         break
       case "css-class-list":
         dict.class = attr.toObject()
+        break
+      case "event":
+        dict.on[attr.event] = function (evt: Event) {
+          evt.target?.dispatchEvent(new CustomEvent("displayMessage", {
+            bubbles: true,
+            cancelable: true,
+            detail: attr.message
+          }))
+        }
         break
       default:
         exhaustiveMatchGuard(attr)

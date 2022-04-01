@@ -1,4 +1,4 @@
-import { classModule, init, propsModule, VNode } from "snabbdom"
+import { classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import { EffectHandler, effectMiddleware } from "./effect"
 import program from "../src/app"
@@ -15,12 +15,18 @@ const store = createStore(program.update, applyMiddleware(effectMiddleware(effec
 
 const patch = init([
   propsModule,
-  classModule
+  classModule,
+  eventListenersModule
 ])
 
 const appRoot = document.getElementById("app")
 
 if (appRoot) {
+  document.body.addEventListener("displayMessage", (evt) => {
+    const displayMessageEvent = evt as CustomEvent<any>
+    store.dispatch(displayMessageEvent.detail)
+  })
+
   let oldNode: Element | VNode = appRoot
   const handleUpdate = () => {
     oldNode = patch(oldNode, program.view(store.getState()))

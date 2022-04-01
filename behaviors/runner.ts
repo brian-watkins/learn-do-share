@@ -1,7 +1,8 @@
 import { validate } from "esbehavior"
-import basic from "./view.behavior"
 import { createServer } from 'vite'
 import { startBrowser, stopBrowser } from "./browser"
+import viewBehavior from "./view.behavior"
+import contentBehavior from "./content.behavior"
 
 const devServer = await createServer({
   configFile: false,
@@ -19,7 +20,8 @@ await devServer.listen()
 await startBrowser()
 
 const summary = await validate([
-  basic
+  viewBehavior,
+  contentBehavior
 ])
 
 if (summary.invalid > 0 || summary.skipped > 0) {
