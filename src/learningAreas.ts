@@ -1,7 +1,6 @@
 import rehypeStringify from "rehype-stringify/lib"
 import remarkParse from "remark-parse/lib"
 import remarkRehype from "remark-rehype"
-import addClasses from "rehype-add-classes"
 import { unified } from "unified"
 import * as Html from "../display/markup"
 import { asListItem } from "./viewHelpers"
@@ -75,6 +74,7 @@ function viewTitle(area: LearningArea): Html.ViewChild {
 
 function viewContent(area: LearningArea): Html.ViewChild {
   return Html.p([
+    Html.id("learning-area-content"),
     Html.cssClassList([
       { "p-4": true },
       { "border-solid": true },
@@ -89,13 +89,6 @@ function getHtmlContent(area: LearningArea): string {
   const vfile = unified()
     .use(remarkParse)
     .use(remarkRehype)
-    .use(addClasses, {
-      h1: "font-bold text-lg",
-      p: "pt-4 pb-4 max-w-lg",
-      h3: "font-bold",
-      ul: "list-disc ml-8",
-      a: "text-sky-800 underline visited:text-sky-600",
-    })
     .use(rehypeStringify)
     .processSync(area.content)
 
