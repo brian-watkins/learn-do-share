@@ -1,21 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  #learning-area-content h1 {
-    @apply font-bold text-lg;
-  }
-  #learning-area-content h3 {
-    @apply font-bold;
-  }
-  #learning-area-content ul {
-    @apply list-disc list-inside;
-  }
-  #learning-area-content a {
-    @apply text-sky-800 underline visited:text-sky-600;
-  }
-  #learning-area-content p {
-    @apply pt-4 pb-4 max-w-lg;
-  }
-}

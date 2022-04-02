@@ -40,6 +40,7 @@
     "node": "^16.0.0"
   },
   "dependencies": {
+    "hast-util-select": "^5.0.1",
     "rehype-stringify": "^9.0.3",
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",

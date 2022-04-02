@@ -1,3 +1,4 @@
+import { selectAll } from "hast-util-select"
 import rehypeStringify from "rehype-stringify/lib"
 import remarkParse from "remark-parse/lib"
 import remarkRehype from "remark-rehype"
@@ -89,6 +90,13 @@ function getHtmlContent(area: LearningArea): string {
   const vfile = unified()
     .use(remarkParse)
     .use(remarkRehype)
+    .use(attachClasses, [
+      { tag: "h1", classes: "font-bold text-lg" },
+      { tag: "h3", classes: "font-bold" },
+      { tag: "ul", classes: "list-disc list-inside"},
+      { tag: "a", classes: "text-sky-800 underline visited:text-sky-600" },
+      { tag: "p", classes: "pt-4 pb-4 max-w-lg" }
+    ])
     .use(rehypeStringify)
     .processSync(area.content)
 
@@ -121,4 +129,19 @@ export function learningAreasView(learningAreas: Array<LearningArea>, selected: 
       { "min-w-fit": true }
     ])], learningAreas.map(viewLearningArea(selected)).map(asListItem))
   ])
+}
+
+interface TagClasses {
+  tag: string
+  classes: string
+}
+
+function attachClasses(config: Array<TagClasses>): any {
+  return function(tree: any, _: any) {
+    for (const tagClass of config) {
+      selectAll(tagClass.tag, tree).forEach((node: any) => {
+        node.properties.className = tagClass.classes
+      })
+    }
+  }
 }
