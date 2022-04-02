@@ -1,8 +1,3 @@
-import { selectAll } from "hast-util-select"
-import rehypeStringify from "rehype-stringify/lib"
-import remarkParse from "remark-parse/lib"
-import remarkRehype from "remark-rehype"
-import { unified } from "unified"
 import * as Html from "../display/markup"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
