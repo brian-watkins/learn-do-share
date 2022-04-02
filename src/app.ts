@@ -20,16 +20,15 @@ function initialState(): AppState {
 
 type DisplayMessage = LearningAreasResponse | LearningAreaOpened
 
-function update(state: AppState = initialState(), action: DisplayMessage): AppState {
+function update(state: AppState, action: DisplayMessage): void {
   switch (action.type) {
     case "learningAreasResponse":
-      return Object.assign(state, { learningAreasContent: learningAreasLoaded(action.learningAreas) })
-    
-    case "learningAreaOpened":
-      return Object.assign(state, { selectedLearningArea: action.area })
+      state.learningAreasContent = learningAreasLoaded(action.learningAreas)
+      break
 
-    default:
-      return state
+    case "learningAreaOpened":
+      state.selectedLearningArea = action.area
+      break
   }
 }
 
@@ -50,6 +49,7 @@ function view(model: AppState): Html.View {
 
 
 const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>> = {
+  initialState,
   initialCommand,
   update,
   view

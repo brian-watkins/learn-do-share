@@ -1,8 +1,9 @@
 import { classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import { EffectHandler, effectMiddleware } from "./effect"
-import program from "../src/app"
+import display from "../src/app"
 import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
+import { createReducer } from "./display"
 
 function effectHandlers(): Map<string, EffectHandler> {
   const handlers = new Map<string, EffectHandler>()
@@ -11,7 +12,7 @@ function effectHandlers(): Map<string, EffectHandler> {
   return handlers
 }
 
-const store = createStore(program.update, applyMiddleware(effectMiddleware(effectHandlers())))
+const store = createStore(createReducer(display), applyMiddleware(effectMiddleware(effectHandlers())))
 
 const patch = init([
   propsModule,
@@ -29,10 +30,10 @@ if (appRoot) {
 
   let oldNode: Element | VNode = appRoot
   const handleUpdate = () => {
-    oldNode = patch(oldNode, program.view(store.getState()))
+    oldNode = patch(oldNode, display.view(store.getState()))
   }
   store.subscribe(handleUpdate)
 
   handleUpdate()
-  store.dispatch(program.initialCommand())
+  store.dispatch(display.initialCommand())
 }
