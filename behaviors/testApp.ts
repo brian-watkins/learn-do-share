@@ -1,11 +1,10 @@
 import { Context } from "esbehavior"
 import { Server } from "http"
-import { Page } from "playwright"
 import { createServer } from "../local/backstage/app"
 import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/backstage"
-import { newBrowserPage, resetBrowser } from "./browser"
+import { TestDisplay } from "./testDisplay"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -36,7 +35,7 @@ export class TestContext {
     await this.server.start({
       learningAreasReader: this.learningAreasReader
     })
-    await this.display.start()
+    await this.display.start("http://localhost:7777")
   }
 
   async stop(): Promise<void> {
@@ -106,32 +105,6 @@ class TestServer {
         resolve()
       })
     })
-  }
-}
-
-class TestDisplay {
-  private page: Page | null = null
-
-  async start(): Promise<void> {
-    this.page = await newBrowserPage()
-    await this.page.goto("http://localhost:7777")
-  }
-
-  async stop(): Promise<void> {
-    await resetBrowser(this.page)
-    this.page = null
-  }
-
-  async pageText(): Promise<string | null> {
-    return this.page?.textContent("body") ?? null
-  }
-
-  async isVisible(selector: string): Promise<boolean> {
-    return this.page?.isVisible(selector) ?? false
-  }
-
-  async clickElementWithText(text: string): Promise<void> {
-    await this.page?.locator(`text="${text}"`).click({ timeout: 1000 })
   }
 }
 

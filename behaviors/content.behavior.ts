@@ -42,7 +42,7 @@ Here is an intro to what you will learn
 ### Further Reading
 - One
 - Here is a link to [somewhere](http://somewhere.com/somewhere.html).
-- Three
+- Here is [another link](http://anotherplace.com)
                 `)
               ])
               .start()
@@ -52,13 +52,21 @@ Here is an intro to what you will learn
           selectLearningArea(FakeLearningArea(1))
         ],
         observe: [
-          effect("header content is displayed", async (testContext) => {
-            const hasElement = await testContext.display.isVisible('h3:has-text("Further Reading")')
-            expect(hasElement).to.be.true
+          effect("header content is displayed as header", async (testContext) => {
+            const actualTag = await testContext.display.selectElementWithText("Further Reading").tagName()
+            expect(actualTag).to.equal("H3")
           }),
           effect("links are displayed", async (testContext) => {
-            const hasElement = await testContext.display.isVisible('a:has-text("somewhere")')
-            expect(hasElement).to.be.true
+            const actualTexts = await testContext.display.selectAll("a").mapElements((el) => el.text())
+            expect(actualTexts).to.deep.equal(["somewhere", "another link"])
+          }),
+          effect("links should open in a different tab", async (testContext) => {
+            const actualTargets = await testContext.display.selectAll("a").mapElements(el => el.getAttribute("target"))
+            expect(actualTargets).to.deep.equal(["_blank", "_blank"])
+          }),
+          effect("links should describe the proper relationship", async (testContext) => {
+            const actualTargets = await testContext.display.selectAll("a").mapElements(el => el.getAttribute("rel"))
+            expect(actualTargets).to.deep.equal(["external", "external"])
           })
         ]
       })
@@ -66,6 +74,6 @@ Here is an intro to what you will learn
 
 function selectLearningArea(learningArea: TestLearningArea): Step<TestContext> {
   return step("a learning area is selected", async (testContext) => {
-    await testContext.display.clickElementWithText(learningArea.title)
+    await testContext.display.selectElementWithText(learningArea.title).click()
   })
 }

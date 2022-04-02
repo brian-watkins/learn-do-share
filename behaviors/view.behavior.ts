@@ -32,7 +32,7 @@ export default
         ],
         observe: [
           effect("it shows a loading indicator", async (testContext) => {
-            const loadingIndicatorIsVisible = await testContext.display.isVisible("#loading-indicator")
+            const loadingIndicatorIsVisible = await testContext.display.select("#loading-indicator").isVisible()
             expect(loadingIndicatorIsVisible).to.be.true
           })
         ]
@@ -48,7 +48,7 @@ export default
         ],
         observe: [
           effect("it hides the loading indicator", async (testContext) => {
-            const loadingIndicatorIsVisible = await testContext.display.isVisible("#loading-indicator")
+            const loadingIndicatorIsVisible = await testContext.display.select("#loading-indicator").isVisible()
             expect(loadingIndicatorIsVisible).to.be.false
           }),
           effect("it does not show that there is nothing to learn", async (testContext) => {
