@@ -16,7 +16,7 @@ jobs:
           node-version: '16'
       - uses: actions/checkout@v3
       - run: npm ci
-      # - run: npx playwright install-deps chromium
+      - run: npm run validate
       - run: npm run test
 
   build_and_deploy_job:

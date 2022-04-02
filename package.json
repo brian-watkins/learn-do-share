@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "validate:display": "tsc --noEmit -p ./display",
+    "validate:backstage": "tsc --noEmit -p ./api",
+    "validate": "npm run validate:display && npm run validate:backstage",
     "build:display": "npm run validate:display && vite build",
     "start:server": "node --loader esbuild-node-loader --no-warnings ./local/backstage/index.ts",
     "start:display": "vite",
