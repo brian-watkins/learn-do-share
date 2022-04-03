@@ -10,7 +10,8 @@ await esbuild.build({
     bundle: true,
     outfile: "./build/backstage/index.mjs",
     external: [
-        "@azure/functions"
+        "@azure/functions",
+        "@azure/cosmos"
     ],
     logLevel: "info"
 })
