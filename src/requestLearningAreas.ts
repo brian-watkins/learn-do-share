@@ -1,12 +1,25 @@
 import { LearningArea } from "./learningAreas.js"
 
-export class LearningAreasRequested {
-  type: "learningAreasRequested" = "learningAreasRequested"
+export interface LearningAreasRequested {
+  type: "learningAreasRequested"
 }
 
-export class LearningAreasResponse {
-  type: "learningAreasResponse" = "learningAreasResponse"
-  constructor(public learningAreas: Array<LearningArea>) { }
+export function learningAreasRequested(): LearningAreasRequested {
+  return {
+    type: "learningAreasRequested"
+  }
+}
+
+export interface LearningAreasResponse {
+  type: "learningAreasResponse"
+  learningAreas: Array<LearningArea>
+}
+
+export function learningAreasResponse(learningAreas: Array<LearningArea>): LearningAreasResponse {
+  return {
+    type: "learningAreasResponse",
+    learningAreas
+  }
 }
 
 export interface LearningAreasReader {
@@ -15,5 +28,5 @@ export interface LearningAreasReader {
 
 export async function requestLearningAreas(reader: LearningAreasReader): Promise<LearningAreasResponse> {
   const learningAreas = await reader.read()
-  return new LearningAreasResponse(learningAreas)
+  return learningAreasResponse(learningAreas)
 }

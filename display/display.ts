@@ -1,11 +1,13 @@
 import { Action, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
+import { EffectHandler } from "./effect"
 
 export interface Display<T, M> {
   initialState(): T
   initialCommand(): M
   update(state: T, message: M): void
+  actions: { [key:string]: EffectHandler }
   view(state: T): View
 }
 

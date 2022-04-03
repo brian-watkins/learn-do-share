@@ -3,10 +3,16 @@ import { h, VNode, VNodeChildElement } from "snabbdom";
 export type View = VNode
 export type ViewChild = VNodeChildElement
 
-export type Attribute = Property | CSSClass | CSSClassList | EventHandler
+export type ViewAttribute = Property | Attribute | CSSClass | CSSClassList | EventHandler
 
 class Property {
   type: "property" = "property"
+
+  constructor(public key: string, public value: string) { }
+}
+
+class Attribute {
+  type: "attribute" = "attribute"
 
   constructor(public key: string, public value: string) { }
 }
@@ -17,15 +23,31 @@ class CSSClass {
   constructor(public value: string) { }
 }
 
-export function id(value: string): Attribute {
+export function id(value: string): ViewAttribute {
   return new Property("id", value)
+}
+
+export function type(value: string): ViewAttribute {
+  return new Attribute("type", value)
+}
+
+export function name(value: string): ViewAttribute {
+  return new Attribute("name", value)
+}
+
+export function value(value: string): ViewAttribute {
+  return new Attribute("value", value)
+}
+
+export function data(name: string, value: string = ""): ViewAttribute {
+  return new Attribute(`data-${name}`, value)
 }
 
 export function text(value: string): ViewChild {
   return value
 }
 
-export function cssClass(value: string): Attribute {
+export function cssClass(value: string): ViewAttribute {
   return new CSSClass(value)
 }
 
@@ -45,59 +67,74 @@ class CSSClassList {
   }
 }
 
-export function cssClassList(classes: Array<CssClassToggle>): Attribute {
+export function cssClassList(classes: Array<CssClassToggle>): ViewAttribute {
   return new CSSClassList(classes)
 }
 
 class EventHandler {
   type: "event" = "event"
 
-  constructor(public event: string, public message: any) { }
+  constructor(public event: string, public generator: (evt: Event) => any) { }
 }
 
-export function onClick(message: any): Attribute {
-  return new EventHandler("click", message)
+export function onClick(message: any): ViewAttribute {
+  return new EventHandler("click", () => message)
 }
 
-export function withHTMLContent(content: string): Attribute {
+export function onInput(generator: (value: string) => any): ViewAttribute {
+  return new EventHandler("input", (evt) => {
+    return generator((<HTMLInputElement>evt.target)?.value)
+  })
+}
+
+export function withHTMLContent(content: string): ViewAttribute {
   return new Property("innerHTML", content)
 }
 
-export function div(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function div(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("div", makeAttributes(attributes), children)
 }
 
-export function p(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function p(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("p", makeAttributes(attributes), children)
 }
 
-export function article(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function article(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("article", makeAttributes(attributes), children)
 }
 
-export function section(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function section(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("section", makeAttributes(attributes), children)
 }
 
-export function h1(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function h1(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("h1", makeAttributes(attributes), children)
 }
 
-export function h3(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function h3(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("h3", makeAttributes(attributes), children)
 }
 
-export function ul(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function ul(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("ul", makeAttributes(attributes), children)
 }
 
-export function li(attributes: Array<Attribute>, children: Array<ViewChild>): View {
+export function li(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("li", makeAttributes(attributes), children)
 }
 
-function makeAttributes(attributes: Array<Attribute>): any {
+export function input(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("input", makeAttributes(attributes), children)
+}
+
+export function label(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("label", makeAttributes(attributes), children)
+}
+
+function makeAttributes(attributes: Array<ViewAttribute>): any {
   const dict: any = {
     props: {},
+    attrs: {},
     class: {},
     on: {}
   }
@@ -105,6 +142,9 @@ function makeAttributes(attributes: Array<Attribute>): any {
     switch (attr.type) {
       case "property":
         dict.props[attr.key] = attr.value
+        break
+      case "attribute":
+        dict.attrs[attr.key] = attr.value
         break
       case "css-class":
         dict.class[attr.value] = true
@@ -117,7 +157,7 @@ function makeAttributes(attributes: Array<Attribute>): any {
           evt.target?.dispatchEvent(new CustomEvent("displayMessage", {
             bubbles: true,
             cancelable: true,
-            detail: attr.message
+            detail: attr.generator(evt)
           }))
         }
         break

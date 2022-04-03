@@ -51,7 +51,7 @@ export class DisplayElement {
   }
 
   async text(): Promise<string | null> {
-    return this.locator.first().textContent()
+    return this.locator.first().textContent({ timeout: 1000 })
   }
 
   async getAttribute(name: string): Promise<string | null> {

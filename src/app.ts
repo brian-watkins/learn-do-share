@@ -1,24 +1,37 @@
 import { LearningAreasContent, learningAreasView, LearningAreaOpened, LearningArea, learningAreasLoading, learningAreasLoaded } from "./learningAreas"
-import { LearningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
+import { learningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
 import * as Html from "../display/markup"
 import { loadingIndicatorView } from "./loadingIndicatorView"
 import { DataMessage } from "./backstage"
-import { BackstageMessage } from "../display/backstage"
+import { backstageMessage, BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
+import { EffectHandler } from "../display/effect"
+import { EngagementPlanPersisted, EngagementPlansContent, EngagementPlansLoaded, engagementPlansLoading, engagementPlansRequested } from "./engagementPlans"
 
 interface AppState {
   learningAreasContent: LearningAreasContent
+  engagementPlansContent: EngagementPlansContent
   selectedLearningArea: LearningArea | null
 }
 
 function initialState(): AppState {
   return {
     learningAreasContent: learningAreasLoading(),
+    engagementPlansContent: engagementPlansLoading(),
     selectedLearningArea: null
   }
 }
 
-type DisplayMessage = LearningAreasResponse | LearningAreaOpened
+interface ApplicationStart {
+  type: "onApplicationStart"
+}
+
+type DisplayMessage
+  = LearningAreasResponse
+  | LearningAreaOpened
+  | EngagementPlanPersisted
+  | EngagementPlansLoaded
+  | ApplicationStart
 
 function update(state: AppState, action: DisplayMessage): void {
   switch (action.type) {
@@ -29,11 +42,34 @@ function update(state: AppState, action: DisplayMessage): void {
     case "learningAreaOpened":
       state.selectedLearningArea = action.area
       break
+
+    case "engagementPlanPersisted":
+      if (state.learningAreasContent.type === "learningAreasLoaded") {
+        switch (state.engagementPlansContent.type) {
+          case "engagementPlansLoaded":
+            state.engagementPlansContent.plans.push(action.plan)
+        }
+      }
+      break
+
+    case "engagementPlansLoaded":
+      state.engagementPlansContent = action
+      break
   }
 }
 
-function initialCommand() {
-  return new BackstageMessage(new LearningAreasRequested())
+const actions: { [key: string]: EffectHandler } = {
+  engagementPlanSelected(dispatcher, message) {
+    dispatcher(backstageMessage(message))
+  },
+  onApplicationStart(dispatcher) {
+    dispatcher(backstageMessage(learningAreasRequested()))
+    dispatcher(backstageMessage(engagementPlansRequested()))
+  }
+}
+
+function initialCommand(): DisplayMessage {
+  return { type: "onApplicationStart" }
 }
 
 // View
@@ -43,7 +79,7 @@ function view(model: AppState): Html.View {
     case "learningAreasLoading":
       return loadingIndicatorView()
     case "learningAreasLoaded":
-      return learningAreasView(model.learningAreasContent.areas, model.selectedLearningArea)
+      return learningAreasView(model.learningAreasContent.areas, model.selectedLearningArea, model.engagementPlansContent)
   }
 }
 
@@ -52,7 +88,8 @@ const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>>
   initialState,
   initialCommand,
   update,
-  view
+  view,
+  actions
 }
 
 export default display

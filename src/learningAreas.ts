@@ -1,4 +1,5 @@
 import * as Html from "../display/markup"
+import { EngagementPlansContent, engagementPlanSelected } from "./engagementPlans"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
 
@@ -39,33 +40,65 @@ function learningAreaOpened(area: LearningArea): LearningAreaOpened {
 export type LearningAreasContent = LearningAreasLoaded | LearningAreasLoading
 
 export interface LearningArea {
+  id: string
   title: string
   content: string
 }
 
-function viewLearningArea(selected: LearningArea | null): (learningArea: LearningArea) => Html.View {
+function viewLearningArea(selected: LearningArea | null, engagementPlans: EngagementPlansContent): (learningArea: LearningArea) => Html.View {
   return (learningArea) => {
     if (learningArea.title === selected?.title) {
       return Html.article([cardStyle()], [
-        viewTitle(learningArea),
-        viewContent(learningArea)
+        viewTitle(learningArea, engagementPlans),
+        viewContent(learningArea),
+        indicateEngagement(learningArea)
       ])
     } else {
       return Html.article([cardStyle(), Html.onClick(learningAreaOpened(learningArea))], [
-        viewTitle(learningArea)
+        viewTitle(learningArea, engagementPlans)
       ])
     }
   }
 }
 
-function viewTitle(area: LearningArea): Html.ViewChild {
+function viewTitle(area: LearningArea, engagementPlans: EngagementPlansContent): Html.ViewChild {
   return Html.h3([Html.cssClassList([
     { "p-4": true },
     { "font-bold": true },
     { "text-sky-800": true },
     { "text-lg": true }
   ])], [
-    Html.text(area.title)
+    Html.text(area.title),
+    engagementPlansView(area, engagementPlans)
+  ])
+}
+
+function engagementPlansView(area: LearningArea, engagementPlans: EngagementPlansContent): Html.ViewChild {
+  switch (engagementPlans.type) {
+    case "engagementPlansLoaded":
+      const plan = engagementPlans.plans.find(plan => plan.learningArea === area.id)
+      if (plan) {
+        switch (plan?.level) {
+          case "doing":
+            return engagementPlanView("Doing")
+          case "learning":
+            return engagementPlanView("Learning")
+          case "sharing":
+            return engagementPlanView("Sharing")
+          default:
+            return Html.text("")  
+        }    
+      } else {
+        return Html.text("")
+      }
+    default:
+      return Html.text("")
+  }
+}
+
+function engagementPlanView(level: string): Html.ViewChild {
+  return Html.div([ Html.data("engagement-indicator") ], [
+    Html.text(level)
   ])
 }
 
@@ -79,7 +112,7 @@ function viewContent(area: LearningArea): Html.ViewChild {
       { "border-t-2": true }
     ]),
     Html.withHTMLContent(markdownToHTML(area.content, [
-      decorate("a",  { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
+      decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
       decorate("h1", { classname: "font-bold text-lg" }),
       decorate("h3", { classname: "font-bold" }),
       decorate("ul", { classname: "list-disc list-inside" }),
@@ -88,7 +121,27 @@ function viewContent(area: LearningArea): Html.ViewChild {
   ], [])
 }
 
-function cardStyle(): Html.Attribute {
+function indicateEngagement(learningArea: LearningArea): Html.ViewChild {
+  return Html.section([], [
+    engagementPlanInput(learningArea, "I am learning it!", "learning"),
+    engagementPlanInput(learningArea, "I am doing it!", "doing"),
+    engagementPlanInput(learningArea, "I am sharing it!", "sharing"),
+  ])
+}
+
+function engagementPlanInput(learningArea: LearningArea, label: string, value: string): Html.ViewChild {
+  return Html.label([], [
+    Html.text(label),
+    Html.input([
+      Html.type("radio"),
+      Html.name("engagement-plan"),
+      Html.value(value),
+      Html.onInput(engagementPlanSelected(learningArea.id))
+    ], [])
+  ])
+}
+
+function cardStyle(): Html.ViewAttribute {
   return Html.cssClassList([
     { "m-4": true },
     { "rounded": true },
@@ -97,7 +150,7 @@ function cardStyle(): Html.Attribute {
     { "border-solid": true }])
 }
 
-export function learningAreasView(learningAreas: Array<LearningArea>, selected: LearningArea | null): Html.View {
+export function learningAreasView(learningAreas: Array<LearningArea>, selected: LearningArea | null, engagementPlans: EngagementPlansContent): Html.View {
   if (learningAreas.length == 0) {
     return Html.h1([], [
       Html.text("There is nothing to learn!")
@@ -112,6 +165,6 @@ export function learningAreasView(learningAreas: Array<LearningArea>, selected: 
       { "basis-3/6": true },
       { "shrink-0": true },
       { "min-w-fit": true }
-    ])], learningAreas.map(viewLearningArea(selected)).map(asListItem))
+    ])], learningAreas.map(viewLearningArea(selected, engagementPlans)).map(asListItem))
   ])
 }

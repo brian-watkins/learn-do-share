@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example, pick, step } from "esbehavior";
-import { Step } from "esbehavior/dist/Assumption";
-import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
+import { behavior, condition, effect, example } from "esbehavior";
+import { selectLearningArea } from "./steps";
+import { FakeLearningArea, testContext } from "./testApp";
 
 export default
   behavior("viewing learning area content", [
@@ -71,9 +71,3 @@ Here is an intro to what you will learn
         ]
       })
   ])
-
-function selectLearningArea(learningArea: TestLearningArea): Step<TestContext> {
-  return step("a learning area is selected", async (testContext) => {
-    await testContext.display.selectElementWithText(learningArea.title).click()
-  })
-}

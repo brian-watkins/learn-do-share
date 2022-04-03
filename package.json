@@ -24,12 +24,14 @@
     "@types/chai": "^4.3.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.21",
+    "@zeit/cosmosdb-server": "^0.13.2",
     "autoprefixer": "^10.4.4",
     "chai": "^4.3.6",
     "esbehavior": "^1.2.3",
     "esbuild-node-loader": "^0.8.0",
     "express": "^4.17.3",
     "foreman": "^3.0.1",
+    "husky": "^7.0.0",
     "playwright": "^1.19.2",
     "postcss": "^8.4.12",
     "redux": "^4.1.2",
@@ -37,13 +39,13 @@
     "tailwindcss": "^3.0.23",
     "typescript": "^4.6.2",
     "vite": "^2.8.6",
-    "wait-on": "^6.0.1",
-    "husky": "^7.0.0"
+    "wait-on": "^6.0.1"
   },
   "engines": {
     "node": "^16.0.0"
   },
   "dependencies": {
+    "@azure/cosmos": "^3.15.1",
     "hast-util-select": "^5.0.1",
     "immer": "^9.0.12",
     "rehype-stringify": "^9.0.3",

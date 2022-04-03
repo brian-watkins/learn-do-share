@@ -5,6 +5,8 @@ import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/backstage"
 import { TestDisplay } from "./testDisplay"
+import https from 'https'
+import { ResetableEngagementPlanRepo } from "./testStore"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -21,6 +23,13 @@ export class TestContext {
   display = new TestDisplay()
   server = new TestServer()
   learningAreasReader = new FakeLearningAreasReader()
+  engagementPlanRepo = new ResetableEngagementPlanRepo({
+    endpoint: "https://localhost:3021",
+    key: "some-dumb-key",
+    database: "lds-test",
+    container: "engagement-plans-test",
+    agent: new https.Agent({ rejectUnauthorized: false })
+  })
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
     this.learningAreasReader.resolveImmediatelyWith(learningAreas)
@@ -33,15 +42,24 @@ export class TestContext {
 
   async start(): Promise<void> {
     await this.server.start({
-      learningAreasReader: this.learningAreasReader
+      learningAreasReader: this.learningAreasReader,
+      engagementPlanWriter: this.engagementPlanRepo,
+      engagementPlanReader: this.engagementPlanRepo
     })
     await this.display.start("http://localhost:7777")
   }
 
   async stop(): Promise<void> {
+    await this.engagementPlanRepo.reset()
     await this.display.stop()
     this.learningAreasReader.stop()
     await this.server.stop()
+  }
+
+  async reload(): Promise<void> {
+    await this.display.stop()
+    this.learningAreasReader.stop()
+    await this.display.start("http://localhost:7777")
   }
 }
 
@@ -111,8 +129,10 @@ class TestServer {
 export class TestLearningArea implements LearningArea {
   title: string
   content: string
+  id: string
 
   constructor(public testId: number) {
+    this.id = `learning-area-${testId}`
     this.title = `Learning Area ${testId}`
     this.content = `Here is some content for learning Area ${testId}!`
   }

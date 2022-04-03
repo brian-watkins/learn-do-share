@@ -2,9 +2,16 @@ import { MessageDispatcher } from "./effect"
 
 export const BACKSTAGE_MESSAGE_TYPE = "_backstage"
 
-export class BackstageMessage<T> {
-  type: "_backstage" = BACKSTAGE_MESSAGE_TYPE
-  constructor(public wrapped: T) { }
+export interface BackstageMessage<T> {
+  type: "_backstage"
+  wrapped: T
+}
+
+export function backstageMessage<T>(wrapped: T): BackstageMessage<T> {
+  return {
+    type: BACKSTAGE_MESSAGE_TYPE,
+    wrapped
+  }
 }
 
 export function handleBackstageMessage(dispatch: MessageDispatcher, message: BackstageMessage<any>) {
