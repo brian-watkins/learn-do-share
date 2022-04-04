@@ -22,8 +22,8 @@ export class TestDisplay {
     return this.select(`text="${text}"`)
   }
 
-  select(selector: string): DisplayElement {
-    return DisplayElement.New(this.page!, selector)
+  select(selector: string, options: SelectorOptions = {}): DisplayElement {
+    return DisplayElement.New(this.page!, buildSelector(selector, options))
   }
 
   selectAll(selector: string): DisplayElementList {
@@ -57,6 +57,10 @@ export class DisplayElement {
   async getAttribute(name: string): Promise<string | null> {
     return this.locator.first().getAttribute(name)
   }
+
+  select(selector: string, options: SelectorOptions = {}): DisplayElement {
+    return new DisplayElement(this.locator.locator(buildSelector(selector, options)))
+  }
 }
 
 export class DisplayElementList {
@@ -74,5 +78,17 @@ export class DisplayElementList {
       promises.push(handler(element))
     }
     return Promise.all(promises)
+  }
+}
+
+export interface SelectorOptions {
+  withText?: string
+}
+
+function buildSelector(base: string, options: SelectorOptions): string {
+  if (options.withText) {
+    return `${base}:has-text("${options.withText}")`
+  } else {
+    return base
   }
 }

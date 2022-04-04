@@ -57,7 +57,11 @@ function selectEngagementLevel(description: string): Step<TestContext> {
 
 function engagementLevelSelected(learningArea: TestLearningArea, indicator: string): Effect<TestContext> {
   return effect(`Engagement level '${indicator}' shown for Learning Area ${learningArea.testId}`, async (testContext) => {
-    const engagementText = await testContext.display.select(`article:has-text("${learningArea.title}") [data-engagement-indicator]`).text()
+    const engagementText = await testContext.display
+      .select('article', { withText: learningArea.title })
+      .select('[data-engagement-indicator]')
+      .text()
+
     expect(engagementText).to.contain(indicator)
   })
 }
