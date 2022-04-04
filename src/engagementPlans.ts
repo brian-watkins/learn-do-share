@@ -9,17 +9,9 @@ export interface EngagementPlan {
   level: EngagementLevel
 }
 
-export interface EngagementPlanSelected {
-  type: "engagementPlanSelected"
-  plan: EngagementPlan
-}
-
-export function engagementPlanSelected(areaId: string, level: EngagementLevel): EngagementPlanSelected {
+export function engagementPlan(learningArea: string, level: EngagementLevel): EngagementPlan {
   return {
-    type: "engagementPlanSelected",
-    plan: {
-      learningArea: areaId,
-      level
-    }
+    learningArea,
+    level
   }
 }

@@ -1,3 +1,4 @@
+import { BackstageMessage, backstageMessage } from "../display/backstage"
 import { EngagementPlan } from "./engagementPlans"
 
 export interface EngagementPlanWriter {
@@ -9,11 +10,11 @@ export interface WriteEngagementPlan {
   plan: EngagementPlan
 }
 
-export function writeEngagementPlan(plan: EngagementPlan): WriteEngagementPlan {
-  return {
+export function writeEngagementPlan(plan: EngagementPlan): BackstageMessage<WriteEngagementPlan> {
+  return backstageMessage({
     type: "writeEngagementPlan",
     plan
-  }
+  })
 }
 
 export interface EngagementPlanPersisted {

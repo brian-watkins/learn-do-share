@@ -1,8 +1,9 @@
 import * as Html from "../display/markup"
-import { EngagementLevel, engagementPlanSelected } from "./engagementPlans"
+import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { EngagementPlansContent } from "./readEngagementPlans"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
+import { writeEngagementPlan } from "./writeEngagementPlans"
 
 export interface LearningAreasLoaded {
   type: "learningAreasLoaded"
@@ -140,6 +141,10 @@ function engagementPlanInput(learningArea: LearningArea, label: string, value: E
       Html.onInput((level) => engagementPlanSelected(learningArea.id, level as EngagementLevel))
     ], [])
   ])
+}
+
+export function engagementPlanSelected(areaId: string, level: EngagementLevel) {
+  return writeEngagementPlan(engagementPlan(areaId, level))
 }
 
 function cardStyle(): Html.ViewAttribute {

@@ -7,7 +7,7 @@ import { backstageMessage, BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
 import { EffectHandler } from "../display/effect"
 import { EngagementPlansContent, EngagementPlansLoaded, engagementPlansLoading, engagementPlansRequested } from "./readEngagementPlans"
-import { EngagementPlanPersisted, writeEngagementPlan } from "./writeEngagementPlans"
+import { EngagementPlanPersisted } from "./writeEngagementPlans"
 
 interface AppState {
   learningAreasContent: LearningAreasContent
@@ -60,9 +60,6 @@ function update(state: AppState, action: DisplayMessage): void {
 }
 
 const actions: { [key: string]: EffectHandler } = {
-  engagementPlanSelected(dispatcher, message) {
-    dispatcher(backstageMessage(writeEngagementPlan(message.plan)))
-  },
   onApplicationStart(dispatcher) {
     dispatcher(backstageMessage(learningAreasRequested()))
     dispatcher(backstageMessage(engagementPlansRequested()))
