@@ -6,9 +6,15 @@ export interface EngagementPlanReader {
   read(): Promise<Array<EngagementPlan>>
 }
 
+export enum EngagementLevel {
+  Learning = "learning",
+  Doing = "doing",
+  Sharing = "sharing"
+}
+
 export interface EngagementPlan {
   learningArea: string
-  level: string
+  level: EngagementLevel
 }
 
 export interface EngagementPlansLoaded {
@@ -50,14 +56,14 @@ export interface EngagementPlanSelected {
   plan: EngagementPlan
 }
 
-export function engagementPlanSelected(areaId: string): (level: string) => EngagementPlanSelected {
-  return (level) => ({
+export function engagementPlanSelected(areaId: string, level: EngagementLevel): EngagementPlanSelected {
+  return {
     type: "engagementPlanSelected",
     plan: {
       learningArea: areaId,
       level
     }
-  })
+  }
 }
 
 export interface EngagementPlanPersisted {

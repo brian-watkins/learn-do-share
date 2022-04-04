@@ -1,5 +1,5 @@
 import * as Html from "../display/markup"
-import { EngagementPlansContent, engagementPlanSelected } from "./engagementPlans"
+import { EngagementLevel, EngagementPlansContent, engagementPlanSelected } from "./engagementPlans"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
 
@@ -123,20 +123,20 @@ function viewContent(area: LearningArea): Html.ViewChild {
 
 function indicateEngagement(learningArea: LearningArea): Html.ViewChild {
   return Html.section([], [
-    engagementPlanInput(learningArea, "I am learning it!", "learning"),
-    engagementPlanInput(learningArea, "I am doing it!", "doing"),
-    engagementPlanInput(learningArea, "I am sharing it!", "sharing"),
+    engagementPlanInput(learningArea, "I am learning it!", EngagementLevel.Learning),
+    engagementPlanInput(learningArea, "I am doing it!", EngagementLevel.Doing),
+    engagementPlanInput(learningArea, "I am sharing it!", EngagementLevel.Sharing),
   ])
 }
 
-function engagementPlanInput(learningArea: LearningArea, label: string, value: string): Html.ViewChild {
+function engagementPlanInput(learningArea: LearningArea, label: string, value: EngagementLevel): Html.ViewChild {
   return Html.label([], [
     Html.text(label),
     Html.input([
       Html.type("radio"),
       Html.name("engagement-plan"),
       Html.value(value),
-      Html.onInput(engagementPlanSelected(learningArea.id))
+      Html.onInput((level) => engagementPlanSelected(learningArea.id, level as EngagementLevel))
     ], [])
   ])
 }
