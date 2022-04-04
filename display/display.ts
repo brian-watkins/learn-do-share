@@ -1,13 +1,12 @@
 import { Action, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
-import { EffectHandler } from "./effect"
+import { BatchMessage } from "./batch"
 
 export interface Display<T, M> {
   initialState(): T
-  initialCommand(): M
+  initialCommand(): M | BatchMessage<M>
   update(state: T, message: M): void
-  actions: { [key:string]: EffectHandler }
   view(state: T): View
 }
 

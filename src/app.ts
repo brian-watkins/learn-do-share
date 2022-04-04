@@ -5,9 +5,9 @@ import { loadingIndicatorView } from "./loadingIndicatorView"
 import { DataMessage } from "./backstage"
 import { backstageMessage, BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
-import { EffectHandler } from "../display/effect"
 import { EngagementPlansContent, EngagementPlansLoaded, engagementPlansLoading, engagementPlansRequested } from "./readEngagementPlans"
 import { EngagementPlanPersisted } from "./writeEngagementPlans"
+import { batch } from "../display/batch"
 
 interface AppState {
   learningAreasContent: LearningAreasContent
@@ -23,16 +23,11 @@ function initialState(): AppState {
   }
 }
 
-interface ApplicationStart {
-  type: "onApplicationStart"
-}
-
 type DisplayMessage
   = LearningAreasResponse
   | LearningAreaOpened
   | EngagementPlanPersisted
   | EngagementPlansLoaded
-  | ApplicationStart
 
 function update(state: AppState, action: DisplayMessage): void {
   switch (action.type) {
@@ -59,15 +54,11 @@ function update(state: AppState, action: DisplayMessage): void {
   }
 }
 
-const actions: { [key: string]: EffectHandler } = {
-  onApplicationStart(dispatcher) {
-    dispatcher(backstageMessage(learningAreasRequested()))
-    dispatcher(backstageMessage(engagementPlansRequested()))
-  }
-}
-
-function initialCommand(): DisplayMessage {
-  return { type: "onApplicationStart" }
+function initialCommand() {
+  return batch([
+    backstageMessage(learningAreasRequested()),
+    backstageMessage(engagementPlansRequested())
+  ])
 }
 
 // View
@@ -86,8 +77,7 @@ const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>>
   initialState,
   initialCommand,
   update,
-  view,
-  actions
+  view
 }
 
 export default display
