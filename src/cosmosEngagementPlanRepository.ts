@@ -1,5 +1,7 @@
-import { EngagementPlan, EngagementPlanReader, EngagementPlanWriter } from "./engagementPlans";
 import { Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
+import { EngagementPlan } from "./engagementPlans";
+import { EngagementPlanReader } from "./readEngagementPlans";
+import { EngagementPlanWriter } from "./writeEngagementPlans";
 
 export interface CosmosConfig extends CosmosClientOptions {
   endpoint: string

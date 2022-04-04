@@ -1,6 +1,7 @@
 import { Backstage } from "../api/backstage/backstage.js";
-import { engagementPlanPersisted, EngagementPlanReader, EngagementPlanSelected, engagementPlansLoaded, EngagementPlansRequested, EngagementPlanWriter } from "./engagementPlans.js";
+import { EngagementPlanReader, engagementPlansLoaded, EngagementPlansRequested } from "./readEngagementPlans.js";
 import { LearningAreasReader, LearningAreasRequested, requestLearningAreas } from "./requestLearningAreas.js";
+import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader
@@ -8,14 +9,13 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-
-export type DataMessage = LearningAreasRequested | EngagementPlanSelected | EngagementPlansRequested
+export type DataMessage = LearningAreasRequested | WriteEngagementPlan | EngagementPlansRequested
 
 const update = (adapters: Adapters) => async (message: DataMessage) => {
   switch (message.type) {
     case "learningAreasRequested":
       return requestLearningAreas(adapters.learningAreasReader)
-    case "engagementPlanSelected":
+    case "writeEngagementPlan":
       await adapters.engagementPlanWriter.write(message.plan)
       return engagementPlanPersisted(message.plan)
     case "engagementPlansRequested":

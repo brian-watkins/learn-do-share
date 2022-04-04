@@ -1,5 +1,6 @@
 import * as Html from "../display/markup"
-import { EngagementLevel, EngagementPlansContent, engagementPlanSelected } from "./engagementPlans"
+import { EngagementLevel, engagementPlanSelected } from "./engagementPlans"
+import { EngagementPlansContent } from "./readEngagementPlans"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
 
