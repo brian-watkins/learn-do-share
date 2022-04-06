@@ -13,6 +13,9 @@ provider "azurerm" {
   features {}
 }
 
+
+# Cosmos DB
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.resource_group_location
@@ -53,4 +56,22 @@ resource "azurerm_cosmosdb_sql_container" "dbContainer" {
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
   database_name       = azurerm_cosmosdb_sql_database.db.name
   partition_key_path  = "/id"
+}
+
+
+# Application Insights
+
+resource "azurerm_log_analytics_workspace" "logs" {
+  name                = "lds-logs"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+}
+
+resource "azurerm_application_insights" "example" {
+  name                = "lds-appinsights"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  workspace_id        = azurerm_log_analytics_workspace.logs.id
+  application_type    = "web"
 }
