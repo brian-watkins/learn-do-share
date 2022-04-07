@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "staticSites_display_name": {
+      "type": "string"
+    },
+    "appInsightsKey": {
+      "type": "string"
+    },
+    "cosmosDBEndpoint": {
+      "type": "string"
+    },
+    "cosmosDBReadWriteKey": {
+      "type": "string"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Web/staticSites/config",
+      "apiVersion": "2020-10-01",
+      "name": "[concat(parameters('staticSites_display_name'), '/appsettings')]",
+      "kind": "string",
+      "properties": {
+        "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsKey')]",
+        "COSMOS_DB_ENDPOINT": "[parameters('cosmosDBEndpoint')]",
+        "COSMOS_DB_READ_WRITE_KEY": "[parameters('cosmosDBReadWriteKey')]"
+      }
+    }
+  ]
+}
