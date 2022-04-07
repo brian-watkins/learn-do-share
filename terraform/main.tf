@@ -6,6 +6,13 @@ terraform {
     }
   }
 
+  backend "azurerm" {
+    resource_group_name  = "lds-tf"
+    storage_account_name = "lds935433"
+    container_name       = "tfstate"
+    key                  = "prod.terraform.tfstate"
+  }
+
   required_version = ">= 1.1.0"
 }
 
