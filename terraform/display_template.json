@@ -3,16 +3,16 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "staticSites_display_name": {
-      "type": "string"
+      "type": "String"
     },
     "appInsightsKey": {
-      "type": "string"
+      "type": "String"
     },
     "cosmosDBEndpoint": {
-      "type": "string"
+      "type": "String"
     },
     "cosmosDBReadWriteKey": {
-      "type": "string"
+      "type": "String"
     }
   },
   "variables": {},
