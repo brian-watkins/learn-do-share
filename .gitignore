@@ -5,3 +5,5 @@ build
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+
+az_creds.json
