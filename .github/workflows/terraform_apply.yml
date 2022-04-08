@@ -20,15 +20,8 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v3
-      
-      # install terraform
       - uses: hashicorp/setup-terraform@v1
-
       - run: terraform init
         working-directory: ./terraform
-
-      # terraform plan
       - run: terraform plan
         working-directory: ./terraform
-
-      # terraform apply
