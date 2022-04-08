@@ -21,8 +21,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - run: |
-        az staticwebapp show --name='lds-display'
+      - run: az staticwebapp show --name="lds-display"
 
       # install terraform
 
