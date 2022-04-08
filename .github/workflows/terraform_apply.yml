@@ -1,0 +1,31 @@
+name: TF Apply
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+  workflow_dispatch:
+
+jobs:
+
+  terraform_apply:
+    runs-on: ubuntu-latest
+    name: Apply
+    steps:
+      - uses: actions/checkout@v3
+      
+      # log in to azure
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - run: |
+        az staticwebapp show --name='lds-display'
+
+      # install terraform
+
+      # terraform plan
+
+      # terraform apply
