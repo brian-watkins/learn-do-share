@@ -24,7 +24,10 @@ jobs:
       - run: az staticwebapp show --name="lds-display"
 
       # install terraform
+      - uses: hashicorp/setup-terraform@v1
 
       # terraform plan
+      - run: terraform plan
+        working-directory: ./terraform
 
       # terraform apply
