@@ -21,13 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      # log in to azure
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - run: az staticwebapp show --name="lds-display"
-
       # install terraform
       - uses: hashicorp/setup-terraform@v1
 
