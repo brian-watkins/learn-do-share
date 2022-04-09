@@ -7,3 +7,4 @@ terraform.tfstate
 terraform.tfstate.backup
 
 az_creds.json
+plan.sh
