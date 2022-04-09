@@ -49,14 +49,15 @@ first install the Azure CLI and Terraform. Then, one time only I think, init Ter
 ```
 $ cd terraform
 $ terraform init
-```
-
-Then, to update, make sure to login to Azure and just run terraform apply:
-
-```
-$ cd terraform
 $ az login
-$ terraform apply
+$ GITHUB_TOKEN=<some github token> terraform plan
 ```
 
-We hope to automate this with a github action at some point.
+A valid github token with repo access is needed to run terraform since it needs
+to check on the status of a github actions secret.
+
+Ordinarily, though, the terrform should be updated only via the github action. When
+you make a change to any of the files in the terraform directory, be sure to run `plan`
+first and then when you commit and push, a github action will run to automatically
+apply the changes. Right now, there's no check on this, so whatever terraform says to
+do will happen.
