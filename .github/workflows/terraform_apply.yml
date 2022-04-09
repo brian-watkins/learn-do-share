@@ -21,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v1
+      - run: terraform fmt -check
+        working-directory: ./terraform
       - run: terraform init
         working-directory: ./terraform
-      - run: terraform plan
+      - run: terraform apply -auto-approve
         working-directory: ./terraform
