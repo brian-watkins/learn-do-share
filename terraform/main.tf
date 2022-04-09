@@ -123,10 +123,16 @@ resource "azurerm_resource_group_template_deployment" "display-config" {
 }
 
 
-# GitHub Action Secret
+# GitHub Action Secrets
 
 resource "github_actions_secret" "api-key" {
   repository      = "learn-do-share"
   secret_name     = "AZURE_STATIC_WEB_APPS_API_KEY"
   plaintext_value = azurerm_static_site.display.api_key
+}
+
+resource "github_actions_secret" "app-insights-connection-string" {
+  repository      = "learn-do-share"
+  secret_name     = "VITE_APP_INSIGHTS_CONNECTION_STRING"
+  plaintext_value = azurerm_application_insights.metrics.connection_string
 }
