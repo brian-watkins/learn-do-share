@@ -26,7 +26,6 @@ provider "azurerm" {
 
 provider "github" {
   owner = "brian-watkins"
-  token = var.github_token
 }
 
 

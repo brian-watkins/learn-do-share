@@ -9,7 +9,3 @@ variable "resource_group_location" {
 variable "cosmos_db_account_name" {
   default = "lds-database"
 }
-
-variable "github_token" {
-  description = "GitHub access token used to configure the provider"
-}
