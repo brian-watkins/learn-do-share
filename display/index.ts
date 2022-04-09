@@ -10,6 +10,10 @@ import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const appInsights = new ApplicationInsights({ config: {
   connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
   disableTelemetry: import.meta.env.DEV,
+  disableFetchTracking: false,
+  enableCorsCorrelation: true,
+  enableRequestHeaderTracking: true,
+  enableResponseHeaderTracking: true,
 } });
 appInsights.loadAppInsights();
 appInsights.trackPageView();
