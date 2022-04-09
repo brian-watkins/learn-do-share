@@ -11,7 +11,8 @@ await esbuild.build({
     outfile: "./build/backstage/index.mjs",
     external: [
         "@azure/functions",
-        "@azure/cosmos"
+        "@azure/cosmos",
+        "applicationinsights"
     ],
     logLevel: "info"
 })
