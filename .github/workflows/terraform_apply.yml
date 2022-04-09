@@ -8,6 +8,10 @@ on:
       - 'terraform/**'
   workflow_dispatch:
 
+permissions:
+  id-token: read
+  repository-projects: write
+
 jobs:
 
   terraform_apply:
@@ -19,7 +23,6 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    permissions: write-all
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v1
