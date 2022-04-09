@@ -1,10 +1,5 @@
 name: TF Apply
 
-permissions:
-  id-token: write
-  contents: write
-  security-events: write
-
 on:
   push:
     branches:
