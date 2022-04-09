@@ -24,7 +24,9 @@ provider "azurerm" {
   features {}
 }
 
-provider "github" {}
+provider "github" {
+  owner = "brian-watkins"
+}
 
 
 # Cosmos DB
@@ -124,7 +126,7 @@ resource "azurerm_resource_group_template_deployment" "display-config" {
 # GitHub Action Secret
 
 resource "github_actions_secret" "api-key" {
-  repository      = "brian-watkins/learn-do-share"
+  repository      = "learn-do-share"
   secret_name     = "AZURE_STATIC_WEB_APPS_API_KEY"
   plaintext_value = azurerm_static_site.display.api_key
 }
