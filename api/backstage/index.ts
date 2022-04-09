@@ -3,6 +3,13 @@ import { Adapters } from "../../src/backstage.js"
 import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader"
 import { initBackstage } from "../../src/backstage"
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository"
+import appInsights from "applicationinsights"
+
+appInsights.setup()
+appInsights.defaultClient.addTelemetryProcessor(function (envelope) {
+  envelope.tags["ai.cloud.role"] = "backstage"
+  return true
+})
 
 const cosmosDB = new CosmosEngagementPlanRepository({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
