@@ -7,7 +7,7 @@ import appInsights from "applicationinsights"
 
 appInsights.setup()
 appInsights.defaultClient.addTelemetryProcessor(function (envelope) {
-  envelope.tags["ai.cloud.role"] = "backstage"
+  envelope.tags["ai.cloud.role"] = "backstage-function"
   return true
 })
 
