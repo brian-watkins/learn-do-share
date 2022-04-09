@@ -21,8 +21,9 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - run: |
-        curl -H "Authorization: Bearer ${GITHUB_TOKEN}" https://api.github.com/repos/brian-watkins/learn-do-share/actions/secrets/AZURE_STATIC_WEB_APPS_API_KEY:
+      - name: Check Token
+        run: |
+          curl -H "Authorization: Bearer ${GITHUB_TOKEN}" https://api.github.com/repos/brian-watkins/learn-do-share/actions/secrets/AZURE_STATIC_WEB_APPS_API_KEY:
       # - uses: hashicorp/setup-terraform@v1
       # - run: terraform fmt -check
       #   working-directory: ./terraform
