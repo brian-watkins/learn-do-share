@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: read
-  repository-projects: write
+  id-token: 'read'
+  contents: 'write'
 
 jobs:
 
