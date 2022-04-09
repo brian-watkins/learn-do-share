@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0.2"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 4.0"
+    }
   }
 
   backend "azurerm" {
@@ -19,6 +23,8 @@ terraform {
 provider "azurerm" {
   features {}
 }
+
+provider "github" {}
 
 
 # Cosmos DB
@@ -112,4 +118,13 @@ resource "azurerm_resource_group_template_deployment" "display-config" {
       value = azurerm_cosmosdb_account.cosmosdb.primary_key
     }
   })
+}
+
+
+# GitHub Action Secret
+
+resource "github_actions_secret" "example_secret" {
+  repository       = "learn-do-share"
+  secret_name      = "AZURE_STATIC_WEB_APPS_API_KEY"
+  plaintext_value  = azurerm_static_site.display.api_key
 }
