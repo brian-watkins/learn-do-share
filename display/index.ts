@@ -5,6 +5,14 @@ import display from "../src/app"
 import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { createReducer } from "./display"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
+import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+
+const appInsights = new ApplicationInsights({ config: {
+  connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
+  disableTelemetry: import.meta.env.DEV,
+} });
+appInsights.loadAppInsights();
+appInsights.trackPageView();
 
 function effectHandlers(): Map<string, EffectHandler> {
   const handlers = new Map<string, EffectHandler>()

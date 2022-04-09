@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@azure/cosmos": "^3.15.1",
+    "@microsoft/applicationinsights-web": "^2.7.4",
     "hast-util-select": "^5.0.1",
     "immer": "^9.0.12",
     "rehype-stringify": "^9.0.3",
