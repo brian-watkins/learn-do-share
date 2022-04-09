@@ -8,10 +8,6 @@ on:
       - 'terraform/**'
   workflow_dispatch:
 
-permissions:
-  secrets: 'write'
-  contents: 'write'
-
 jobs:
 
   terraform_apply:
