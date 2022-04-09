@@ -24,7 +24,10 @@ provider "azurerm" {
   features {}
 }
 
-provider "github" {}
+provider "github" {
+  owner = "brian-watkins"
+  token = var.github_token
+}
 
 
 # Cosmos DB
