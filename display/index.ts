@@ -16,6 +16,9 @@ const appInsights = new ApplicationInsights({ config: {
   enableResponseHeaderTracking: true,
 } });
 appInsights.loadAppInsights();
+appInsights.addTelemetryInitializer(function (envelope) {
+  envelope.tags!["ai.cloud.role"] = "display";
+});
 appInsights.trackPageView();
 
 function effectHandlers(): Map<string, EffectHandler> {
