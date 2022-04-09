@@ -18,12 +18,10 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.TERRAFORM_GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - name: Check Token
-        env:
-          FUNNY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -i -H "Authorization: Bearer ${FUNNY_TOKEN}" https://api.github.com/repos/brian-watkins/learn-do-share/actions/secrets/AZURE_STATIC_WEB_APPS_API_KEY:
       # - uses: hashicorp/setup-terraform@v1
