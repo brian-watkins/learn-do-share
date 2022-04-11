@@ -27,12 +27,12 @@ const httpTrigger: AzureFunction = async function (context: Context, _: HttpRequ
   fs.readdir(context.executionContext.functionDirectory, function (err, files) {
     //handling error
     if (err) {
-      return console.log('Unable to scan directory: ' + err);
+      return context.log('Unable to scan directory: ' + err);
     }
     //listing all files using forEach
     files.forEach(function (file) {
       // Do whatever you want to do with the file
-      console.log(file);
+      context.log("File", file);
     });
   });
 
@@ -45,6 +45,9 @@ const httpTrigger: AzureFunction = async function (context: Context, _: HttpRequ
   const html = template.replace("/* DISPLAY_INITIAL_STATE */", content)
 
   context.res = {
+    headers: {
+      "Content-Type": "text/html"
+    },
     body: html
   };
 };
