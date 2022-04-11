@@ -52,5 +52,4 @@ if (appRoot) {
   store.subscribe(handleUpdate)
 
   handleUpdate()
-  store.dispatch(display.initialCommand() as any)
 }

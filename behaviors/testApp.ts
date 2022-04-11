@@ -1,6 +1,6 @@
 import { Context } from "esbehavior"
 import { Server } from "http"
-import { createServer } from "../local/backstage/app"
+import { createServer, stopVite } from "../local/backstage/app"
 import { LearningArea } from "../src/learningAreas"
 import { LearningAreasReader } from "../src/requestLearningAreas"
 import { Adapters } from "../src/backstage"
@@ -36,74 +36,46 @@ export class TestContext {
     return this
   }
 
-  resolveLearningAreasRequestWith(learningAreas: Array<TestLearningArea>) {
-    this.learningAreasReader.resolveWith(learningAreas)
-  }
-
   async start(): Promise<void> {
     await this.server.start({
       learningAreasReader: this.learningAreasReader,
       engagementPlanWriter: this.engagementPlanRepo,
       engagementPlanReader: this.engagementPlanRepo
     })
-    await this.display.start("http://localhost:7777")
+    await this.display.start("http://localhost:7778")
   }
 
   async stop(): Promise<void> {
     await this.engagementPlanRepo.reset()
     await this.display.stop()
-    this.learningAreasReader.stop()
     await this.server.stop()
   }
 
   async reload(): Promise<void> {
     await this.display.stop()
-    this.learningAreasReader.stop()
-    await this.display.start("http://localhost:7777")
+    await this.display.start("http://localhost:7778")
   }
 }
 
 class FakeLearningAreasReader implements LearningAreasReader {
-  private resolver: ((areas: LearningArea[]) => void) | null = null
   private areas: LearningArea[] | null = null
 
   constructor() { }
 
   async read(): Promise<Array<LearningArea>> {
-    if (this.areas == null) {
-      return new Promise((resolve) => {
-        this.resolver = resolve
-      })
-    } else {
-      return this.areas
-    }
-  }
-
-  resolveWith(areas: Array<LearningArea>) {
-    if (this.resolver != null) {
-      this.resolver(areas)
-      this.resolver = null
-    }
+    return this.areas!
   }
 
   resolveImmediatelyWith(areas: Array<LearningArea>) {
     this.areas = areas
-  }
-
-  stop() {
-    // this avoids having the test hang if there was a failure in the middle of a script
-    // that only later resolves the learning areas request
-    if (this.resolver != null) {
-      this.resolveWith([])
-    }
   }
 }
 
 class TestServer {
   private server: Server | null = null
 
-  start(adapters: Adapters): Promise<void> {
-    const app = createServer(adapters)
+  async start(adapters: Adapters): Promise<void> {
+    const app = await createServer(adapters)
 
     return new Promise((resolve) => {
       this.server = app.listen(7778, () => {
@@ -112,14 +84,18 @@ class TestServer {
     })
   }
 
-  stop(): Promise<void> {
+  async stop(): Promise<void> {
+    await stopVite()
+
     return new Promise((resolve) => {
       if (this.server == null) {
+        console.log("server is null")
         resolve()
         return
       }
 
       this.server.close(() => {
+        console.log("server is closed")
         resolve()
       })
     })

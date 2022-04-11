@@ -1,26 +1,17 @@
-import { LearningAreasContent, learningAreasView, LearningAreaOpened, LearningArea, learningAreasLoading, learningAreasLoaded } from "./learningAreas"
-import { learningAreasRequested, LearningAreasResponse } from "./requestLearningAreas"
+import { LearningAreasContent, learningAreasView, LearningAreaOpened, LearningArea, learningAreasLoaded } from "./learningAreas"
+import { LearningAreasResponse } from "./requestLearningAreas"
 import * as Html from "../display/markup"
 import { loadingIndicatorView } from "./loadingIndicatorView"
 import { DataMessage } from "./backstage"
-import { backstageMessage, BackstageMessage } from "../display/backstage"
+import { BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
-import { EngagementPlansContent, EngagementPlansLoaded, engagementPlansLoading, engagementPlansRequested } from "./readEngagementPlans"
+import { EngagementPlansContent, EngagementPlansLoaded } from "./readEngagementPlans"
 import { EngagementPlanPersisted } from "./writeEngagementPlans"
-import { batch } from "../display/batch"
 
 interface AppState {
   learningAreasContent: LearningAreasContent
   engagementPlansContent: EngagementPlansContent
   selectedLearningArea: LearningArea | null
-}
-
-function initialState(): AppState {
-  return {
-    learningAreasContent: learningAreasLoading(),
-    engagementPlansContent: engagementPlansLoading(),
-    selectedLearningArea: null
-  }
 }
 
 type DisplayMessage
@@ -54,13 +45,6 @@ function update(state: AppState, action: DisplayMessage): void {
   }
 }
 
-function initialCommand() {
-  return batch([
-    backstageMessage(learningAreasRequested()),
-    backstageMessage(engagementPlansRequested())
-  ])
-}
-
 // View
 
 function view(model: AppState): Html.View {
@@ -74,8 +58,6 @@ function view(model: AppState): Html.View {
 
 
 const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>> = {
-  initialState,
-  initialCommand,
   update,
   view
 }

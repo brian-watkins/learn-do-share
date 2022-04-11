@@ -1,4 +1,5 @@
 import { Backstage } from "../api/backstage/backstage.js";
+import { learningAreasLoaded } from "./learningAreas.js";
 import { EngagementPlanReader, engagementPlansLoaded, EngagementPlansRequested } from "./readEngagementPlans.js";
 import { LearningAreasReader, LearningAreasRequested, requestLearningAreas } from "./requestLearningAreas.js";
 import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
@@ -15,6 +16,7 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
   switch (message.type) {
     case "learningAreasRequested":
       return requestLearningAreas(adapters.learningAreasReader)
+      break
     case "writeEngagementPlan":
       await adapters.engagementPlanWriter.write(message.plan)
       return engagementPlanPersisted(message.plan)
@@ -24,8 +26,20 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
   }
 }
 
+const initialState = (adapters: Adapters) => async () => {
+  const learningAreas = await adapters.learningAreasReader.read()
+  const plans = await adapters.engagementPlanReader.read()
+
+  return {
+    learningAreasContent: learningAreasLoaded(learningAreas),
+    engagementPlansContent: engagementPlansLoaded(plans),
+    selectedLearningArea: null
+  }
+}
+
 export function initBackstage(adapters: Adapters): Backstage<DataMessage> {
   return {
-    messageHandler: update(adapters)
+    messageHandler: update(adapters),
+    initialState: initialState(adapters)
   }
 }

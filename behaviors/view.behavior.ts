@@ -27,30 +27,15 @@ export default
         prepare: [
           condition("the app loads and requests learning areas", async (testContext) =>
             await testContext
+              .withLearningAreas([
+                FakeLearningArea(1),
+                FakeLearningArea(2),
+                FakeLearningArea(3),
+              ])
               .start()
           )
         ],
         observe: [
-          effect("it shows a loading indicator", async (testContext) => {
-            const loadingIndicatorIsVisible = await testContext.display.select("#loading-indicator").isVisible()
-            expect(loadingIndicatorIsVisible).to.be.true
-          })
-        ]
-      }).andThen({
-        perform: [
-          step("the learning areas are returned", (testContext) => {
-            testContext.resolveLearningAreasRequestWith([
-              FakeLearningArea(1),
-              FakeLearningArea(2),
-              FakeLearningArea(3),
-            ])
-          })
-        ],
-        observe: [
-          effect("it hides the loading indicator", async (testContext) => {
-            const loadingIndicatorIsVisible = await testContext.display.select("#loading-indicator").isVisible()
-            expect(loadingIndicatorIsVisible).to.be.false
-          }),
           effect("it does not show that there is nothing to learn", async (testContext) => {
             const pageText = await testContext.display.pageText()
             expect(pageText).not.to.contain("There is nothing to learn!")

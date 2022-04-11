@@ -6,7 +6,7 @@
     "type": "module",
     "scripts": {
         "validate": "tsc --noEmit",
-        "build": "npm run validate && node build.mjs"
+        "build": "npm run validate && node build.mjs && cp root/index.html build/root/index.html"
     },
     "author": "Brian Watkins",
     "license": "MIT",

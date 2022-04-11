@@ -1,4 +1,10 @@
 {
+  "routes": [
+    {
+      "route": "/index.html",
+      "rewrite": "/api/root"
+    }
+  ],
   "platform": {
     "apiRuntime": "node:16"
   }

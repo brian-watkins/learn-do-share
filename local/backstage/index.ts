@@ -28,7 +28,7 @@ const adapters: Adapters = {
   engagementPlanWriter: cosmosDB
 }
 
-const app = createServer(adapters)
+const app = await createServer(adapters)
 
 app.listen(port, () => {
   console.log("Server listening on port", port)
