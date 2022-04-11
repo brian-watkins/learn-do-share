@@ -20,21 +20,8 @@ const adapters: Adapters = {
 
 const backstage = initBackstage(adapters)
 
-
 const httpTrigger: AzureFunction = async function (context: Context, _: HttpRequest): Promise<void> {
-  context.log('Root function processed a request.', context.executionContext.functionDirectory);
-
-  fs.readdir(context.executionContext.functionDirectory, function (err, files) {
-    //handling error
-    if (err) {
-      return context.log('Unable to scan directory: ' + err);
-    }
-    //listing all files using forEach
-    files.forEach(function (file) {
-      // Do whatever you want to do with the file
-      context.log("File", file);
-    });
-  });
+  context.log('Root function processed a request.');
 
   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
 
