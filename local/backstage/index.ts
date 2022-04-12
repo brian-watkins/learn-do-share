@@ -9,7 +9,7 @@ const port = process.env.PORT || 7778;
 
 await new Promise<void>((resolve) => {
   (cosmosServer as any).default().listen(3021, () => {
-    console.log(`Cosmos DB server running at https://localhost:3021`);
+    console.log(`Cosmos DB server running!`);
     resolve()
   })
 });
@@ -31,5 +31,7 @@ const adapters: Adapters = {
 const app = await createServer(adapters)
 
 app.listen(port, () => {
-  console.log("Server listening on port", port)
+  console.log()
+  console.log(`Server listening! Go to: http://localhost:${port}`)
+  console.log()
 })
