@@ -1,7 +1,7 @@
 
 export type MessageHandler<T> = (message: T) => Promise<any>
 
-export interface Backstage<T> {
+export interface Backstage<T, M> {
   messageHandler: MessageHandler<T>
-  initialState(): Promise<any>
+  initialState(): Promise<M>
 }

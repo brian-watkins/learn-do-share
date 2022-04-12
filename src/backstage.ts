@@ -1,4 +1,5 @@
 import { Backstage } from "../api/backstage/backstage.js";
+import { AppState } from "./app.js";
 import { learningAreasLoaded } from "./learningAreas.js";
 import { EngagementPlanReader, engagementPlansLoaded, EngagementPlansRequested } from "./readEngagementPlans.js";
 import { LearningAreasReader, LearningAreasRequested, requestLearningAreas } from "./requestLearningAreas.js";
@@ -26,7 +27,7 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
   }
 }
 
-const initialState = (adapters: Adapters) => async () => {
+const initialState = (adapters: Adapters) => async (): Promise<AppState> => {
   const learningAreas = await adapters.learningAreasReader.read()
   const plans = await adapters.engagementPlanReader.read()
 
@@ -37,7 +38,7 @@ const initialState = (adapters: Adapters) => async () => {
   }
 }
 
-export function initBackstage(adapters: Adapters): Backstage<DataMessage> {
+export function initBackstage(adapters: Adapters): Backstage<DataMessage, AppState> {
   return {
     messageHandler: update(adapters),
     initialState: initialState(adapters)

@@ -8,7 +8,7 @@ import { Display } from "../display/display"
 import { EngagementPlansContent, EngagementPlansLoaded } from "./readEngagementPlans"
 import { EngagementPlanPersisted } from "./writeEngagementPlans"
 
-interface AppState {
+export interface AppState {
   learningAreasContent: LearningAreasContent
   engagementPlansContent: EngagementPlansContent
   selectedLearningArea: LearningArea | null
