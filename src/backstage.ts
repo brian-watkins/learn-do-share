@@ -1,8 +1,7 @@
 import { Backstage } from "../api/backstage/backstage.js";
 import { AppState } from "./app.js";
-import { learningAreasLoaded } from "./learningAreas.js";
-import { EngagementPlanReader, engagementPlansLoaded, EngagementPlansRequested } from "./readEngagementPlans.js";
-import { LearningAreasReader, LearningAreasRequested, requestLearningAreas } from "./requestLearningAreas.js";
+import { EngagementPlanReader, engagementPlansLoaded } from "./readEngagementPlans.js";
+import { LearningAreasReader } from "./readLearningAreas.js";
 import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 
 export interface Adapters {
@@ -11,19 +10,13 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-export type DataMessage = LearningAreasRequested | WriteEngagementPlan | EngagementPlansRequested
+export type DataMessage = WriteEngagementPlan
 
 const update = (adapters: Adapters) => async (message: DataMessage) => {
   switch (message.type) {
-    case "learningAreasRequested":
-      return requestLearningAreas(adapters.learningAreasReader)
-      break
     case "writeEngagementPlan":
       await adapters.engagementPlanWriter.write(message.plan)
       return engagementPlanPersisted(message.plan)
-    case "engagementPlansRequested":
-      const plans = await adapters.engagementPlanReader.read()
-      return engagementPlansLoaded(plans)
   }
 }
 
@@ -32,7 +25,7 @@ const initialState = (adapters: Adapters) => async (): Promise<AppState> => {
   const plans = await adapters.engagementPlanReader.read()
 
   return {
-    learningAreasContent: learningAreasLoaded(learningAreas),
+    learningAreas: learningAreas,
     engagementPlansContent: engagementPlansLoaded(plans),
     selectedLearningArea: null
   }

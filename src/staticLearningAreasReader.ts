@@ -1,5 +1,5 @@
 import { LearningArea } from "./learningAreas.js";
-import { LearningAreasReader } from "./requestLearningAreas.js";
+import { LearningAreasReader } from "./readLearningAreas.js";
 
 export class StaticLearningAreasReader implements LearningAreasReader {
   async read(): Promise<LearningArea[]> {

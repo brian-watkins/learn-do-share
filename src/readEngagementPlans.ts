@@ -9,31 +9,11 @@ export interface EngagementPlansLoaded {
   plans: Array<EngagementPlan>
 }
 
-export interface EngagementPlansLoading {
-  type: "engagementPlansLoading"
-}
-
-export function engagementPlansLoading(): EngagementPlansLoading {
-  return {
-    type: "engagementPlansLoading"
-  }
-}
-
-export type EngagementPlansContent = EngagementPlansLoading | EngagementPlansLoaded
+export type EngagementPlansContent = EngagementPlansLoaded
 
 export function engagementPlansLoaded(plans: Array<EngagementPlan>): EngagementPlansLoaded {
   return {
     type: "engagementPlansLoaded",
     plans
-  }
-}
-
-export interface EngagementPlansRequested {
-  type: "engagementPlansRequested"
-}
-
-export function engagementPlansRequested(): EngagementPlansRequested {
-  return {
-    type: "engagementPlansRequested"
   }
 }

@@ -5,28 +5,6 @@ import { decorate, markdownToHTML } from "./util/markdownParser"
 import { asListItem } from "./viewHelpers"
 import { writeEngagementPlan } from "./writeEngagementPlans"
 
-export interface LearningAreasLoaded {
-  type: "learningAreasLoaded"
-  areas: Array<LearningArea>
-}
-
-export function learningAreasLoaded(areas: Array<LearningArea>): LearningAreasLoaded {
-  return {
-    type: "learningAreasLoaded",
-    areas
-  }
-}
-
-export interface LearningAreasLoading {
-  type: "learningAreasLoading"
-}
-
-export function learningAreasLoading(): LearningAreasLoading {
-  return {
-    type: "learningAreasLoading"
-  }
-}
-
 export interface LearningAreaOpened {
   type: "learningAreaOpened"
   area: LearningArea
@@ -38,8 +16,6 @@ function learningAreaOpened(area: LearningArea): LearningAreaOpened {
     area
   }
 }
-
-export type LearningAreasContent = LearningAreasLoaded | LearningAreasLoading
 
 export interface LearningArea {
   id: string
