@@ -1,4 +1,4 @@
-import { behavior, condition, effect, example, pick, step } from "esbehavior"
+import { behavior, condition, effect, example, pick } from "esbehavior"
 import { expect } from "chai"
 import { FakeLearningArea, testContext } from "./testApp"
 
