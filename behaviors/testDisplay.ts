@@ -14,10 +14,6 @@ export class TestDisplay {
     this.page = null
   }
 
-  async pageText(): Promise<string | null> {
-    return this.page?.textContent("body") ?? null
-  }
-
   selectElementWithText(text: string): DisplayElement {
     return this.select(`text="${text}"`)
   }
@@ -31,8 +27,12 @@ export class TestDisplay {
   }
 }
 
-export function withinContentArea(selector: string) {
+export function contentArea(selector: string = "") {
   return `#learning-area-content ${selector}`
+}
+
+export function learningAreas(selector: string = "") {
+  return `#learning-areas ${selector}`
 }
 
 export class DisplayElement {

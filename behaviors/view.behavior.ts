@@ -1,6 +1,7 @@
 import { behavior, condition, effect, example, pick } from "esbehavior"
 import { expect } from "chai"
 import { FakeLearningArea, testContext } from "./testApp"
+import { learningAreas } from "./testDisplay"
 
 export default
   behavior("viewing items", [
@@ -16,8 +17,8 @@ export default
         ],
         observe: [
           effect("it shows that there is nothing to learn", async (testContext) => {
-            const pageText = await testContext.display.pageText()
-            expect(pageText).to.contain("There is nothing to learn!")
+            const text = await testContext.display.select(learningAreas()).text()
+            expect(text).to.contain("There is nothing to learn!")
           })
         ]
       }),
@@ -37,14 +38,14 @@ export default
         ],
         observe: [
           effect("it does not show that there is nothing to learn", async (testContext) => {
-            const pageText = await testContext.display.pageText()
-            expect(pageText).not.to.contain("There is nothing to learn!")
+            const text = await testContext.display.select(learningAreas()).text()
+            expect(text).not.to.contain("There is nothing to learn!")
           }),
           effect("it shows that there are things to learn", async (testContext) => {
-            const pageText = await testContext.display.pageText()
-            expect(pageText).to.contain(FakeLearningArea(1).title)
-            expect(pageText).to.contain(FakeLearningArea(2).title)
-            expect(pageText).to.contain(FakeLearningArea(3).title)
+            const text = await testContext.display.select(learningAreas()).text()
+            expect(text).to.contain(FakeLearningArea(1).title)
+            expect(text).to.contain(FakeLearningArea(2).title)
+            expect(text).to.contain(FakeLearningArea(3).title)
           })
         ]
       })

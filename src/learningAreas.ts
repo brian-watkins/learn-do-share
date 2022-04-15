@@ -134,12 +134,14 @@ function cardStyle(): Html.ViewAttribute {
 
 export function learningAreasView(learningAreas: Array<LearningArea>, selected: LearningArea | null, engagementPlans: EngagementPlansContent): Html.View {
   if (learningAreas.length == 0) {
-    return Html.h1([], [
+    return Html.h1([ Html.id("learning-areas") ], [
       Html.text("There is nothing to learn!")
     ])
   }
 
-  return Html.section([Html.cssClassList([
+  return Html.section([
+    Html.id("learning-areas"),
+    Html.cssClassList([
     { "flex": true },
     { "place-content-center": true }
   ])], [
