@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { behavior, condition, effect, example, pick } from "esbehavior";
 import { selectLearningArea } from "./steps";
 import { FakeLearningArea, testContext } from "./testApp";
+import { withinContentArea } from "./testDisplay";
 
 export default
   behavior("viewing learning area content", [
@@ -57,15 +58,15 @@ Here is an intro to what you will learn
             expect(actualTag).to.equal("H3")
           }),
           effect("links are displayed", async (testContext) => {
-            const actualTexts = await testContext.display.selectAll("a").mapElements((el) => el.text())
+            const actualTexts = await testContext.display.selectAll(withinContentArea("a")).mapElements((el) => el.text())
             expect(actualTexts).to.deep.equal(["somewhere", "another link"])
           }),
           effect("links should open in a different tab", async (testContext) => {
-            const actualTargets = await testContext.display.selectAll("a").mapElements(el => el.getAttribute("target"))
+            const actualTargets = await testContext.display.selectAll(withinContentArea("a")).mapElements(el => el.getAttribute("target"))
             expect(actualTargets).to.deep.equal(["_blank", "_blank"])
           }),
           effect("links should describe the proper relationship", async (testContext) => {
-            const actualTargets = await testContext.display.selectAll("a").mapElements(el => el.getAttribute("rel"))
+            const actualTargets = await testContext.display.selectAll(withinContentArea("a")).mapElements(el => el.getAttribute("rel"))
             expect(actualTargets).to.deep.equal(["external", "external"])
           })
         ]
