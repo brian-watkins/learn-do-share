@@ -43,6 +43,10 @@ export function data(name: string, value: string = ""): ViewAttribute {
   return new Attribute(`data-${name}`, value)
 }
 
+export function href(value: string): ViewAttribute {
+  return new Attribute("href", value)
+}
+
 export function text(value: string): ViewChild {
   return value
 }
@@ -129,6 +133,10 @@ export function input(attributes: Array<ViewAttribute>, children: Array<ViewChil
 
 export function label(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("label", makeAttributes(attributes), children)
+}
+
+export function a(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("a", makeAttributes(attributes), children)
 }
 
 function makeAttributes(attributes: Array<ViewAttribute>): any {

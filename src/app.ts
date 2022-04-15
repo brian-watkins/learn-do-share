@@ -5,11 +5,13 @@ import { BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
 import { EngagementPlansContent } from "./readEngagementPlans"
 import { EngagementPlanPersisted } from "./writeEngagementPlans"
+import { User, userAccountView } from "./user"
 
 export interface AppState {
   learningAreas: Array<LearningArea>
   engagementPlansContent: EngagementPlansContent
-  selectedLearningArea: LearningArea | null
+  selectedLearningArea: LearningArea | null,
+  user: User | null
 }
 
 type DisplayMessage
@@ -34,7 +36,10 @@ function update(state: AppState, action: DisplayMessage): void {
 // View
 
 function view(model: AppState): Html.View {
-  return learningAreasView(model.learningAreas, model.selectedLearningArea, model.engagementPlansContent)
+  return Html.div([], [
+    userAccountView(model.user),
+    learningAreasView(model.learningAreas, model.selectedLearningArea, model.engagementPlansContent)
+  ])
 }
 
 

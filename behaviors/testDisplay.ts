@@ -15,7 +15,7 @@ export class TestDisplay {
   }
 
   async pageText(): Promise<string | null> {
-    return this.select("body").text()
+    return this.page?.textContent("body") ?? null
   }
 
   selectElementWithText(text: string): DisplayElement {
@@ -29,6 +29,10 @@ export class TestDisplay {
   selectAll(selector: string): DisplayElementList {
     return new DisplayElementList(this.page!, selector)
   }
+}
+
+export function withinContentArea(selector: string) {
+  return `#learning-area-content ${selector}`
 }
 
 export class DisplayElement {
@@ -46,8 +50,19 @@ export class DisplayElement {
     await this.locator.first().click({ timeout: 1000 })
   }
 
+  async type(value: string): Promise<void> {
+    await this.locator.first().click()
+    await this.locator.first().type(value)
+  }
+
   async isVisible(): Promise<boolean> {
-    return this.locator.first().isVisible()
+    await this.locator.first().waitFor({ state: "visible", timeout: 1000 })
+    return true
+  }
+
+  async isHidden(): Promise<boolean> {
+    await this.locator.first().waitFor({ state: "hidden", timeout: 1000 })
+    return true
   }
 
   async text(): Promise<string | null> {

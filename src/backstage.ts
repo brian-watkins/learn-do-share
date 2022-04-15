@@ -2,6 +2,7 @@ import { Backstage } from "../api/backstage/backstage.js";
 import { AppState } from "./app.js";
 import { EngagementPlanReader, engagementPlansLoaded } from "./readEngagementPlans.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
+import { toUser } from "./user.js";
 import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 
 export interface Adapters {
@@ -20,14 +21,16 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
   }
 }
 
-const initialState = (adapters: Adapters) => async (): Promise<AppState> => {
+const initialState = (adapters: Adapters) => async (userIdentifier: string | null): Promise<AppState> => {
   const learningAreas = await adapters.learningAreasReader.read()
   const plans = await adapters.engagementPlanReader.read()
+  const user = toUser(userIdentifier)
 
   return {
     learningAreas: learningAreas,
     engagementPlansContent: engagementPlansLoaded(plans),
-    selectedLearningArea: null
+    selectedLearningArea: null,
+    user
   }
 }
 
