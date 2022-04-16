@@ -25,9 +25,7 @@ const backstage = initBackstage(adapters)
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
 
-  context.log("Headers", req.headers)
-
-  const html = await renderTemplate(backstage, template, azureUserParser(req, context))
+  const html = await renderTemplate(backstage, template, azureUserParser(req))
 
   context.res = {
     headers: {
