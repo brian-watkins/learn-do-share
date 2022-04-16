@@ -45,8 +45,6 @@ export class TestServer {
   }
 
   async stop(): Promise<void> {
-    await stopVite()
-
     return new Promise((resolve) => {
       if (this.server == null) {
         resolve()
@@ -60,7 +58,8 @@ export class TestServer {
   }
 }
 
-export function stopSWAServer() {
+export async function stopServer(): Promise<void> {
   SWA_SERVER?.kill()
   SWA_SERVER = null
+  await stopVite()
 }
