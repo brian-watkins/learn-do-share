@@ -3,6 +3,10 @@
     {
       "route": "/index.html",
       "rewrite": "/api/root"
+    },
+    {
+      "route": "/login",
+      "rewrite": "/.auth/login/github"
     }
   ],
   "platform": {

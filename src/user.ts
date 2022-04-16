@@ -15,7 +15,7 @@ export function toUser(identifier: string | null): User | null {
 export function userAccountView(user: User | null): Html.View {
   if (user === null) {
     return Html.div([], [
-      Html.a([Html.href("/.auth/login/github")], [Html.text("Login")]),
+      Html.a([Html.href("/login")], [Html.text("Login")]),
     ])
   } else {
     return Html.div([], [
