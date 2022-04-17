@@ -7,3 +7,11 @@ export function selectLearningArea(learningArea: TestLearningArea): Step<TestCon
     await testContext.display.selectElementWithText(learningArea.title).click()
   })
 }
+
+export function loginUser(username: string): Step<TestContext> {
+  return step(`login ${username}`, async (testContext) => {
+    await testContext.display.selectElementWithText("Login").click()
+    await testContext.display.select("#userDetails").type(username)
+    await testContext.display.select("#submit").click()
+  })
+}

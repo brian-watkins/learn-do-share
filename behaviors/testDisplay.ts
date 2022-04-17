@@ -73,8 +73,12 @@ export class DisplayElement {
     return this.locator.first().getAttribute(name)
   }
 
-  select(selector: string, options: SelectorOptions = {}): DisplayElement {
+  selectDescendant(selector: string, options: SelectorOptions = {}): DisplayElement {
     return new DisplayElement(this.locator.locator(buildSelector(selector, options)))
+  }
+
+  selectDescendantWithText(text: string): DisplayElement {
+    return new DisplayElement(this.locator.locator(`text="${text}"`))
   }
 }
 

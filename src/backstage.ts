@@ -1,6 +1,9 @@
 import { Backstage } from "../api/backstage/backstage.js";
 import { AppState } from "./app.js";
-import { EngagementPlanReader, engagementPlansLoaded } from "./readEngagementPlans.js";
+import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
+import { LearningArea } from "./learningAreas.js";
+import { PersonalizedLearningArea } from "./personalizedLearningAreas.js";
+import { EngagementPlanReader } from "./readEngagementPlans.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
 import { toUser } from "./user.js";
 import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
@@ -26,11 +29,27 @@ const initialState = (adapters: Adapters) => async (userIdentifier: string | nul
   const plans = await adapters.engagementPlanReader.read()
   const user = toUser(userIdentifier)
 
-  return {
-    learningAreas: learningAreas,
-    engagementPlansContent: engagementPlansLoaded(plans),
-    selectedLearningArea: null,
-    user
+  if (user === null) {
+    return {
+      type: "informative",
+      learningAreas: learningAreas
+    }
+  } else {
+    const state = {
+      type: "personalized",
+      learningAreas: learningAreas.map(toPersonalizedLearningAreas(plans)),
+      user: user
+    }
+
+    return state as AppState
+  }
+}
+
+function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: LearningArea) => PersonalizedLearningArea {
+  return (area) => {
+    return Object.assign(area, {
+      engagementLevels: plans.filter(plan => plan.learningArea === area.id).map(plan => plan.level as EngagementLevel)
+    })
   }
 }
 

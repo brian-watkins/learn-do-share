@@ -12,14 +12,14 @@ export function toUser(identifier: string | null): User | null {
   return { identifier }
 }
 
-export function userAccountView(user: User | null): Html.View {
-  if (user === null) {
-    return Html.div([], [
-      Html.a([Html.href("/login")], [Html.text("Login")]),
-    ])
-  } else {
-    return Html.div([], [
-      Html.div([], [Html.text(user.identifier)])
-    ])
-  }
+export function loginView(): Html.View {
+  return Html.div([], [
+    Html.a([Html.href("/login")], [Html.text("Login")]),
+  ])
+}
+
+export function userAccountView(user: User): Html.View {
+  return Html.div([], [
+    Html.div([], [Html.text(user.identifier)])
+  ])
 }

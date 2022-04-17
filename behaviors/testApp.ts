@@ -56,15 +56,15 @@ export class TestContext {
 }
 
 class FakeLearningAreasReader implements LearningAreasReader {
-  private areas: LearningArea[] | null = null
+  private areas: TestLearningArea[] | null = null
 
   constructor() { }
 
   async read(): Promise<Array<LearningArea>> {
-    return this.areas!
+    return this.areas?.map(toLearningArea) ?? []
   }
 
-  resolveImmediatelyWith(areas: Array<LearningArea>) {
+  resolveImmediatelyWith(areas: Array<TestLearningArea>) {
     this.areas = areas
   }
 }
@@ -73,16 +73,27 @@ export class TestLearningArea implements LearningArea {
   title: string
   content: string
   id: string
+  selected: boolean
 
   constructor(public testId: number) {
     this.id = `learning-area-${testId}`
     this.title = `Learning Area ${testId}`
     this.content = `Here is some content for learning Area ${testId}!`
+    this.selected = false
   }
 
   withContent(content: string): TestLearningArea {
     this.content = content
     return this
+  }
+}
+
+function toLearningArea(area: TestLearningArea): LearningArea {
+  return {
+    id: area.id,
+    content: area.content,
+    title: area.title,
+    selected: area.selected
   }
 }
 
