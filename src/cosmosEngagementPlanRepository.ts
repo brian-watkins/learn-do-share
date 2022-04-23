@@ -97,6 +97,6 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
       }
     }), 'id')
 
-    console.log("Delete result: ", result)
+    console.log("Delete result: ", JSON.stringify(result))
   }
 }
