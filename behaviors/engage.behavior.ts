@@ -24,14 +24,14 @@ export default
         perform: [
           loginUser("funny-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
-          increaseEngagementLevel(FakeLearningArea(1)),
+          increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
           selectLearningArea(FakeLearningArea(2)),
-          increaseEngagementLevel(FakeLearningArea(2)),
-          increaseEngagementLevel(FakeLearningArea(2)),
+          increaseEngagementLevel(FakeLearningArea(2), "I'm ready to learn!"),
+          increaseEngagementLevel(FakeLearningArea(2), "Let's do it!"),
           selectLearningArea(FakeLearningArea(4)),
-          increaseEngagementLevel(FakeLearningArea(4)),
-          increaseEngagementLevel(FakeLearningArea(4)),
-          increaseEngagementLevel(FakeLearningArea(4))
+          increaseEngagementLevel(FakeLearningArea(4), "I'm ready to learn!"),
+          increaseEngagementLevel(FakeLearningArea(4), "Let's do it!"),
+          increaseEngagementLevel(FakeLearningArea(4), "I'm ready to share!")
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
@@ -71,14 +71,14 @@ export default
         perform: [
           loginUser("funny-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
-          increaseEngagementLevel(FakeLearningArea(1)),
+          increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning")
         ]
       }).andThen({
         perform: [
-          increaseEngagementLevel(FakeLearningArea(1))
+          increaseEngagementLevel(FakeLearningArea(1), "Let's do it!")
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
@@ -86,7 +86,7 @@ export default
         ]
       }).andThen({
         perform: [
-          increaseEngagementLevel(FakeLearningArea(1))
+          increaseEngagementLevel(FakeLearningArea(1), "I'm ready to share!")
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
@@ -95,7 +95,7 @@ export default
         ]
       }).andThen({
         perform: [
-          increaseEngagementLevel(FakeLearningArea(1)),
+          increaseEngagementLevel(FakeLearningArea(1), "I'm done for now!"),
         ],
         observe: [
           noEngagementLevelsSelected(FakeLearningArea(1))
@@ -111,11 +111,11 @@ export default
       })
   ])
 
-function increaseEngagementLevel(learningArea: TestLearningArea): Step<TestContext> {
-  return step(`Increased engagement for ${learningArea.title}`, async (testContext) => {
+function increaseEngagementLevel(learningArea: TestLearningArea, engagementLevelButton: string): Step<TestContext> {
+  return step(`Clicked '${engagementLevelButton}' for ${learningArea.title}`, async (testContext) => {
     await testContext.display
       .select("article", { withText: learningArea.title })
-      .selectDescendant("[data-increase-engagement]")
+      .selectDescendantWithText(engagementLevelButton)
       .click()
   })
 }

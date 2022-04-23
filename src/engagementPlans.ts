@@ -1,6 +1,7 @@
 import { LearningArea } from "./learningAreas"
 
 export enum EngagementLevel {
+  None = "none",
   Learning = "learning",
   Doing = "doing",
   Sharing = "sharing"

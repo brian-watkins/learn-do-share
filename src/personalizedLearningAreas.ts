@@ -61,21 +61,39 @@ function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.
   ])
 }
 
-function increaseEngagementText(_: PersonalizedLearningArea): string {
-  return "Increase Engagement!"
+function increaseEngagementText(learningArea: PersonalizedLearningArea): string {
+  switch (nextEngagementLevel(learningArea)) {
+    case EngagementLevel.Learning:
+      return "I'm ready to learn!"
+    case EngagementLevel.Doing:
+      return "Let's do it!"
+    case EngagementLevel.Sharing:
+      return "I'm ready to share!"
+    case EngagementLevel.None:
+      return "I'm done for now!"
+  }
 }
 
 function nextEngagementLevelMessage(learningArea: PersonalizedLearningArea) {
-  if (learningArea.engagementLevels.includes(EngagementLevel.Sharing)) {
+  const nextLevel = nextEngagementLevel(learningArea)
+  if (nextLevel === EngagementLevel.None) {
     return deleteEngagementPlans(learningArea)
+  } else {
+    return writeEngagementPlan(engagementPlan(learningArea, nextLevel))
+  }
+}
+
+function nextEngagementLevel(learningArea: PersonalizedLearningArea): EngagementLevel {
+  if (learningArea.engagementLevels.includes(EngagementLevel.Sharing)) {
+    return EngagementLevel.None
   }
   if (learningArea.engagementLevels.includes(EngagementLevel.Doing)) {
-    return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Sharing))
+    return EngagementLevel.Sharing
   }
   if (learningArea.engagementLevels.includes(EngagementLevel.Learning)) {
-    return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Doing))
+    return EngagementLevel.Doing
   }
-  return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Learning))
+  return EngagementLevel.Learning
 }
 
 export function engagementPlanSelected(area: LearningArea, level: EngagementLevel) {
