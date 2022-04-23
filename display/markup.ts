@@ -139,6 +139,10 @@ export function a(attributes: Array<ViewAttribute>, children: Array<ViewChild>):
   return h("a", makeAttributes(attributes), children)
 }
 
+export function button(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("button", makeAttributes(attributes), children)
+}
+
 function makeAttributes(attributes: Array<ViewAttribute>): any {
   const dict: any = {
     props: {},

@@ -6,7 +6,7 @@ import { PersonalizedLearningArea } from "./personalizedLearningAreas.js";
 import { EngagementPlanReader } from "./readEngagementPlans.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
 import { toUser } from "./user.js";
-import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
+import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader
@@ -14,13 +14,16 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-export type DataMessage = WriteEngagementPlan
+export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans
 
 const update = (adapters: Adapters) => async (message: DataMessage) => {
   switch (message.type) {
     case "writeEngagementPlan":
       await adapters.engagementPlanWriter.write(message.plan)
       return engagementPlanPersisted(message.plan)
+    case "deleteEngagementPlans":
+      await adapters.engagementPlanWriter.deleteAll(message.learningArea)
+      return engagementPlansDeleted(message.learningArea)
   }
 }
 

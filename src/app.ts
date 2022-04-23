@@ -3,10 +3,9 @@ import * as Html from "../display/markup"
 import { DataMessage } from "./backstage"
 import { BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
-import { EngagementPlanPersisted } from "./writeEngagementPlans"
+import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { loginView, User, userAccountView } from "./user"
 import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
-import { asListItem } from "./viewHelpers"
 
 export interface Informative {
   type: "informative"
@@ -26,6 +25,7 @@ export type AppState
 type DisplayMessage
   = LearningAreaOpened
   | EngagementPlanPersisted
+  | EngagementPlansDeleted
 
 function update(state: AppState, action: DisplayMessage): void {
   switch (state.type) {
@@ -42,12 +42,20 @@ function update(state: AppState, action: DisplayMessage): void {
         case "learningAreaOpened":
           state.learningAreas.forEach(area => area.selected = (area.id === action.area.id))
           break
-        case "engagementPlanPersisted":
+        case "engagementPlanPersisted": {
           const index = state.learningAreas.findIndex(area => {
             return area.id === action.plan.learningArea
           })
           state.learningAreas[index].engagementLevels.push(action.plan.level)
           break
+        }
+        case "engagementPlansDeleted": {
+          const index = state.learningAreas.findIndex(area => {
+            return area.id === action.learningArea
+          })
+          state.learningAreas[index].engagementLevels = []
+          break
+        }
       }
   }
 }
@@ -59,12 +67,12 @@ function view(appState: AppState): Html.View {
     case "informative":
       return Html.div([], [
         loginView(),
-        learningAreasView(appState.learningAreas.map(learningAreaView).map(asListItem))
+        learningAreasView(appState.learningAreas.map(learningAreaView))
       ])
     case "personalized":
       return Html.div([], [
         userAccountView(appState.user),
-        learningAreasView(appState.learningAreas.map(personalizedLearningAreaView).map(asListItem))
+        learningAreasView(appState.learningAreas.map(personalizedLearningAreaView))
       ])
   }
 }

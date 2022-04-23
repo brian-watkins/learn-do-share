@@ -1,7 +1,7 @@
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { LearningArea, learningAreaContentView, learningAreaOpened, learningAreaTitleView } from "./learningAreas"
 import * as Html from '../display/markup'
-import { writeEngagementPlan } from "./writeEngagementPlans"
+import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { cardView } from "./viewElements"
 
 export interface PersonalizedLearningArea extends LearningArea {
@@ -14,7 +14,7 @@ export function personalizedLearningAreaView(learningArea: PersonalizedLearningA
         learningAreaTitleView(learningArea),
         engagementPlansView(learningArea.engagementLevels),
         learningAreaContentView(learningArea),
-        indicateEngagement(learningArea)
+        increaseEngagementButton(learningArea)
       ])
   } else {
     return cardView([Html.onClick(learningAreaOpened(learningArea))], [
@@ -50,27 +50,34 @@ function engagementPlanView(level: string): Html.ViewChild {
   ])
 }
 
-function indicateEngagement(learningArea: PersonalizedLearningArea): Html.ViewChild {
+function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.ViewChild {
   return Html.section([], [
-    engagementPlanInput(learningArea, "I am learning it!", EngagementLevel.Learning),
-    engagementPlanInput(learningArea, "I am doing it!", EngagementLevel.Doing),
-    engagementPlanInput(learningArea, "I am sharing it!", EngagementLevel.Sharing),
+    Html.button([
+      Html.data("increase-engagement"),
+      Html.onClick(nextEngagementLevelMessage(learningArea))
+    ], [
+      Html.text(increaseEngagementText(learningArea))
+    ])
   ])
 }
 
-function engagementPlanInput(learningArea: PersonalizedLearningArea, label: string, value: EngagementLevel): Html.ViewChild {
-  return Html.label([], [
-    Html.text(label),
-    Html.input([
-      Html.type("radio"),
-      Html.name("engagement-plan"),
-      Html.data("area", learningArea.id),
-      Html.value(value),
-      Html.onInput((level) => engagementPlanSelected(learningArea.id, level as EngagementLevel))
-    ], [])
-  ])
+function increaseEngagementText(_: PersonalizedLearningArea): string {
+  return "Increase Engagement!"
 }
 
-export function engagementPlanSelected(areaId: string, level: EngagementLevel) {
-  return writeEngagementPlan(engagementPlan(areaId, level))
+function nextEngagementLevelMessage(learningArea: PersonalizedLearningArea) {
+  if (learningArea.engagementLevels.includes(EngagementLevel.Sharing)) {
+    return deleteEngagementPlans(learningArea)
+  }
+  if (learningArea.engagementLevels.includes(EngagementLevel.Doing)) {
+    return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Sharing))
+  }
+  if (learningArea.engagementLevels.includes(EngagementLevel.Learning)) {
+    return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Doing))
+  }
+  return writeEngagementPlan(engagementPlan(learningArea, EngagementLevel.Learning))
+}
+
+export function engagementPlanSelected(area: LearningArea, level: EngagementLevel) {
+  return writeEngagementPlan(engagementPlan(area, level))
 }

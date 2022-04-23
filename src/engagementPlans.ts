@@ -1,3 +1,5 @@
+import { LearningArea } from "./learningAreas"
+
 export enum EngagementLevel {
   Learning = "learning",
   Doing = "doing",
@@ -9,9 +11,9 @@ export interface EngagementPlan {
   level: EngagementLevel
 }
 
-export function engagementPlan(learningArea: string, level: EngagementLevel): EngagementPlan {
+export function engagementPlan(learningArea: LearningArea, level: EngagementLevel): EngagementPlan {
   return {
-    learningArea,
+    learningArea: learningArea.id,
     level
   }
 }

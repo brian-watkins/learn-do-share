@@ -1,8 +1,10 @@
 import { BackstageMessage, backstageMessage } from "../display/backstage"
 import { EngagementPlan } from "./engagementPlans"
+import { LearningArea } from "./learningAreas"
 
 export interface EngagementPlanWriter {
   write(plan: EngagementPlan): Promise<EngagementPlan>
+  deleteAll(learningArea: string): Promise<void>
 }
 
 export interface WriteEngagementPlan {
@@ -17,6 +19,18 @@ export function writeEngagementPlan(plan: EngagementPlan): BackstageMessage<Writ
   })
 }
 
+export interface DeleteEngagementPlans {
+  type: "deleteEngagementPlans"
+  learningArea: string
+}
+
+export function deleteEngagementPlans<T extends LearningArea>(area: T): BackstageMessage<DeleteEngagementPlans> {
+  return backstageMessage({
+    type: "deleteEngagementPlans",
+    learningArea: area.id
+  })
+}
+
 export interface EngagementPlanPersisted {
   type: "engagementPlanPersisted"
   plan: EngagementPlan
@@ -26,5 +40,17 @@ export function engagementPlanPersisted(plan: EngagementPlan): EngagementPlanPer
   return {
     type: "engagementPlanPersisted",
     plan
+  }
+}
+
+export interface EngagementPlansDeleted {
+  type: "engagementPlansDeleted"
+  learningArea: string
+}
+
+export function engagementPlansDeleted(learningArea: string): EngagementPlansDeleted {
+  return {
+    type: "engagementPlansDeleted",
+    learningArea
   }
 }

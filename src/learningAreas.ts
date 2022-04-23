@@ -1,6 +1,7 @@
 import * as Html from "../display/markup"
 import { decorate, markdownToHTML } from "./util/markdownParser"
 import { cardView } from "./viewElements"
+import { asListItem } from "./viewHelpers"
 
 export interface LearningAreaOpened {
   type: "learningAreaOpened"
@@ -21,8 +22,8 @@ export interface LearningArea {
   selected?: boolean
 }
 
-export function learningAreasView(children: Array<Html.ViewChild>): Html.View {
-  if (children.length == 0) {
+export function learningAreasView(learningAreaViews: Array<Html.ViewChild>): Html.View {
+  if (learningAreaViews.length == 0) {
     return Html.h1([Html.id("learning-areas")], [
       Html.text("There is nothing to learn!")
     ])
@@ -38,7 +39,7 @@ export function learningAreasView(children: Array<Html.ViewChild>): Html.View {
       { "basis-3/6": true },
       { "shrink-0": true },
       { "min-w-fit": true }
-    ])], children)
+    ])], learningAreaViews.map(asListItem))
   ])
 }
 

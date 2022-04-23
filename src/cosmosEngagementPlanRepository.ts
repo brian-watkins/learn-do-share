@@ -1,4 +1,4 @@
-import { Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
+import { BulkOperationType, Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
 import { EngagementPlan } from "./engagementPlans";
 import { EngagementPlanReader } from "./readEngagementPlans";
 import { EngagementPlanWriter } from "./writeEngagementPlans";
@@ -24,7 +24,13 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
   async connect(): Promise<void> {
     const databaseResponse = await this.client.databases.createIfNotExists({ id: this.config.database });
     this.database = databaseResponse.database
-    const containerResponse = await this.database?.containers.createIfNotExists({ id: this.config.container });
+    const containerResponse = await this.database?.containers.createIfNotExists({
+      id: this.config.container,
+      partitionKey: {
+        paths: ["/id"],
+        version: 2
+      }
+    });
     this.container = containerResponse.container
   }
 
@@ -40,7 +46,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     const { resources } = await this.container.items
       .query("SELECT * FROM plans")
       .fetchAll()
-    
+
     return resources
   }
 
@@ -48,7 +54,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     if (this.container == null) {
       await this.connect()
     }
-    
+
     if (this.container == null) {
       return Promise.reject("No container has been connected!")
     }
@@ -60,5 +66,28 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     }
 
     return resource
+  }
+
+  async deleteAll(learningArea: string): Promise<void> {
+    if (this.container == null) {
+      console.log("Connecting to container!")
+      await this.connect()
+    }
+
+    if (this.container == null) {
+      return Promise.reject("No container has been connected!")
+    }
+
+    const { resources } = await this.container.items
+      .query(`SELECT * FROM plans WHERE plans.learningArea = '${learningArea}'`)
+      .fetchAll()
+
+    await this.container.items.batch(resources.map((resource) => {
+      return {
+        operationType: BulkOperationType.Delete,
+        partitionKey: '[]',
+        id: resource.id
+      }
+    }))
   }
 }

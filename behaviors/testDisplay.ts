@@ -77,6 +77,10 @@ export class DisplayElement {
     return new DisplayElement(this.locator.locator(buildSelector(selector, options)))
   }
 
+  selectAllDescendants(selector: string): DisplayElementList {
+    return new DisplayElementList(this.locator.page(), selector)
+  }
+
   selectDescendantWithText(text: string): DisplayElement {
     return new DisplayElement(this.locator.locator(`text="${text}"`))
   }
