@@ -95,7 +95,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
         partitionKey: `["${resource.id}"]`,
         id: resource.id
       }
-    }), 'id')
+    }))
 
     console.log("Delete result: ", JSON.stringify(result))
   }
