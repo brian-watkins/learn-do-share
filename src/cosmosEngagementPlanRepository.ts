@@ -78,16 +78,25 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
       return Promise.reject("No container has been connected!")
     }
 
+    // Note: Seems like we should try to remove this query
+    // But the frontend request doesn't seem to be all that much slower,
+    // maybe a few ms. So doesn't matter a whole lot
     const { resources } = await this.container.items
       .query(`SELECT * FROM plans WHERE plans.learningArea = '${learningArea}'`)
       .fetchAll()
 
-    await this.container.items.batch(resources.map((resource) => {
+    for (const resource of resources) {
+      console.log("Deleting resource: ", resource.id)
+    }
+
+    const result = await this.container.items.batch(resources.map((resource) => {
       return {
         operationType: BulkOperationType.Delete,
         partitionKey: '["id"]',
         id: resource.id
       }
     }), 'id')
+
+    console.log("Delete result: ", result)
   }
 }
