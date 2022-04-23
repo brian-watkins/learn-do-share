@@ -88,6 +88,6 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
         partitionKey: '["id"]',
         id: resource.id
       }
-    }), '["id"]')
+    }), 'id')
   }
 }
