@@ -92,10 +92,11 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     const result = await this.container.items.batch(resources.map((resource) => {
       return {
         operationType: BulkOperationType.Delete,
-        partitionKey: `["${resource.id}"]`,
+        // partitionKey: `["${resource.id}"]`,
+        partitionKey: '[]',
         id: resource.id
       }
-    }))
+    }), "id")
 
     console.log("Delete result: ", JSON.stringify(result))
   }
