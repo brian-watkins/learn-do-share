@@ -70,7 +70,7 @@ resource "azurerm_cosmosdb_sql_container" "dbContainer" {
   resource_group_name = azurerm_cosmosdb_account.cosmosdb.resource_group_name
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
   database_name       = azurerm_cosmosdb_sql_database.db.name
-  partition_key_path  = "/id"
+  partition_key_path  = "/userId"
 }
 
 
