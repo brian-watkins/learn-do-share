@@ -1,10 +1,11 @@
 import { Context } from "@azure/functions"
+import { User } from "./user"
 
 export interface Request {
   headers: { [name: string]: string }
 }
 
-export function azureUserParser(req: Request, context?: Context): string | null {
+export function azureUserParser(req: Request, context?: Context): User | null {
   const header = req.headers['x-ms-client-principal']
 
   if (!header) {
@@ -16,5 +17,8 @@ export function azureUserParser(req: Request, context?: Context): string | null 
 
   context?.log("Principal", principal)
 
-  return principal.userDetails
+  return {
+    identifier: principal.userId,
+    name: principal.userDetails
+  }
 }

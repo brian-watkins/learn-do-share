@@ -35,6 +35,10 @@ export function learningAreas(selector: string = "") {
   return `#learning-areas ${selector}`
 }
 
+export interface TypingOptions {
+  clear: boolean
+}
+
 export class DisplayElement {
   static New(page: Page, selector: string): DisplayElement {
     return new DisplayElement(page.locator(selector))
@@ -50,8 +54,11 @@ export class DisplayElement {
     await this.locator.first().click({ timeout: 1000 })
   }
 
-  async type(value: string): Promise<void> {
+  async type(value: string, options: TypingOptions = { clear: false }): Promise<void> {
     await this.locator.first().click()
+    if (options.clear) {
+      await this.locator.first().press("Meta+A")
+    }
     await this.locator.first().type(value)
   }
 

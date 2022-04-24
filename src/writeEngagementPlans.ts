@@ -1,10 +1,11 @@
+import { User } from "../api/common/user"
 import { BackstageMessage, backstageMessage } from "../display/backstage"
 import { EngagementPlan } from "./engagementPlans"
 import { LearningArea } from "./learningAreas"
 
 export interface EngagementPlanWriter {
-  write(plan: EngagementPlan): Promise<EngagementPlan>
-  deleteAll(userId: string, learningArea: string): Promise<void>
+  write(user: User, plan: EngagementPlan): Promise<EngagementPlan>
+  deleteAll(user: User, learningArea: string): Promise<void>
 }
 
 export interface WriteEngagementPlan {
@@ -21,14 +22,12 @@ export function writeEngagementPlan(plan: EngagementPlan): BackstageMessage<Writ
 
 export interface DeleteEngagementPlans {
   type: "deleteEngagementPlans"
-  userId: string
   learningArea: string
 }
 
 export function deleteEngagementPlans<T extends LearningArea>(area: T): BackstageMessage<DeleteEngagementPlans> {
   return backstageMessage({
     type: "deleteEngagementPlans",
-    userId: "somebody-cool",
     learningArea: area.id
   })
 }

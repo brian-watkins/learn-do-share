@@ -3,7 +3,7 @@ import { Adapters, initBackstage } from "../../src/backstage"
 import { createServer as createViteServer } from "vite"
 import fs from "fs"
 import { renderTemplate } from "../../api/root/render"
-import { azureUserParser, Request } from "../../api/root/azureUserParser"
+import { azureUserParser, Request } from "../../api/common/azureUserParser"
 import { IncomingMessage } from "http"
 
 const vite = await createViteServer({
@@ -27,7 +27,7 @@ export async function createServer(adapters: Adapters): Promise<Express> {
   const backstage = initBackstage(adapters)
 
   app.post('/api/backstage', async (req, res) => {
-    const result = await backstage.messageHandler(req.body)
+    const result = await backstage.messageHandler(azureUserParser(normalizeRequest(req)), req.body)
     res.send(result)
   })
 

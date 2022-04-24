@@ -1,4 +1,5 @@
 import { BulkOperationType, Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
+import { User } from "../api/common/user";
 import { EngagementPlan } from "./engagementPlans";
 import { EngagementPlanReader } from "./readEngagementPlans";
 import { EngagementPlanWriter } from "./writeEngagementPlans";
@@ -34,7 +35,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     this.container = containerResponse.container
   }
 
-  async read(): Promise<EngagementPlan[]> {
+  async read(user: User): Promise<EngagementPlan[]> {
     if (this.container == null) {
       await this.connect()
     }
@@ -44,13 +45,18 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     }
 
     const { resources } = await this.container.items
-      .query("SELECT * FROM plans")
+      .query({
+        query: "SELECT * FROM plans p WHERE p.userId = @userId",
+        parameters: [
+          { name: "@userId", value: user.identifier }
+        ]
+      })
       .fetchAll()
 
     return resources
   }
 
-  async write(plan: EngagementPlan): Promise<EngagementPlan> {
+  async write(user: User, plan: EngagementPlan): Promise<EngagementPlan> {
     if (this.container == null) {
       await this.connect()
     }
@@ -59,7 +65,9 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
       return Promise.reject("No container has been connected!")
     }
 
-    const { resource } = await this.container.items.create(plan)
+    const storeablePlan = Object.assign(plan, { userId: user.identifier })
+
+    const { resource } = await this.container.items.create(storeablePlan)
 
     if (!resource) {
       return Promise.reject("Unable to create plan!")
@@ -68,7 +76,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     return resource
   }
 
-  async deleteAll(userId: string, learningArea: string): Promise<void> {
+  async deleteAll(user: User, learningArea: string): Promise<void> {
     if (this.container == null) {
       console.log("Connecting to container!")
       await this.connect()
@@ -88,9 +96,9 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     await this.container.items.batch(resources.map((resource) => {
       return {
         operationType: BulkOperationType.Delete,
-        partitionKey: `["${userId}"]`,
+        partitionKey: `["${user.identifier}"]`,
         id: resource.id
       }
-    }), userId)
+    }), user.identifier)
   }
 }

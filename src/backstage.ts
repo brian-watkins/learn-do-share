@@ -1,11 +1,11 @@
 import { Backstage } from "../api/backstage/backstage.js";
+import { User } from "../api/common/user.js";
 import { AppState } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
 import { LearningArea } from "./learningAreas.js";
 import { PersonalizedLearningArea } from "./personalizedLearningAreas.js";
 import { EngagementPlanReader } from "./readEngagementPlans.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
-import { toUser } from "./user.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 
 export interface Adapters {
@@ -16,21 +16,23 @@ export interface Adapters {
 
 export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans
 
-const update = (adapters: Adapters) => async (message: DataMessage) => {
+const update = (adapters: Adapters) => async (user: User | null, message: DataMessage) => {
+  if (user == null) {
+    return { type: "no-user-found" }
+  }
+
   switch (message.type) {
     case "writeEngagementPlan":
-      await adapters.engagementPlanWriter.write(message.plan)
+      await adapters.engagementPlanWriter.write(user, message.plan)
       return engagementPlanPersisted(message.plan)
     case "deleteEngagementPlans":
-      await adapters.engagementPlanWriter.deleteAll(message.userId, message.learningArea)
+      await adapters.engagementPlanWriter.deleteAll(user, message.learningArea)
       return engagementPlansDeleted(message.learningArea)
   }
 }
 
-const initialState = (adapters: Adapters) => async (userIdentifier: string | null): Promise<AppState> => {
+const initialState = (adapters: Adapters) => async (user: User | null): Promise<AppState> => {
   const learningAreas = await adapters.learningAreasReader.read()
-  const plans = await adapters.engagementPlanReader.read()
-  const user = toUser(userIdentifier)
 
   if (user === null) {
     return {
@@ -38,6 +40,7 @@ const initialState = (adapters: Adapters) => async (userIdentifier: string | nul
       learningAreas: learningAreas
     }
   } else {
+    const plans = await adapters.engagementPlanReader.read(user)
     const state = {
       type: "personalized",
       learningAreas: learningAreas.map(toPersonalizedLearningAreas(plans)),

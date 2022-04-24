@@ -1,7 +1,8 @@
+import { User } from "../api/common/user";
 import { EngagementPlan } from "./engagementPlans";
 
 export interface EngagementPlanReader {
-  read(): Promise<Array<EngagementPlan>>
+  read(user: User): Promise<Array<EngagementPlan>>
 }
 
 export interface EngagementPlansLoaded {

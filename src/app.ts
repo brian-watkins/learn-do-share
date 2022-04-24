@@ -4,8 +4,9 @@ import { DataMessage } from "./backstage"
 import { BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
-import { loginView, User, userAccountView } from "./user"
+import { loginView, userAccountView } from "./user"
 import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
+import { User } from "../api/common/user"
 
 export interface Informative {
   type: "informative"

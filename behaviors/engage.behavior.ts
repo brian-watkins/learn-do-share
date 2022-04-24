@@ -7,7 +7,7 @@ import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./
 export default
   behavior("indicate engagement with a learning area", [
     example(testContext())
-      .description("engagement levels are persisted")
+      .description("engagement levels are persisted for a particular user")
       .script({
         prepare: [
           condition("The app loads", async (testContext) => {
@@ -54,6 +54,16 @@ export default
           engagementLevelSelected(FakeLearningArea(4), "Learning"),
           engagementLevelSelected(FakeLearningArea(4), "Doing"),
           engagementLevelSelected(FakeLearningArea(4), "Sharing"),
+        ]
+      }).andThen({
+        perform: [
+          reloadTheApp(),
+          loginUser("some-other-user@email.com")
+        ],
+        observe: [
+          noEngagementLevelsSelected(FakeLearningArea(1)),
+          noEngagementLevelsSelected(FakeLearningArea(2)),
+          noEngagementLevelsSelected(FakeLearningArea(4)),
         ]
       }),
     example(testContext())

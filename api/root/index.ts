@@ -5,7 +5,7 @@ import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader";
 import fs from "fs"
 import path from "path"
 import { renderTemplate } from "./render";
-import { azureUserParser } from "./azureUserParser";
+import { azureUserParser } from "../common/azureUserParser";
 
 const cosmosDB = new CosmosEngagementPlanRepository({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",

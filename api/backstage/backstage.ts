@@ -1,7 +1,8 @@
+import { User } from "../common/user"
 
-export type MessageHandler<T> = (message: T) => Promise<any>
+export type MessageHandler<T> = (user: User | null, message: T) => Promise<any>
 
 export interface Backstage<T, M> {
   messageHandler: MessageHandler<T>
-  initialState(userIdentifier: string | null): Promise<M>
+  initialState(user: User | null): Promise<M>
 }
