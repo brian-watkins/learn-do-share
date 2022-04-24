@@ -43,7 +43,7 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
   offer_type                = "Standard"
   kind                      = "GlobalDocumentDB"
   enable_automatic_failover = false
-  ip_range_filter           = "104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26,0.0.0.0"
+  ip_range_filter           = "67.189.241.252,104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26,0.0.0.0"
 
   consistency_policy {
     consistency_level = "Session"
