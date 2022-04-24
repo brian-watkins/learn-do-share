@@ -55,10 +55,7 @@ export class DisplayElement {
   }
 
   async type(value: string, options: TypingOptions = { clear: false }): Promise<void> {
-    await this.locator.first().click()
-    if (options.clear) {
-      await this.locator.first().press("Meta+A")
-    }
+    await this.locator.first().click({ clickCount: options.clear ? 3 : 1 })
     await this.locator.first().type(value)
   }
 
