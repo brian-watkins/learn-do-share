@@ -4,7 +4,7 @@ import { LearningArea } from "./learningAreas"
 
 export interface EngagementPlanWriter {
   write(plan: EngagementPlan): Promise<EngagementPlan>
-  deleteAll(learningArea: string): Promise<void>
+  deleteAll(userId: string, learningArea: string): Promise<void>
 }
 
 export interface WriteEngagementPlan {
@@ -21,12 +21,14 @@ export function writeEngagementPlan(plan: EngagementPlan): BackstageMessage<Writ
 
 export interface DeleteEngagementPlans {
   type: "deleteEngagementPlans"
+  userId: string
   learningArea: string
 }
 
 export function deleteEngagementPlans<T extends LearningArea>(area: T): BackstageMessage<DeleteEngagementPlans> {
   return backstageMessage({
     type: "deleteEngagementPlans",
+    userId: "somebody-cool",
     learningArea: area.id
   })
 }

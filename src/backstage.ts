@@ -22,7 +22,7 @@ const update = (adapters: Adapters) => async (message: DataMessage) => {
       await adapters.engagementPlanWriter.write(message.plan)
       return engagementPlanPersisted(message.plan)
     case "deleteEngagementPlans":
-      await adapters.engagementPlanWriter.deleteAll(message.learningArea)
+      await adapters.engagementPlanWriter.deleteAll(message.userId, message.learningArea)
       return engagementPlansDeleted(message.learningArea)
   }
 }

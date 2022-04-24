@@ -27,7 +27,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     const containerResponse = await this.database?.containers.createIfNotExists({
       id: this.config.container,
       partitionKey: {
-        paths: ["/id"],
+        paths: ["/userId"],
         version: 2
       }
     });
@@ -68,7 +68,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     return resource
   }
 
-  async deleteAll(learningArea: string): Promise<void> {
+  async deleteAll(userId: string, learningArea: string): Promise<void> {
     if (this.container == null) {
       console.log("Connecting to container!")
       await this.connect()
@@ -85,19 +85,12 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
       .query(`SELECT * FROM plans WHERE plans.learningArea = '${learningArea}'`)
       .fetchAll()
 
-    for (const resource of resources) {
-      console.log("Deleting resource: ", resource.id)
-    }
-
-    const result = await this.container.items.batch(resources.map((resource) => {
+    await this.container.items.batch(resources.map((resource) => {
       return {
         operationType: BulkOperationType.Delete,
-        // partitionKey: `["${resource.id}"]`,
-        partitionKey: '[]',
+        partitionKey: `["${userId}"]`,
         id: resource.id
       }
-    }), "id")
-
-    console.log("Delete result: ", JSON.stringify(result))
+    }), userId)
   }
 }
