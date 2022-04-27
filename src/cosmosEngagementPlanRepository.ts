@@ -50,7 +50,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
         parameters: [
           { name: "@userId", value: user.identifier }
         ]
-      })
+      }, { partitionKey: user.identifier })
       .fetchAll()
 
     return resources
@@ -90,7 +90,12 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
     // But the frontend request doesn't seem to be all that much slower,
     // maybe a few ms. So doesn't matter a whole lot
     const { resources } = await this.container.items
-      .query(`SELECT * FROM plans WHERE plans.learningArea = '${learningArea}'`)
+      .query({
+        query: "SELECT * FROM plans WHERE plans.learningArea = @learningArea",
+        parameters: [
+          { name: "@learningArea", value: learningArea }
+        ],
+      }, { partitionKey: user.identifier })
       .fetchAll()
 
     const result = await this.container.items.batch(resources.map((resource) => {
