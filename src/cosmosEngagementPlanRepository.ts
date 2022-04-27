@@ -93,12 +93,14 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Eng
       .query(`SELECT * FROM plans WHERE plans.learningArea = '${learningArea}'`)
       .fetchAll()
 
-    await this.container.items.batch(resources.map((resource) => {
+    const result = await this.container.items.batch(resources.map((resource) => {
       return {
         operationType: BulkOperationType.Delete,
         partitionKey: `["${user.identifier}"]`,
         id: resource.id
       }
     }), user.identifier)
+
+    console.log("RESULT", JSON.stringify(result))
   }
 }
