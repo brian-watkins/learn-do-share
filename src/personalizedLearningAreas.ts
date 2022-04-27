@@ -2,7 +2,7 @@ import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { LearningArea, learningAreaContentView, learningAreaOpened, learningAreaTitleView } from "./learningAreas"
 import * as Html from '../display/markup'
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
-import { cardView } from "./viewElements"
+import { cardView, fullView } from "./viewElements"
 
 export interface PersonalizedLearningArea extends LearningArea {
   engagementLevels: Array<EngagementLevel>
@@ -10,12 +10,27 @@ export interface PersonalizedLearningArea extends LearningArea {
 
 export function personalizedLearningAreaView(learningArea: PersonalizedLearningArea): Html.View {
   if (learningArea.selected) {
-      return cardView([], [
+    return fullView([], [
+      Html.div([
+        Html.cssClassList([
+          { "basis-1/4": true },
+          { "flex": true },
+          { "flex-col": true },
+        ])
+      ], [
         learningAreaTitleView(learningArea),
         engagementPlansView(learningArea.engagementLevels),
+
+      ]),
+      Html.div([
+        Html.cssClassList([
+          { "basis-3/4": true }
+        ])
+      ], [
         learningAreaContentView(learningArea),
         increaseEngagementButton(learningArea)
       ])
+    ])
   } else {
     return cardView([Html.onClick(learningAreaOpened(learningArea))], [
       learningAreaTitleView(learningArea),
@@ -41,18 +56,50 @@ function engagementPlansView(engagementLevels: Array<EngagementLevel>): Html.Vie
     }
   }
 
-  return Html.div([], levelViews)
+  return Html.div([
+    Html.cssClassList([
+      { "grow": true }
+    ])
+  ], levelViews)
 }
 
 function engagementPlanView(level: string): Html.ViewChild {
-  return Html.div([Html.data("engagement-indicator")], [
+  return Html.div([
+    Html.cssClassList([
+      { "py-2": true },
+      { "px-4": true },
+      { "my-2": true },
+      { "mr-2": true },
+      { "bg-cyan-500": true },
+      { "rounded": true },
+      { "text-neutral-50": true },
+      { "w-auto": true },
+      { "inline-block": true }
+    ]),
+    Html.data("engagement-indicator")
+  ], [
     Html.text(level)
   ])
 }
 
 function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.ViewChild {
-  return Html.section([], [
+  return Html.section([
+    Html.cssClassList([
+      { "mt-8": true },
+      { "max-w-lg": true }
+    ])
+  ], [
     Html.button([
+      Html.cssClassList([
+        { "w-full": true },
+        { "px-4": true },
+        { "py-2": true },
+        { "rounded": true },
+        { "border-2": true },
+        { "border-sky-200": true },
+        { "border-solid": true },
+        { "text-sky-400": true }
+      ]),
       Html.data("increase-engagement"),
       Html.onClick(nextEngagementLevelMessage(learningArea))
     ], [
