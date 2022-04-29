@@ -2,7 +2,7 @@ import { behavior, condition, effect, example, pick } from "esbehavior"
 import { expect } from "chai"
 import { FakeLearningArea, testContext } from "./testApp"
 import { disciplineLearningAreas, teamLearningAreas, theoryLearningAreas } from "./testDisplay"
-import { LearningAreaGroup } from "../src/learningAreas"
+import { LearningAreaCategory } from "../src/leanringAreaCategory"
 
 export default
   behavior("viewing items", [
@@ -13,11 +13,11 @@ export default
           condition("the app loads learning areas", async (testContext) =>
             await testContext
               .withLearningAreas([
-                FakeLearningArea(1).withGroup(LearningAreaGroup.Team),
-                FakeLearningArea(2).withGroup(LearningAreaGroup.Team),
-                FakeLearningArea(3).withGroup(LearningAreaGroup.Discipline),
-                FakeLearningArea(4).withGroup(LearningAreaGroup.Theory),
-                FakeLearningArea(5).withGroup(LearningAreaGroup.Theory),
+                FakeLearningArea(1).withGroup(LearningAreaCategory.Team),
+                FakeLearningArea(2).withGroup(LearningAreaCategory.Team),
+                FakeLearningArea(3).withGroup(LearningAreaCategory.Discipline),
+                FakeLearningArea(4).withGroup(LearningAreaCategory.Theory),
+                FakeLearningArea(5).withGroup(LearningAreaCategory.Theory),
               ])
               .start()
           )

@@ -1,10 +1,11 @@
 import { Context } from "esbehavior"
-import { LearningArea, LearningAreaGroup } from "../src/learningAreas"
+import { LearningArea } from "../src/learningAreas"
 import { TestDisplay } from "./testDisplay"
 import https from 'https'
 import { ResetableEngagementPlanRepo } from "./testStore"
 import { LearningAreasReader } from "../src/readLearningAreas"
 import { TestServer } from "./testServer"
+import { LearningAreaCategory } from "../src/leanringAreaCategory"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -74,14 +75,14 @@ export class TestLearningArea implements LearningArea {
   content: string
   id: string
   selected: boolean
-  group: LearningAreaGroup
+  category: LearningAreaCategory
 
   constructor(public testId: number) {
     this.id = `learning-area-${testId}`
     this.title = `Learning Area ${testId}`
     this.content = `Here is some content for learning Area ${testId}!`
     this.selected = false
-    this.group = LearningAreaGroup.Discipline
+    this.category = LearningAreaCategory.Discipline
   }
 
   withContent(content: string): TestLearningArea {
@@ -89,8 +90,8 @@ export class TestLearningArea implements LearningArea {
     return this
   }
 
-  withGroup(group: LearningAreaGroup): TestLearningArea {
-    this.group = group
+  withGroup(group: LearningAreaCategory): TestLearningArea {
+    this.category = group
     return this
   }
 }
@@ -101,7 +102,7 @@ function toLearningArea(area: TestLearningArea): LearningArea {
     content: area.content,
     title: area.title,
     selected: area.selected,
-    group: area.group
+    category: area.category
   }
 }
 
