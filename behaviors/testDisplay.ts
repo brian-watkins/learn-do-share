@@ -31,8 +31,16 @@ export function contentArea(selector: string = "") {
   return `#learning-area-content ${selector}`
 }
 
-export function learningAreas(selector: string = "") {
-  return `#learning-areas ${selector}`
+export function teamLearningAreas(selector: string = "") {
+  return `#team-learning-areas ${selector}`
+}
+
+export function disciplineLearningAreas(selector: string = "") {
+  return `#discipline-learning-areas ${selector}`
+}
+
+export function theoryLearningAreas(selector: string = "") {
+  return `#theory-learning-areas ${selector}`
 }
 
 export interface TypingOptions {

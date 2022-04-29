@@ -68,12 +68,12 @@ function view(appState: AppState): Html.View {
     case "informative":
       return Html.div([], [
         loginView(),
-        learningAreasView(appState.learningAreas.map(learningAreaView))
+        learningAreasView(appState.learningAreas, learningAreaView)
       ])
     case "personalized":
       return Html.div([], [
         userAccountView(appState.user),
-        learningAreasView(appState.learningAreas.map(personalizedLearningAreaView))
+        learningAreasView(appState.learningAreas, personalizedLearningAreaView) 
       ])
   }
 }

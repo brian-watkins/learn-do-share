@@ -14,32 +14,82 @@ export function learningAreaOpened(area: LearningArea): LearningAreaOpened {
   }
 }
 
+export enum LearningAreaGroup {
+  Team = "team",
+  Discipline = "discipline",
+  Theory = "theory"
+}
+
 export interface LearningArea {
   id: string
   title: string
   content: string
   selected?: boolean
+  group: LearningAreaGroup
 }
 
-export function learningAreasView(learningAreaViews: Array<Html.ViewChild>): Html.View {
-  if (learningAreaViews.length == 0) {
-    return Html.h1([Html.id("learning-areas")], [
-      Html.text("There is nothing to learn!")
-    ])
-  }
-
+export function learningAreasView<T extends LearningArea>(learningAreas: Array<T>, toView: (area: T) => Html.ViewChild): Html.View {
   return Html.section([
     Html.id("learning-areas"),
     Html.cssClassList([
-      { "m-8": true },
-      { "w-min": true },
-      { "h-5/6": true },
-      { "gap-8": true },
+      { "mx-auto": true },
+      { "w-fit": true },
+      { "gap-16": true },
       { "flex": true },
-      { "flex-col": true },
-      { "flex-wrap": true },
     ])
-  ], learningAreaViews)
+  ], [
+    Html.section([
+      Html.id("team-learning-areas"),
+      learningAreaGroupStyles()
+    ], [
+      learningAreaGroupTitle("Team"),
+      ...filterAreas(LearningAreaGroup.Team, learningAreas).map(toView)
+    ]),
+    Html.section([
+      Html.id("discipline-learning-areas"),
+      learningAreaGroupStyles()
+    ], [
+      learningAreaGroupTitle("Discipline"),
+      ...filterAreas(LearningAreaGroup.Discipline, learningAreas).map(toView)
+    ]),
+    Html.section([
+      Html.id("theory-learning-areas"),
+      learningAreaGroupStyles()
+    ], [
+      learningAreaGroupTitle("Theory"),
+      ...filterAreas(LearningAreaGroup.Theory, learningAreas).map(toView)
+    ]),
+  ])
+}
+
+function learningAreaGroupTitle(title: string): Html.ViewChild {
+  return Html.div([
+    Html.cssClassList([
+      { "py-2": true },
+      { "px-4": true },
+      { "my-2": true },
+      { "font-bold": true },
+      { "bg-indigo-700": true },
+      { "rounded": true },
+      { "text-neutral-50": true },
+      { "w-auto": true },
+      { "inline-block": true }
+    ])
+  ], [
+    Html.text(title)
+  ])
+}
+
+function learningAreaGroupStyles(): Html.ViewAttribute {
+  return Html.cssClassList([
+    { "flex": true },
+    { "flex-col": true },
+    { "gap-8": true }
+  ])
+}
+
+function filterAreas<T extends LearningArea>(group: LearningAreaGroup, areas: Array<T>): Array<T> {
+  return areas.filter(area => area.group === group)
 }
 
 export function learningAreaView(learningArea: LearningArea): Html.View {

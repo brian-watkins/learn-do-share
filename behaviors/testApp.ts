@@ -1,5 +1,5 @@
 import { Context } from "esbehavior"
-import { LearningArea } from "../src/learningAreas"
+import { LearningArea, LearningAreaGroup } from "../src/learningAreas"
 import { TestDisplay } from "./testDisplay"
 import https from 'https'
 import { ResetableEngagementPlanRepo } from "./testStore"
@@ -74,16 +74,23 @@ export class TestLearningArea implements LearningArea {
   content: string
   id: string
   selected: boolean
+  group: LearningAreaGroup
 
   constructor(public testId: number) {
     this.id = `learning-area-${testId}`
     this.title = `Learning Area ${testId}`
     this.content = `Here is some content for learning Area ${testId}!`
     this.selected = false
+    this.group = LearningAreaGroup.Discipline
   }
 
   withContent(content: string): TestLearningArea {
     this.content = content
+    return this
+  }
+
+  withGroup(group: LearningAreaGroup): TestLearningArea {
+    this.group = group
     return this
   }
 }
@@ -93,7 +100,8 @@ function toLearningArea(area: TestLearningArea): LearningArea {
     id: area.id,
     content: area.content,
     title: area.title,
-    selected: area.selected
+    selected: area.selected,
+    group: area.group
   }
 }
 

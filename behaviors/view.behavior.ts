@@ -1,51 +1,41 @@
 import { behavior, condition, effect, example, pick } from "esbehavior"
 import { expect } from "chai"
 import { FakeLearningArea, testContext } from "./testApp"
-import { learningAreas } from "./testDisplay"
+import { disciplineLearningAreas, teamLearningAreas, theoryLearningAreas } from "./testDisplay"
+import { LearningAreaGroup } from "../src/learningAreas"
 
 export default
   behavior("viewing items", [
     example(testContext())
-      .description("when there are no learning areas available")
-      .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
-              .withLearningAreas([])
-              .start()
-          })
-        ],
-        observe: [
-          effect("it shows that there is nothing to learn", async (testContext) => {
-            const text = await testContext.display.select(learningAreas()).text()
-            expect(text).to.contain("There is nothing to learn!")
-          })
-        ]
-      }),
-    example(testContext())
       .description("when there are learning areas available")
       .script({
         prepare: [
-          condition("the app loads and requests learning areas", async (testContext) =>
+          condition("the app loads learning areas", async (testContext) =>
             await testContext
               .withLearningAreas([
-                FakeLearningArea(1),
-                FakeLearningArea(2),
-                FakeLearningArea(3),
+                FakeLearningArea(1).withGroup(LearningAreaGroup.Team),
+                FakeLearningArea(2).withGroup(LearningAreaGroup.Team),
+                FakeLearningArea(3).withGroup(LearningAreaGroup.Discipline),
+                FakeLearningArea(4).withGroup(LearningAreaGroup.Theory),
+                FakeLearningArea(5).withGroup(LearningAreaGroup.Theory),
               ])
               .start()
           )
         ],
         observe: [
-          effect("it does not show that there is nothing to learn", async (testContext) => {
-            const text = await testContext.display.select(learningAreas()).text()
-            expect(text).not.to.contain("There is nothing to learn!")
-          }),
-          effect("it shows that there are things to learn", async (testContext) => {
-            const text = await testContext.display.select(learningAreas()).text()
+          effect("it shows the team learning areas", async (testContext) => {
+            const text = await testContext.display.select(teamLearningAreas()).text()
             expect(text).to.contain(FakeLearningArea(1).title)
             expect(text).to.contain(FakeLearningArea(2).title)
+          }),
+          effect("it shows the discipline learning areas", async (testContext) => {
+            const text = await testContext.display.select(disciplineLearningAreas()).text()
             expect(text).to.contain(FakeLearningArea(3).title)
+          }),
+          effect("it shows the theory learning areas", async (testContext) => {
+            const text = await testContext.display.select(theoryLearningAreas()).text()
+            expect(text).to.contain(FakeLearningArea(4).title)
+            expect(text).to.contain(FakeLearningArea(5).title)
           })
         ]
       })
