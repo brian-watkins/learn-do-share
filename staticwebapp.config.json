@@ -5,6 +5,10 @@
       "rewrite": "/api/root"
     },
     {
+      "route": "/learning-areas/*",
+      "rewrite": "/api/engage"
+    },
+    {
       "route": "/login",
       "rewrite": "/.auth/login/aad"
     }

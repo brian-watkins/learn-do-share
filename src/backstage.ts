@@ -1,4 +1,4 @@
-import { Backstage } from "../api/backstage/backstage.js";
+import { Backstage, BackstageContext } from "../api/backstage/backstage.js";
 import { User } from "../api/common/user.js";
 import { AppState } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
@@ -31,20 +31,20 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
   }
 }
 
-const initialState = (adapters: Adapters) => async (user: User | null): Promise<AppState> => {
+const initialState = (adapters: Adapters) => async (context: BackstageContext<null>): Promise<AppState> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
-  if (user === null) {
+  if (context.user === null) {
     return {
       type: "informative",
       learningAreas: learningAreas
     }
   } else {
-    const plans = await adapters.engagementPlanReader.read(user)
+    const plans = await adapters.engagementPlanReader.read(context.user)
     const state = {
       type: "personalized",
       learningAreas: learningAreas.map(toPersonalizedLearningAreas(plans)),
-      user: user
+      user: context.user
     }
 
     return state as AppState
@@ -59,7 +59,7 @@ function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: Learn
   }
 }
 
-export function initBackstage(adapters: Adapters): Backstage<DataMessage, AppState> {
+export function initBackstage(adapters: Adapters): Backstage<null, DataMessage, AppState> {
   return {
     messageHandler: update(adapters),
     initialState: initialState(adapters)

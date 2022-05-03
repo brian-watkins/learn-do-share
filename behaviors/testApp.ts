@@ -6,6 +6,8 @@ import { ResetableEngagementPlanRepo } from "./testStore"
 import { LearningAreasReader } from "../src/readLearningAreas"
 import { TestServer } from "./testServer"
 import { LearningAreaCategory } from "../src/leanringAreaCategory"
+import { LearningAreaReader } from "../src/engage/learningAreaReader"
+import { LearningArea as EngageLearningArea } from "../src/engage/learningArea"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -22,6 +24,7 @@ export class TestContext {
   display = new TestDisplay()
   server = new TestServer()
   learningAreasReader = new FakeLearningAreasReader()
+  learningAreaReader = new FakeLearningAreaReader()
   engagementPlanRepo = new ResetableEngagementPlanRepo({
     endpoint: "https://localhost:3021",
     key: "some-dumb-key",
@@ -32,16 +35,18 @@ export class TestContext {
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
     this.learningAreasReader.resolveImmediatelyWith(learningAreas)
+    this.learningAreaReader.areas = learningAreas
     return this
   }
 
-  async start(): Promise<void> {
+  async start(path: string = ""): Promise<void> {
     await this.server.start({
+      learningAreaReader: this.learningAreaReader,
       learningAreasReader: this.learningAreasReader,
       engagementPlanWriter: this.engagementPlanRepo,
       engagementPlanReader: this.engagementPlanRepo
     })
-    await this.display.start(this.server.host())
+    await this.display.start(this.server.host() + path)
   }
 
   async stop(): Promise<void> {
@@ -70,6 +75,14 @@ class FakeLearningAreasReader implements LearningAreasReader {
   }
 }
 
+class FakeLearningAreaReader implements LearningAreaReader {
+  public areas: TestLearningArea[] = []
+
+  async read(id: string): Promise<EngageLearningArea | null> {
+    return this.areas.filter(area => area.id === id).map(toLearningArea)[0] ?? null
+  }
+}
+
 export class TestLearningArea implements LearningArea {
   title: string
   content: string
@@ -90,8 +103,8 @@ export class TestLearningArea implements LearningArea {
     return this
   }
 
-  withGroup(group: LearningAreaCategory): TestLearningArea {
-    this.category = group
+  withCategory(category: LearningAreaCategory): TestLearningArea {
+    this.category = category
     return this
   }
 }

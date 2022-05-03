@@ -7,33 +7,40 @@ import { fileURLToPath } from 'url';
  */
 const config = {
   root: "./display",
-  server: {
-    port: 7663,
-    open: true,
-    proxy: {
-      "/api/backstage": "http://localhost:7664"
-    }
-  },
+  // server: {
+    // port: 7663,
+    // open: true,
+    // proxy: {
+      // "/api/backstage": "http://localhost:7664"
+    // }
+  // },
   build: {
+    rollupOptions: {
+      input: {
+        main: '/Users/bwatkins/workspace/learn-do-share/display/index.html',
+        engage: '/Users/bwatkins/workspace/learn-do-share/display/engage.html'
+      }
+    },
     outDir: "../build/display",
     emptyOutDir: true,
     sourcemap: true
   },
   plugins: [
-    copyIndex("./api/root")
+    copyHtml("index.html", "./api/root"),
+    copyHtml("engage.html", "./api/engage")
   ]
 }
 
-function copyIndex(destinationDir) {
+function copyHtml(filename, destinationDir) {
   return {
-    name: 'copy-index',
+    name: 'copy-html',
     enforce: 'post',
     apply: 'build',
     async writeBundle(options, bundle) {
-      const indexFile = bundle['index.html']
-      const outputFile = path.resolve(dirname(), destinationDir, "index.html")
+      const indexFile = bundle[filename]
+      const outputFile = path.resolve(dirname(), destinationDir, filename)
       fs.writeFileSync(outputFile, indexFile.source)
-      console.log("[copy-index] Wrote", outputFile)
+      console.log("[copy-html] Wrote", outputFile)
     }
   }
 }

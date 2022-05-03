@@ -64,6 +64,7 @@ function update(state: AppState, action: DisplayMessage): void {
 // View
 
 function view(appState: AppState): Html.View {
+  console.log("Drawing main view with state:", appState)
   switch (appState.type) {
     case "informative":
       return Html.div([], [

@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { behavior, condition, Effect, effect, example, pick, step } from "esbehavior";
 import { Step } from "esbehavior/dist/Assumption";
-import { loginUser, reloadTheApp, selectLearningArea } from "./steps";
+import { loginUser, reloadTheApp, returnToLearningAreas, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
 
 export default
   behavior("indicate engagement with a learning area", [
-    example(testContext())
+    pick.example(testContext())
       .description("engagement levels are persisted for a particular user")
       .script({
         prepare: [
@@ -25,13 +25,16 @@ export default
           loginUser("funny-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
           increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
+          returnToLearningAreas(),
           selectLearningArea(FakeLearningArea(2)),
           increaseEngagementLevel(FakeLearningArea(2), "I'm ready to learn!"),
           increaseEngagementLevel(FakeLearningArea(2), "Let's do it!"),
+          returnToLearningAreas(),
           selectLearningArea(FakeLearningArea(4)),
           increaseEngagementLevel(FakeLearningArea(4), "I'm ready to learn!"),
           increaseEngagementLevel(FakeLearningArea(4), "Let's do it!"),
-          increaseEngagementLevel(FakeLearningArea(4), "I'm ready to share!")
+          increaseEngagementLevel(FakeLearningArea(4), "I'm ready to share!"),
+          returnToLearningAreas()
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),

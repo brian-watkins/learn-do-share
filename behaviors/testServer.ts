@@ -2,6 +2,7 @@ import { Server } from "http"
 import { ChildProcess, spawn } from "child_process"
 import { createServer, stopVite } from "../local/backstage/app"
 import { Adapters } from "../src/backstage"
+import { Adapters as EngageAdapters } from "../src/engage/backstage"
 
 let SWA_SERVER: ChildProcess | null = null
 
@@ -15,7 +16,7 @@ export class TestServer {
     return "http://localhost:4280"
   }
 
-  async start(adapters: Adapters): Promise<void> {
+  async start(adapters: Adapters & EngageAdapters): Promise<void> {
     const app = await createServer(adapters)
 
     return new Promise((resolve) => {

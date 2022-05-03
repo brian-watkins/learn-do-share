@@ -1,6 +1,6 @@
 import { Adapters } from "../../src/backstage.js";
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository.js";
-import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader.js"
+import { StaticLearningAreaReader, StaticLearningAreasReader } from "../../src/staticLearningAreasReader.js"
 import { createServer } from "./app.js";
 import cosmosServer from "@zeit/cosmosdb-server"
 import https from 'https'
@@ -22,8 +22,9 @@ const cosmosDB = new CosmosEngagementPlanRepository({
   agent: new https.Agent({ rejectUnauthorized: false })
 })
 
-const adapters: Adapters = {
+const adapters = {
   learningAreasReader: new StaticLearningAreasReader(),
+  learningAreaReader: new StaticLearningAreaReader(),
   engagementPlanReader: cosmosDB,
   engagementPlanWriter: cosmosDB
 }

@@ -8,6 +8,12 @@ export function reloadTheApp(): Step<TestContext> {
   })
 }
 
+export function returnToLearningAreas(): Step<TestContext> {
+  return step("Return to the learning areas list", async (testContext) => {
+    await testContext.display.goBack()
+  })
+}
+
 export function selectLearningArea(learningArea: TestLearningArea): Step<TestContext> {
   return step(`Selected Learning Area ${learningArea.testId}`, async (testContext) => {
     await testContext.display.selectElementWithText(learningArea.title).click()

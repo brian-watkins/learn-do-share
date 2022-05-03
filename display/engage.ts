@@ -1,7 +1,7 @@
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
 import { EffectHandler, effectMiddleware } from "./effect"
-import display from "../src/app"
+import display from "../src/engage/display"
 import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { createReducer } from "./display"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
@@ -45,22 +45,11 @@ if (appRoot) {
     store.dispatch(displayMessageEvent.detail)
   })
 
-  window.addEventListener("pageshow", (evt) => {
-    if (evt.persisted) {
-      console.log("Showing the page!")
-      store.dispatch({ type: "refresh-state" } as any)
-    } else {
-      console.log("Showing the page but not persisted!")
-    }
-  })
-
   let oldNode: Element | VNode = appRoot
   const handleUpdate = () => {
     oldNode = patch(oldNode, display.view(store.getState()))
   }
   store.subscribe(handleUpdate)
-
-  // here I would want to also subscribe, call getState() and write to session storage
 
   handleUpdate()
 }
