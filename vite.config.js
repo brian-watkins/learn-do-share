@@ -6,34 +6,41 @@ import { fileURLToPath } from 'url';
  * @type {import('vite').UserConfig}
  */
 const config = {
-  root: "./display",
-  server: {
-    port: 7663,
-    open: true,
-    proxy: {
-      "/api/backstage": "http://localhost:7664"
-    }
-  },
+  root: "./src",
+  // server: {
+    // port: 7663,
+    // open: true,
+    // proxy: {
+      // "/api/backstage": "http://localhost:7664"
+    // }
+  // },
   build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(dirname(), "src/index.html"),
+        engage: path.resolve(dirname(), "src/engage/index.html")
+      }
+    },
     outDir: "../build/display",
     emptyOutDir: true,
     sourcemap: true
   },
   plugins: [
-    copyIndex("./api/root")
+    copyHtml("index.html", "./api/root/index.html"),
+    copyHtml("engage/index.html", "./api/engage/index.html")
   ]
 }
 
-function copyIndex(destinationDir) {
+function copyHtml(filename, destinationFile) {
   return {
-    name: 'copy-index',
+    name: 'copy-html',
     enforce: 'post',
     apply: 'build',
     async writeBundle(options, bundle) {
-      const indexFile = bundle['index.html']
-      const outputFile = path.resolve(dirname(), destinationDir, "index.html")
+      const indexFile = bundle[filename]
+      const outputFile = path.resolve(dirname(), destinationFile)
       fs.writeFileSync(outputFile, indexFile.source)
-      console.log("[copy-index] Wrote", outputFile)
+      console.log("[copy-html] Wrote", outputFile)
     }
   }
 }

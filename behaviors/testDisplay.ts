@@ -14,6 +14,10 @@ export class TestDisplay {
     this.page = null
   }
 
+  async goBack(): Promise<void> {
+    await this.page?.goBack()
+  }
+
   selectElementWithText(text: string): DisplayElement {
     return this.select(`text="${text}"`)
   }
@@ -25,6 +29,10 @@ export class TestDisplay {
   selectAll(selector: string): DisplayElementList {
     return new DisplayElementList(this.page!, selector)
   }
+}
+
+export function title() {
+  return "#learning-area-title"
 }
 
 export function contentArea(selector: string = "") {
@@ -55,7 +63,7 @@ export class DisplayElement {
   constructor(private locator: Locator) {}
 
   async tagName(): Promise<string> {
-    return await this.locator.first().evaluate(el => el.tagName)
+    return await this.locator.first().evaluate(el => el.tagName, null, { timeout: 1000 })
   }
 
   async click(): Promise<void> {
@@ -78,7 +86,7 @@ export class DisplayElement {
   }
 
   async text(): Promise<string | null> {
-    return this.locator.first().textContent({ timeout: 1000 })
+    return this.locator.first().innerText({ timeout: 1000 })
   }
 
   async getAttribute(name: string): Promise<string | null> {

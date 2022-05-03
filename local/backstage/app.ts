@@ -1,8 +1,10 @@
 import express, { Express } from "express"
 import { Adapters, initBackstage } from "../../src/backstage"
+import { Adapters as EngageAdapters, initBackstage as initEngageBackstage } from "../../src/engage/backstage"
 import { createServer as createViteServer } from "vite"
 import fs from "fs"
 import { renderTemplate } from "../../api/root/render"
+import { renderTemplate as renderEngage } from "../../api/engage/render"
 import { azureUserParser, Request } from "../../api/common/azureUserParser"
 import { IncomingMessage } from "http"
 
@@ -14,7 +16,7 @@ export async function stopVite() {
   await vite.close()
 }
 
-export async function createServer(adapters: Adapters): Promise<Express> {
+export async function createServer(adapters: Adapters & EngageAdapters): Promise<Express> {
   const app = express()
 
   app.use(express.json())
@@ -33,11 +35,34 @@ export async function createServer(adapters: Adapters): Promise<Express> {
 
   app.use(vite.middlewares)
 
-  app.use("*", async (req, res, next) => {
+  app.use("/api/root", async (req, res, next) => {
     try {
-      let template = fs.readFileSync("./display/index.html", 'utf-8')
+      let template = fs.readFileSync("./src/index.html", 'utf-8')
 
       const html = await renderTemplate(backstage, template, azureUserParser(normalizeRequest(req)))
+
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+    } catch (err: any) {
+      vite.ssrFixStacktrace(err)
+      next(err)
+    }
+  })
+
+  const engageBackstage = initEngageBackstage(adapters)
+
+  app.use("/api/engage", async (req, res, next) => {
+
+    // console.log("Path", req.url)
+    // console.log("Query", req.query)
+    // console.log("Headers", req.headers)
+  
+    const url = new URL(req.headers["x-ms-original-url"] as string)
+    const areaId = url.pathname.split("/").pop() ?? ""
+
+    try {
+      let template = fs.readFileSync("./src/engage/index.html", 'utf-8')
+
+      const html = await renderEngage(engageBackstage, template, azureUserParser(normalizeRequest(req)), areaId)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (err: any) {

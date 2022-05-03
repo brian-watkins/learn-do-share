@@ -13,11 +13,11 @@ export default
           condition("the app loads learning areas", async (testContext) =>
             await testContext
               .withLearningAreas([
-                FakeLearningArea(1).withGroup(LearningAreaCategory.Team),
-                FakeLearningArea(2).withGroup(LearningAreaCategory.Team),
-                FakeLearningArea(3).withGroup(LearningAreaCategory.Discipline),
-                FakeLearningArea(4).withGroup(LearningAreaCategory.Theory),
-                FakeLearningArea(5).withGroup(LearningAreaCategory.Theory),
+                FakeLearningArea(1).withCategory(LearningAreaCategory.Team),
+                FakeLearningArea(2).withCategory(LearningAreaCategory.Team),
+                FakeLearningArea(3).withCategory(LearningAreaCategory.Discipline),
+                FakeLearningArea(4).withCategory(LearningAreaCategory.Theory),
+                FakeLearningArea(5).withCategory(LearningAreaCategory.Theory),
               ])
               .start()
           )

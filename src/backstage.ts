@@ -1,6 +1,6 @@
-import { Backstage } from "../api/backstage/backstage.js";
+import { Backstage, BackstageContext } from "../api/backstage/backstage.js";
 import { User } from "../api/common/user.js";
-import { AppState } from "./app.js";
+import { AppModel } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
 import { LearningArea } from "./learningAreas.js";
 import { PersonalizedLearningArea } from "./personalizedLearningAreas.js";
@@ -31,35 +31,52 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
   }
 }
 
-const initialState = (adapters: Adapters) => async (user: User | null): Promise<AppState> => {
+const initialState = (adapters: Adapters) => async (context: BackstageContext<null>): Promise<AppModel> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
-  if (user === null) {
+  if (context.user === null) {
     return {
-      type: "informative",
-      learningAreas: learningAreas
+      state: { type: "informative" },
+      learningAreas: learningAreas,
+      selectedLearningArea: { type: "learning-area-not-selected" }
     }
   } else {
-    const plans = await adapters.engagementPlanReader.read(user)
-    const state = {
-      type: "personalized",
-      learningAreas: learningAreas.map(toPersonalizedLearningAreas(plans)),
-      user: user
+    const plans = await adapters.engagementPlanReader.read(context.user)
+    const state: AppModel = {
+      state: { type: "personalized", user: context.user, engagementLevels: toEngagementPlanMap(plans) },
+      learningAreas: learningAreas,
+      selectedLearningArea: { type: "learning-area-not-selected" }
     }
 
-    return state as AppState
+    return state
   }
 }
 
-function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: LearningArea) => PersonalizedLearningArea {
-  return (area) => {
-    return Object.assign(area, {
-      engagementLevels: plans.filter(plan => plan.learningArea === area.id).map(plan => plan.level as EngagementLevel)
-    })
+function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Array<EngagementLevel> } {
+  let map: { [key:string]: Array<EngagementLevel> } = {}
+
+  for (const plan of plans) {
+    let list = map[plan.learningArea]
+    if (!list) {
+      map[plan.learningArea] = [plan.level]
+    } else {
+      list.push(plan.level)
+    }
   }
+
+  return map
 }
 
-export function initBackstage(adapters: Adapters): Backstage<DataMessage, AppState> {
+
+// function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: LearningArea) => PersonalizedLearningArea {
+//   return (area) => {
+//     return Object.assign(area, {
+//       engagementLevels: plans.filter(plan => plan.learningArea === area.id).map(plan => plan.level as EngagementLevel)
+//     })
+//   }
+// }
+
+export function initBackstage(adapters: Adapters): Backstage<null, DataMessage, AppModel> {
   return {
     messageHandler: update(adapters),
     initialState: initialState(adapters)
