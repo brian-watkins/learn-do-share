@@ -1,7 +1,6 @@
 import { LearningAreaCategory } from "../leanringAreaCategory"
 import * as Html from "../../display/markup"
 import { decorate, markdownToHTML } from "../util/markdownParser"
-import { EngagementLevel } from "../engagementPlans"
 
 export interface LearningArea {
   id: string

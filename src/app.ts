@@ -5,18 +5,44 @@ import { BackstageMessage } from "../display/backstage"
 import { Display } from "../display/display"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { loginView, userAccountView } from "./user"
-import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
+import { personalizedLearningAreaView } from "./personalizedLearningAreas"
 import { User } from "../api/common/user"
+import { EngagementLevel } from "./engagementPlans"
 
 export interface Informative {
   type: "informative"
-  learningAreas: Array<LearningArea>
+  // learningAreas: Array<LearningArea>
 }
 
 export interface Personalized {
   type: "personalized"
-  learningAreas: Array<PersonalizedLearningArea>
+  // learningAreas: Array<PersonalizedLearningArea>
+  engagementLevels: { [key:string]: Array<EngagementLevel> }
   user: User
+}
+
+export interface LearningAreaSelected {
+  type: "learning-area-selected",
+  learningArea: LearningArea
+}
+
+export interface LearningAreaNotFound {
+  type: "learning-area-not-found"
+}
+
+export interface LearningAreaNotSelected {
+  type: "learning-area-not-selected"
+}
+
+export type LearningAreaSelection
+  = LearningAreaNotSelected
+  | LearningAreaNotFound
+  | LearningAreaSelected
+
+export interface AppModel {
+  learningAreas: Array<LearningArea>
+  selectedLearningArea: LearningAreaSelection
+  state: AppState
 }
 
 export type AppState
@@ -28,59 +54,80 @@ type DisplayMessage
   | EngagementPlanPersisted
   | EngagementPlansDeleted
 
-function update(state: AppState, action: DisplayMessage): void {
-  switch (state.type) {
+function update(model: AppModel, action: DisplayMessage): void {
+  switch (model.state.type) {
     case "informative":
+      break
+    case "personalized":
       switch (action.type) {
-        case "learningAreaOpened":
-          state.learningAreas.forEach(area => area.selected = (area.id === action.area.id))
+        case "engagementPlanPersisted":
+          const levels = model.state.engagementLevels[action.plan.learningArea]
+          if (!levels) {
+            model.state.engagementLevels[action.plan.learningArea] = [action.plan.level]
+          } else {
+            model.state.engagementLevels[action.plan.learningArea] = [...levels, action.plan.level]
+          }
+
+          // const index = model.learningAreas.findIndex(area => {
+          //   return area.id === action.plan.learningArea
+          // })
+          // model.learningAreas[index].engagementLevels.push(action.plan.level)
           break
       }
       break
-
-    case "personalized":
-      switch (action.type) {
-        case "learningAreaOpened":
-          state.learningAreas.forEach(area => area.selected = (area.id === action.area.id))
-          break
-        case "engagementPlanPersisted": {
-          const index = state.learningAreas.findIndex(area => {
-            return area.id === action.plan.learningArea
-          })
-          state.learningAreas[index].engagementLevels.push(action.plan.level)
-          break
-        }
-        case "engagementPlansDeleted": {
-          const index = state.learningAreas.findIndex(area => {
-            return area.id === action.learningArea
-          })
-          state.learningAreas[index].engagementLevels = []
-          break
-        }
-      }
   }
+  // switch (model.state.type) {
+    // case "informative":
+      // switch (action.type) {
+        // case "learningAreaOpened":
+          // model.learningAreas.forEach(area => area.selected = (area.id === action.area.id))
+          // break
+      // }
+      // break
+
+    // case "personalized":
+      // switch (action.type) {
+        // case "learningAreaOpened":
+          // model.learningAreas.forEach(area => area.selected = (area.id === action.area.id))
+          // break
+        // case "engagementPlanPersisted": {
+          // const index = model.learningAreas.findIndex(area => {
+            // return area.id === action.plan.learningArea
+          // })
+          // model.learningAreas[index].engagementLevels.push(action.plan.level)
+          // break
+        // }
+        // case "engagementPlansDeleted": {
+          // const index = model.learningAreas.findIndex(area => {
+            // return area.id === action.learningArea
+          // })
+          // model.learningAreas[index].engagementLevels = []
+          // break
+        // }
+      // }
+  // }
 }
 
 // View
 
-function view(appState: AppState): Html.View {
-  console.log("Drawing main view with state:", appState)
-  switch (appState.type) {
+function view(model: AppModel): Html.View {
+  console.log("Drawing main view with state:", model)
+  switch (model.state.type) {
     case "informative":
       return Html.div([], [
         loginView(),
-        learningAreasView(appState.learningAreas, learningAreaView)
+        learningAreasView(model.learningAreas, learningAreaView)
       ])
     case "personalized":
       return Html.div([], [
-        userAccountView(appState.user),
-        learningAreasView(appState.learningAreas, personalizedLearningAreaView) 
+        userAccountView(model.state.user),
+        learningAreasView(model.learningAreas, personalizedLearningAreaView(model.state.engagementLevels)) 
       ])
   }
 }
 
 
-const display: Display<AppState, DisplayMessage | BackstageMessage<DataMessage>> = {
+const display: Display<AppModel, DisplayMessage | BackstageMessage<DataMessage>> = {
   update,
   view
 }

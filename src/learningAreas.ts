@@ -1,6 +1,5 @@
 import * as Html from "../display/markup"
 import { LearningAreaCategory, learningAreaCategoryView } from "./leanringAreaCategory"
-import { decorate, markdownToHTML } from "./util/markdownParser"
 import { cardView } from "./viewElements"
 
 export interface LearningAreaOpened {

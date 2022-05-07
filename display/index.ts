@@ -10,6 +10,7 @@ import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 const appInsights = new ApplicationInsights({ config: {
   connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
   disableTelemetry: import.meta.env.DEV,
+  disablePageUnloadEvents: ["beforeUnload", "unload"], // required for bfcache on chrome
   disableFetchTracking: false,
   enableCorsCorrelation: true,
   enableRequestHeaderTracking: true,
@@ -46,12 +47,17 @@ if (appRoot) {
   })
 
   window.addEventListener("pageshow", (evt) => {
-    if (evt.persisted) {
-      console.log("Showing the page!")
-      store.dispatch({ type: "refresh-state" } as any)
-    } else {
-      console.log("Showing the page but not persisted!")
-    }
+    // if (evt.persisted) {
+      const patch = window.sessionStorage.getItem("__display_session_state")
+      console.log("Patch message", patch)
+      if (patch !== null) {
+        const patchMessage = JSON.parse(patch)
+        console.log("dispatching session message on page show:", patchMessage)
+        store.dispatch(patchMessage)
+      }
+    // } else {
+      // console.log("Showing the page but not persisted!")
+    // }
   })
 
   let oldNode: Element | VNode = appRoot
@@ -59,8 +65,6 @@ if (appRoot) {
     oldNode = patch(oldNode, display.view(store.getState()))
   }
   store.subscribe(handleUpdate)
-
-  // here I would want to also subscribe, call getState() and write to session storage
 
   handleUpdate()
 }

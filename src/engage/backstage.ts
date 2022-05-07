@@ -1,13 +1,11 @@
 import { Backstage, BackstageContext } from "../../api/backstage/backstage.js";
 import { User } from "../../api/common/user.js";
 import { EngageContext } from "../../api/engage/render"
+import { AppModel } from "../app.js";
 import { EngagementLevel, EngagementPlan } from "../engagementPlans.js";
 import { EngagementPlanReader } from "../readEngagementPlans.js";
 import { engagementPlanPersisted, EngagementPlanWriter, WriteEngagementPlan } from "../writeEngagementPlans.js";
-import { AppState } from "./display"
-import { LearningArea } from "./learningArea.js";
 import { LearningAreaReader } from "./learningAreaReader"
-import { PersonalizedLearningArea } from "./personalizedLearningArea.js";
 
 export interface Adapters {
   learningAreaReader: LearningAreaReader
@@ -33,39 +31,65 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
 }
 
 // Here I need to know a path variable basically ... the id of the learning area
-const initialState = (adapters: Adapters) => async (context: BackstageContext<EngageContext>): Promise<AppState> => {
+const initialState = (adapters: Adapters) => async (context: BackstageContext<EngageContext>): Promise<AppModel> => {
   const learningArea = await adapters.learningAreaReader.read(context.attributes.learningAreaId)
 
   if (learningArea == null) {
-    return { type: "unknown-area" }
+    return {
+      learningAreas: [],
+      selectedLearningArea: { type: "learning-area-not-found" },
+      state: { type: "informative" }
+    }
   }
 
   if (context.user === null) {
     return {
-      type: "informative",
-      learningArea: learningArea
+      learningAreas: [],
+      selectedLearningArea: { type: "learning-area-selected", learningArea },
+      state: { type: "informative" }
     }
   } else {
     const plans = await adapters.engagementPlanReader.read(context.user)
-    const state = {
-      type: "personalized",
-      learningArea: toPersonalizedLearningAreas(plans)(learningArea),
-      user: context.user
+    const state: AppModel = {
+      state: {
+        type: "personalized",
+        user: context.user,
+        engagementLevels: toEngagementPlanMap(plans)
+      },
+      selectedLearningArea: { type: "learning-area-selected", learningArea },
+      learningAreas: []
+      // learningArea: toPersonalizedLearningAreas(plans)(learningArea),
+      // user: context.user
     }
 
-    return state as AppState
+    return state
   }
 }
 
-function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: LearningArea) => PersonalizedLearningArea {
-  return (area) => {
-    return Object.assign(area, {
-      engagementLevels: plans.filter(plan => plan.learningArea === area.id).map(plan => plan.level as EngagementLevel)
-    })
+function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Array<EngagementLevel> } {
+  let map: { [key:string]: Array<EngagementLevel> } = {}
+
+  for (const plan of plans) {
+    let list = map[plan.learningArea]
+    if (!list) {
+      map[plan.learningArea] = [plan.level]
+    } else {
+      list.push(plan.level)
+    }
   }
+
+  return map
 }
 
-export function initBackstage(adapters: Adapters): Backstage<EngageContext, any, AppState> {
+// function toPersonalizedLearningAreas(plans: Array<EngagementPlan>): (area: LearningArea) => PersonalizedLearningArea {
+//   return (area) => {
+//     return Object.assign(area, {
+//       engagementLevels: plans.filter(plan => plan.learningArea === area.id).map(plan => plan.level as EngagementLevel)
+//     })
+//   }
+// }
+
+export function initBackstage(adapters: Adapters): Backstage<EngageContext, any, AppModel> {
   return {
     messageHandler: update(adapters),
     initialState: initialState(adapters)

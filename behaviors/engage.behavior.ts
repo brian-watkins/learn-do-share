@@ -6,7 +6,7 @@ import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./
 
 export default
   behavior("indicate engagement with a learning area", [
-    pick.example(testContext())
+    example(testContext())
       .description("engagement levels are persisted for a particular user")
       .script({
         prepare: [
@@ -130,6 +130,10 @@ function increaseEngagementLevel(learningArea: TestLearningArea, engagementLevel
       .select("article", { withText: learningArea.title })
       .selectDescendantWithText(engagementLevelButton)
       .click()
+    await testContext.display
+      .select("article", { withText: learningArea.title })
+      .selectDescendantWithText(engagementLevelButton)
+      .isHidden()
   })
 }
 
@@ -150,7 +154,7 @@ function noEngagementLevelsSelected(learningArea: TestLearningArea): Effect<Test
       .select('article', { withText: learningArea.title })
       .selectAllDescendants('[data-engagement-indicator]')
       .mapElements(element => element.isHidden())
-    
+
     expect(engagementLevelsHidden).to.not.include(false, "Expected no engagement levels but found some")
   })
 }

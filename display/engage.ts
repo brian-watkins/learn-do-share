@@ -6,15 +6,19 @@ import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { createReducer } from "./display"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+import { handleSessionMessage, SESSION_MESSAGE_TYPE } from "./session"
 
-const appInsights = new ApplicationInsights({ config: {
-  connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
-  disableTelemetry: import.meta.env.DEV,
-  disableFetchTracking: false,
-  enableCorsCorrelation: true,
-  enableRequestHeaderTracking: true,
-  enableResponseHeaderTracking: true,
-} });
+const appInsights = new ApplicationInsights({
+  config: {
+    connectionString: import.meta.env.VITE_APP_INSIGHTS_CONNECTION_STRING,
+    disableTelemetry: import.meta.env.DEV,
+    disablePageUnloadEvents: ["beforeUnload", "unload"], // required for bfcache on chrome
+    disableFetchTracking: false,
+    enableCorsCorrelation: true,
+    enableRequestHeaderTracking: true,
+    enableResponseHeaderTracking: true,
+  }
+});
 appInsights.loadAppInsights();
 appInsights.addTelemetryInitializer(function (envelope) {
   envelope.tags!["ai.cloud.role"] = "display";
@@ -25,6 +29,7 @@ function effectHandlers(): Map<string, EffectHandler> {
   const handlers = new Map<string, EffectHandler>()
   handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
   handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
+  handlers.set(SESSION_MESSAGE_TYPE, handleSessionMessage)
   return handlers
 }
 
@@ -50,6 +55,12 @@ if (appRoot) {
     oldNode = patch(oldNode, display.view(store.getState()))
   }
   store.subscribe(handleUpdate)
+
+  if (display.subscription) {
+    store.subscribe(() => {
+      display.subscription?.(store.getState(), store.dispatch)
+    })
+  }
 
   handleUpdate()
 }
