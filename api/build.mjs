@@ -31,3 +31,19 @@ await esbuild.build({
     ],
     logLevel: "info"
 })
+
+await esbuild.build({
+    entryPoints: [
+        "./engage/index.ts"
+    ],
+    platform: "node",
+    format: "esm",
+    target: "node16",
+    bundle: true,
+    outfile: "./build/engage/index.mjs",
+    external: [
+        "@azure/functions",
+        "@azure/cosmos"
+    ],
+    logLevel: "info"
+})
