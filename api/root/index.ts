@@ -17,7 +17,6 @@ const cosmosDB = new CosmosEngagementPlanRepository({
 const adapters: Adapters = {
   learningAreasReader: new StaticLearningAreasReader(),
   engagementPlanReader: cosmosDB,
-  engagementPlanWriter: cosmosDB
 }
 
 const backstage = initBackstage(adapters)
@@ -29,7 +28,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
   context.res = {
     headers: {
-      "Content-Type": "text/html"
+      "Content-Type": "text/html",
+      "Cache-Control": "no-store"
     },
     body: html
   };

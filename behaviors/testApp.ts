@@ -109,12 +109,11 @@ export class TestLearningArea implements LearningArea {
   }
 }
 
-function toLearningArea(area: TestLearningArea): LearningArea {
+function toLearningArea(area: TestLearningArea): EngageLearningArea {
   return {
     id: area.id,
     content: area.content,
     title: area.title,
-    selected: area.selected,
     category: area.category
   }
 }

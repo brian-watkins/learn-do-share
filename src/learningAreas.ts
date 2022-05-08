@@ -2,23 +2,9 @@ import * as Html from "../display/markup"
 import { LearningAreaCategory, learningAreaCategoryView } from "./leanringAreaCategory"
 import { cardView } from "./viewElements"
 
-export interface LearningAreaOpened {
-  type: "learningAreaOpened"
-  area: LearningArea
-}
-
-export function learningAreaOpened(area: LearningArea): LearningAreaOpened {
-  return {
-    type: "learningAreaOpened",
-    area
-  }
-}
-
 export interface LearningArea {
   id: string
   title: string
-  content: string
-  selected?: boolean
   category: LearningAreaCategory
 }
 
@@ -52,21 +38,11 @@ function filterAreas<T extends LearningArea>(group: LearningAreaCategory, areas:
 }
 
 export function learningAreaView(learningArea: LearningArea): Html.View {
-  // if (learningArea.selected) {
-    // return cardView([], [
-      // learningAreaTitleView(learningArea),
-      // learningAreaContentView(learningArea),
-    // ])
-  // } else {
-    // return cardView([Html.onClick(learningAreaOpened(learningArea))], [
-      // learningAreaTitleView(learningArea)
-    // ])
-    return Html.a([ Html.href(`/learning-areas/${learningArea.id}`) ], [
-      cardView([], [
-        learningAreaTitleView(learningArea)
-      ])
+  return Html.a([Html.href(`/learning-areas/${learningArea.id}`)], [
+    cardView([], [
+      learningAreaTitleView(learningArea)
     ])
-  // }
+  ])
 }
 
 export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
@@ -78,16 +54,3 @@ export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
     Html.text(area.title),
   ])
 }
-
-// export function learningAreaContentView(area: LearningArea): Html.ViewChild {
-//   return Html.p([
-//     Html.id("learning-area-content"),
-//     Html.withHTMLContent(markdownToHTML(area.content, [
-//       decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
-//       decorate("h1", { classname: "font-bold text-lg" }),
-//       decorate("h3", { classname: "font-bold" }),
-//       decorate("ul", { classname: "list-disc list-inside" }),
-//       decorate("p", { classname: "pb-4 max-w-lg" })
-//     ]))
-//   ], [])
-// }

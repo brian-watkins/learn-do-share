@@ -26,14 +26,26 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
     res.json([{ config: { bindings: [{ type: "httpTrigger" }] } }])
   })
 
-  const backstage = initBackstage(adapters)
+  const engageBackstage = initEngageBackstage(adapters)
 
   app.post('/api/backstage', async (req, res) => {
-    const result = await backstage.messageHandler(azureUserParser(normalizeRequest(req)), req.body)
-    res.send(result)
+    const user = azureUserParser(normalizeRequest(req))
+
+    // if (req.body.type === "_backstage-reload-initial-state") {
+      // const initialState = await backstage.initialState({ user, attributes: null })
+      // res.send({
+        // type: "_backstage-refresh-with-initial-state",
+        // state: initialState
+      // })
+    // } else {
+      const result = await engageBackstage.messageHandler(user, req.body)
+      res.send(result)  
+    // }
   })
 
   app.use(vite.middlewares)
+
+  const backstage = initBackstage(adapters)
 
   app.use("/api/root", async (req, res, next) => {
     try {
@@ -41,21 +53,18 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
 
       const html = await renderTemplate(backstage, template, azureUserParser(normalizeRequest(req)))
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+      res.status(200).set({
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-store',
+      }).end(html)
     } catch (err: any) {
       vite.ssrFixStacktrace(err)
       next(err)
     }
   })
 
-  const engageBackstage = initEngageBackstage(adapters)
 
   app.use("/api/engage", async (req, res, next) => {
-
-    // console.log("Path", req.url)
-    // console.log("Query", req.query)
-    // console.log("Headers", req.headers)
-  
     const url = new URL(req.headers["x-ms-original-url"] as string)
     const areaId = url.pathname.split("/").pop() ?? ""
 
@@ -64,7 +73,10 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
 
       const html = await renderEngage(engageBackstage, template, azureUserParser(normalizeRequest(req)), areaId)
 
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
+      res.status(200).set({
+        'Content-Type': 'text/html',
+        'Cache-Control': 'no-store'
+      }).end(html)
     } catch (err: any) {
       vite.ssrFixStacktrace(err)
       next(err)
