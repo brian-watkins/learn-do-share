@@ -1,7 +1,6 @@
 import { Store, Action, applyMiddleware, createStore, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
-import { SESSION_MESSAGE_TYPE } from "./session"
 import { EffectHandler, effectMiddleware } from "./effect"
 import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
@@ -21,12 +20,6 @@ function getInitialState() {
 
 export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>): Reducer<T, M> {
   return function (state: T = getInitialState(), message: M): T {
-    console.log("Main reducer handling message", message)
-    if (message.type === SESSION_MESSAGE_TYPE) {
-      console.log("Patchng the state with a session message!!!", state, message)
-      return { ...state, ...(message as any).slice }
-    }
-
     return produce(state, (draft) => {
       display.update(draft as T, message)
     })
@@ -37,14 +30,13 @@ function effectHandlers(): Map<string, EffectHandler> {
   const handlers = new Map<string, EffectHandler>()
   handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
   handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
-  // handlers.set(SESSION_MESSAGE_TYPE, handleSessionMessage)
   return handlers
 }
 
 export class AppDisplay<T, M extends Action<any>> {
   private store: Store<T, M>
 
-  constructor(private rootSelector: string, private config: DisplayConfig<T, M>) {
+  constructor(private config: DisplayConfig<T, M>) {
     this.store = createStore(createReducer(this.config), applyMiddleware(effectMiddleware(effectHandlers())))
   }
 
@@ -52,7 +44,7 @@ export class AppDisplay<T, M extends Action<any>> {
     this.store.dispatch(message)
   }
 
-  start() {
+  mount(selector: string) {
     const patch = init([
       propsModule,
       attributesModule,
@@ -60,8 +52,7 @@ export class AppDisplay<T, M extends Action<any>> {
       eventListenersModule
     ])
 
-    // element should be configurable
-    const appRoot = document.querySelector(this.rootSelector)
+    const appRoot = document.querySelector(selector)
 
     if (appRoot) {
       document.body.addEventListener("displayMessage", (evt) => {
@@ -71,7 +62,6 @@ export class AppDisplay<T, M extends Action<any>> {
 
       let oldNode: Element | VNode = appRoot
       const handleUpdate = () => {
-        console.log("Updating the view!")
         oldNode = patch(oldNode, this.config.view(this.store.getState()))
       }
       this.store.subscribe(handleUpdate)
