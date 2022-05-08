@@ -3,7 +3,7 @@ import { MessageDispatcher } from "./effect"
 export const BACKSTAGE_MESSAGE_TYPE = "_backstage"
 
 export interface BackstageMessage<T> {
-  type: "_backstage"
+  type: typeof BACKSTAGE_MESSAGE_TYPE
   wrapped: T
 }
 
