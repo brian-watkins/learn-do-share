@@ -23,7 +23,7 @@ const adapters: Adapters = {
 const backstage = initBackstage(adapters)
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-  let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
+  let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
 
   console.log("Path", req.url)
   console.log("Query", req.query)

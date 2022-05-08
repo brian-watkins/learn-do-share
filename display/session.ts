@@ -15,6 +15,6 @@ export function storeForSession(slice: any): SessionMessage {
 }
 
 // Ultimately probably want this to be a concern of the app, not the framework?
-export function handleSessionMessage(dispatch: MessageDispatcher, message: SessionMessage) {
+export function handleSessionMessage(_: MessageDispatcher, message: SessionMessage) {
   window.sessionStorage.setItem("__display_session_state", JSON.stringify(message))
 }

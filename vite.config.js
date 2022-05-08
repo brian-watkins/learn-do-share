@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
  * @type {import('vite').UserConfig}
  */
 const config = {
-  root: "./display",
+  root: "./src",
   // server: {
     // port: 7663,
     // open: true,
@@ -17,8 +17,8 @@ const config = {
   build: {
     rollupOptions: {
       input: {
-        main: '/Users/bwatkins/workspace/learn-do-share/display/index.html',
-        engage: '/Users/bwatkins/workspace/learn-do-share/display/engage.html'
+        main: path.resolve(dirname(), "src/index.html"),
+        engage: path.resolve(dirname(), "src/engage/index.html")
       }
     },
     outDir: "../build/display",
@@ -26,19 +26,19 @@ const config = {
     sourcemap: true
   },
   plugins: [
-    copyHtml("index.html", "./api/root"),
-    copyHtml("engage.html", "./api/engage")
+    copyHtml("index.html", "./api/root/index.html"),
+    copyHtml("engage/index.html", "./api/engage/index.html")
   ]
 }
 
-function copyHtml(filename, destinationDir) {
+function copyHtml(filename, destinationFile) {
   return {
     name: 'copy-html',
     enforce: 'post',
     apply: 'build',
     async writeBundle(options, bundle) {
       const indexFile = bundle[filename]
-      const outputFile = path.resolve(dirname(), destinationDir, filename)
+      const outputFile = path.resolve(dirname(), destinationFile)
       fs.writeFileSync(outputFile, indexFile.source)
       console.log("[copy-html] Wrote", outputFile)
     }

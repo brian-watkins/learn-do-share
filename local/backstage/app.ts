@@ -37,7 +37,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
 
   app.use("/api/root", async (req, res, next) => {
     try {
-      let template = fs.readFileSync("./display/index.html", 'utf-8')
+      let template = fs.readFileSync("./src/index.html", 'utf-8')
 
       const html = await renderTemplate(backstage, template, azureUserParser(normalizeRequest(req)))
 
@@ -60,7 +60,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
     const areaId = url.pathname.split("/").pop() ?? ""
 
     try {
-      let template = fs.readFileSync("./display/engage.html", 'utf-8')
+      let template = fs.readFileSync("./src/engage/index.html", 'utf-8')
 
       const html = await renderEngage(engageBackstage, template, azureUserParser(normalizeRequest(req)), areaId)
 

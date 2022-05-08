@@ -1,10 +1,10 @@
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 import { createStore, applyMiddleware } from "redux"
-import { EffectHandler, effectMiddleware } from "./effect"
-import display from "../src/app"
-import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
-import { createReducer } from "./display"
-import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
+import { EffectHandler, effectMiddleware } from "../display/effect"
+import display from "./app"
+import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "../display/backstage"
+import { createReducer } from "../display/display"
+import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "../display/batch"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 
 const appInsights = new ApplicationInsights({ config: {
