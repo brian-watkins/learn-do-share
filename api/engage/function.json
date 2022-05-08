@@ -7,8 +7,7 @@
       "name": "req",
       "methods": [
         "get"
-      ],
-      "route": "engage/{learningAreaId}"
+      ]
     },
     {
       "type": "http",
