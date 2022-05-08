@@ -3,7 +3,7 @@ import { MessageDispatcher } from "./effect"
 export const SESSION_MESSAGE_TYPE = "session-property"
 
 export interface SessionMessage {
-  type: "session-property"
+  type: typeof SESSION_MESSAGE_TYPE
   slice: any
 }
 

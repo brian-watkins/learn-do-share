@@ -3,7 +3,7 @@ import { MessageDispatcher } from "./effect"
 export const BATCH_MESSAGE_TYPE = "_batch"
 
 export interface BatchMessage<T> {
-  type: "_batch"
+  type: typeof BATCH_MESSAGE_TYPE
   children: Array<T>
 }
 
