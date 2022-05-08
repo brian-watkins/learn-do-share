@@ -2,7 +2,7 @@ import { learningAreasView, LearningAreaOpened, LearningArea, learningAreaView }
 import * as Html from "../display/markup"
 import { DataMessage } from "./backstage"
 import { BackstageMessage } from "../display/backstage"
-import { Display } from "../display/display"
+import { DisplayConfig } from "../display/display"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { loginView, userAccountView } from "./user"
 import { personalizedLearningAreaView } from "./personalizedLearningAreas"
@@ -127,7 +127,7 @@ function view(model: AppModel): Html.View {
 }
 
 
-const display: Display<AppModel, DisplayMessage | BackstageMessage<DataMessage>> = {
+const display: DisplayConfig<AppModel, DisplayMessage | BackstageMessage<DataMessage>> = {
   update,
   view
 }

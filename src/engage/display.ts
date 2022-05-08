@@ -2,7 +2,7 @@
 import * as Html from "../../display/markup"
 // import { DataMessage } from "./backstage"
 // import { BackstageMessage } from "../display/backstage"
-import { Display } from "../../display/display"
+import { DisplayConfig } from "../../display/display"
 // import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 // import { loginView, userAccountView } from "./user"
 // import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
@@ -129,12 +129,14 @@ function view(model: AppModel): Html.View {
   // }
 }
 
-const display: Display<AppModel, any> = {
+const display: DisplayConfig<AppModel, any> = {
   update,
   view,
   subscription: (model: AppModel, dispatch: (message: any) => void) => {
-    console.log("dispatch a session message on model change!")
-    dispatch(storeForSession({ state: model.state }))
+    console.log("storing session message on model change!")
+    // window.sessionStorage.setItem("__session_message", )
+    // dispatch(storeForSession({ state: model.state }))
+    window.sessionStorage.setItem("__display_session_state", JSON.stringify(storeForSession({ state: model.state })))
   }
 }
 

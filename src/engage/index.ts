@@ -3,10 +3,10 @@ import { createStore, applyMiddleware } from "redux"
 import { EffectHandler, effectMiddleware } from "../../display/effect"
 import display from "./display"
 import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "../../display/backstage"
-import { createReducer } from "../../display/display"
+import { AppDisplay, createReducer } from "../../display/display"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "../../display/batch"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
-import { handleSessionMessage, SESSION_MESSAGE_TYPE } from "../../display/session"
+import { SESSION_MESSAGE_TYPE } from "../../display/session"
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -25,42 +25,45 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView();
 
-function effectHandlers(): Map<string, EffectHandler> {
-  const handlers = new Map<string, EffectHandler>()
-  handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
-  handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
-  handlers.set(SESSION_MESSAGE_TYPE, handleSessionMessage)
-  return handlers
-}
+const app = new AppDisplay("#app", display)
+app.start()
 
-const store = createStore(createReducer(display), applyMiddleware(effectMiddleware(effectHandlers())))
+// function effectHandlers(): Map<string, EffectHandler> {
+//   const handlers = new Map<string, EffectHandler>()
+//   handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
+//   handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
+//   handlers.set(SESSION_MESSAGE_TYPE, handleSessionMessage)
+//   return handlers
+// }
 
-const patch = init([
-  propsModule,
-  attributesModule,
-  classModule,
-  eventListenersModule
-])
+// const store = createStore(createReducer(display), applyMiddleware(effectMiddleware(effectHandlers())))
 
-const appRoot = document.getElementById("app")
+// const patch = init([
+//   propsModule,
+//   attributesModule,
+//   classModule,
+//   eventListenersModule
+// ])
 
-if (appRoot) {
-  document.body.addEventListener("displayMessage", (evt) => {
-    const displayMessageEvent = evt as CustomEvent<any>
-    store.dispatch(displayMessageEvent.detail)
-  })
+// const appRoot = document.getElementById("app")
 
-  let oldNode: Element | VNode = appRoot
-  const handleUpdate = () => {
-    oldNode = patch(oldNode, display.view(store.getState()))
-  }
-  store.subscribe(handleUpdate)
+// if (appRoot) {
+//   document.body.addEventListener("displayMessage", (evt) => {
+//     const displayMessageEvent = evt as CustomEvent<any>
+//     store.dispatch(displayMessageEvent.detail)
+//   })
 
-  if (display.subscription) {
-    store.subscribe(() => {
-      display.subscription?.(store.getState(), store.dispatch)
-    })
-  }
+//   let oldNode: Element | VNode = appRoot
+//   const handleUpdate = () => {
+//     oldNode = patch(oldNode, display.view(store.getState()))
+//   }
+//   store.subscribe(handleUpdate)
 
-  handleUpdate()
-}
+//   if (display.subscription) {
+//     store.subscribe(() => {
+//       display.subscription?.(store.getState(), store.dispatch)
+//     })
+//   }
+
+//   handleUpdate()
+// }
