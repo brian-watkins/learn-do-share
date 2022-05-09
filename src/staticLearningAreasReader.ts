@@ -4,7 +4,7 @@ import { LearningAreaCategory } from "./leanringAreaCategory.js";
 import { LearningArea } from "./learningAreas.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
 
-const learningAreas = [
+const learningAreas: Array<AreaToEngage> = [
   {
     id: "area-1",
     title: "Test-Driven Development",
@@ -63,6 +63,6 @@ export class StaticLearningAreaReader implements LearningAreaReader {
 
 export class StaticLearningAreasReader implements LearningAreasReader {
   async read(): Promise<LearningArea[]> {
-    return learningAreas
+    return learningAreas.map(({ content, ...props }: AreaToEngage) => props)
   }
 }
