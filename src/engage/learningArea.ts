@@ -1,4 +1,4 @@
-import { LearningAreaCategory } from "../leanringAreaCategory"
+import { LearningAreaCategory } from "../learningAreaCategory"
 import * as Html from "../../display/markup"
 import { decorate, markdownToHTML } from "../util/markdownParser"
 

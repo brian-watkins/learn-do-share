@@ -5,7 +5,7 @@ import https from 'https'
 import { ResetableEngagementPlanRepo } from "./testStore"
 import { LearningAreasReader } from "../src/readLearningAreas"
 import { TestServer } from "./testServer"
-import { LearningAreaCategory } from "../src/leanringAreaCategory"
+import { LearningAreaCategory } from "../src/learningAreaCategory"
 import { LearningAreaReader } from "../src/engage/learningAreaReader"
 import { LearningArea as EngageLearningArea } from "../src/engage/learningArea"
 

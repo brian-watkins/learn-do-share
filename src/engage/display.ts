@@ -3,7 +3,7 @@ import { DisplayConfig } from "../../display/display"
 import { LearningArea, learningAreaContentView, learningAreaTitleView } from "./learningArea"
 import { User } from "../../api/common/user"
 import { engagementPlansView, increaseEngagementButton, PersonalizedLearningArea } from "./personalizedLearningArea"
-import { EngagementPlanPersisted, EngagementPlansDeleted } from "../writeEngagementPlans"
+import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 
 export interface Informative {
   type: "informative"

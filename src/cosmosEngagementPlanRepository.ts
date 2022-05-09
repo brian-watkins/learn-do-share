@@ -2,7 +2,7 @@ import { BulkOperationType, Container, CosmosClient, CosmosClientOptions, Databa
 import { User } from "../api/common/user";
 import { EngagementPlan } from "./engagementPlans";
 import { EngagementPlanReader } from "./readEngagementPlans";
-import { EngagementPlanWriter } from "./writeEngagementPlans";
+import { EngagementPlanWriter } from "./engage/writeEngagementPlans";
 
 export interface CosmosConfig extends CosmosClientOptions {
   endpoint: string

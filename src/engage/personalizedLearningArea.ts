@@ -1,6 +1,6 @@
 import * as Html from "../../display/markup"
 import { EngagementLevel, engagementPlan } from "../engagementPlans"
-import { deleteEngagementPlans, writeEngagementPlan } from "../writeEngagementPlans"
+import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
 
 export interface PersonalizedLearningArea extends LearningArea {

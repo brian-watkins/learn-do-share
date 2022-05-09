@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { behavior, condition, effect, example, pick, step } from "esbehavior";
-import { LearningAreaCategory } from "../src/leanringAreaCategory";
+import { LearningAreaCategory } from "../src/learningAreaCategory";
 import { selectLearningArea } from "./steps";
 import { FakeLearningArea, testContext } from "./testApp";
 import { contentArea, title } from "./testDisplay";

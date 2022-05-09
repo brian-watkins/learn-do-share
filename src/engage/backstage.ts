@@ -1,8 +1,7 @@
 import { Backstage, BackstageContext } from "../../api/backstage/backstage.js";
 import { User } from "../../api/common/user.js";
-import { EngageContext } from "../../api/engage/render"
 import { EngagementPlanReader } from "../readEngagementPlans.js";
-import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "../writeEngagementPlans.js";
+import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
 
@@ -27,6 +26,10 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
       await adapters.engagementPlanWriter.deleteAll(user, message.learningArea)
       return engagementPlansDeleted(message.learningArea)
   }
+}
+
+export interface EngageContext {
+  learningAreaId: string
 }
 
 const initialState = (adapters: Adapters) => async (context: BackstageContext<EngageContext>): Promise<Model> => {

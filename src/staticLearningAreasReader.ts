@@ -1,6 +1,6 @@
 import { LearningArea as AreaToEngage } from "./engage/learningArea.js";
 import { LearningAreaReader } from "./engage/learningAreaReader.js";
-import { LearningAreaCategory } from "./leanringAreaCategory.js";
+import { LearningAreaCategory } from "./learningAreaCategory.js";
 import { LearningArea } from "./learningAreas.js";
 import { LearningAreasReader } from "./readLearningAreas.js";
 
