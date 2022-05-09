@@ -23,22 +23,21 @@ const adapters: Adapters = {
 const backstage = initBackstage(adapters)
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+  // this needs to be consolidate with the local version
+  const url = new URL(req.headers["x-ms-original-url"] as string)
+  const areaId = url.pathname.split("/").pop() ?? ""
+
   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
 
-  console.log("Path", req.url)
-  console.log("Query", req.query)
-  console.log("Headers", req.headers)
-
-  const learningAreaId = context.bindingData.learningAreaId
-
-  const html = await renderTemplate(backstage, template, azureUserParser(req, context), learningAreaId)
+  const html = await renderTemplate(backstage, template, azureUserParser(req, context), areaId)
 
   context.res = {
     headers: {
-      "Content-Type": "text/html"
+      'Content-Type': 'text/html',
+      'Cache-Control': 'no-store'
     },
     body: html
-  };
+  }
 };
 
 export default httpTrigger;

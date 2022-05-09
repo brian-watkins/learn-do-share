@@ -30,17 +30,8 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
 
   app.post('/api/backstage', async (req, res) => {
     const user = azureUserParser(normalizeRequest(req))
-
-    // if (req.body.type === "_backstage-reload-initial-state") {
-      // const initialState = await backstage.initialState({ user, attributes: null })
-      // res.send({
-        // type: "_backstage-refresh-with-initial-state",
-        // state: initialState
-      // })
-    // } else {
-      const result = await engageBackstage.messageHandler(user, req.body)
-      res.send(result)  
-    // }
+    const result = await engageBackstage.messageHandler(user, req.body)
+    res.send(result)
   })
 
   app.use(vite.middlewares)
