@@ -4,7 +4,7 @@ import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRe
 import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader";
 import fs from "fs"
 import path from "path"
-import { renderTemplate } from "./render";
+import { renderTemplate } from "../common/render";
 import { azureUserParser } from "../common/azureUserParser";
 
 const cosmosDB = new CosmosEngagementPlanRepository({
@@ -24,7 +24,7 @@ const backstage = initBackstage(adapters)
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
 
-  const html = await renderTemplate(backstage, template, azureUserParser(req, context))
+  const html = await renderTemplate(backstage, template, { user: azureUserParser(req, context), attributes: null })
 
   context.res = {
     headers: {

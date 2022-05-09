@@ -9,7 +9,7 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-const initialState = (adapters: Adapters) => async (context: BackstageContext<null>): Promise<AppModel> => {
+const initialState = (adapters: Adapters) => async (context: BackstageContext<never>): Promise<AppModel> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
   if (context.user === null) {
@@ -43,7 +43,7 @@ function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Arra
   return map
 }
 
-export function initBackstage(adapters: Adapters): Backstage<null, never, AppModel> {
+export function initBackstage(adapters: Adapters): Backstage<never, never, AppModel> {
   return {
     messageHandler: () => Promise.reject("unused"),
     initialState: initialState(adapters)

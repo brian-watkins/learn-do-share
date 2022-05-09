@@ -3,8 +3,7 @@ import { Adapters, initBackstage } from "../../src/backstage"
 import { Adapters as EngageAdapters, initBackstage as initEngageBackstage } from "../../src/engage/backstage"
 import { createServer as createViteServer } from "vite"
 import fs from "fs"
-import { renderTemplate } from "../../api/root/render"
-import { renderTemplate as renderEngage } from "../../api/engage/render"
+import { renderTemplate } from "../../api/common/render"
 import { azureUserParser, Request } from "../../api/common/azureUserParser"
 import { IncomingMessage } from "http"
 
@@ -42,7 +41,10 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
     try {
       let template = fs.readFileSync("./src/index.html", 'utf-8')
 
-      const html = await renderTemplate(backstage, template, azureUserParser(normalizeRequest(req)))
+      const html = await renderTemplate(backstage, template, {
+        user: azureUserParser(normalizeRequest(req)),
+        attributes: null
+      })
 
       res.status(200).set({
         'Content-Type': 'text/html',
@@ -62,7 +64,12 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
     try {
       let template = fs.readFileSync("./src/engage/index.html", 'utf-8')
 
-      const html = await renderEngage(engageBackstage, template, azureUserParser(normalizeRequest(req)), areaId)
+      const html = await renderTemplate(engageBackstage, template, {
+        user: azureUserParser(normalizeRequest(req)), 
+        attributes: {
+          learningAreaId: areaId
+        }
+      })
 
       res.status(200).set({
         'Content-Type': 'text/html',
