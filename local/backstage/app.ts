@@ -1,11 +1,11 @@
 import express, { Express } from "express"
-import { Adapters, initBackstage } from "../../src/backstage"
-import { Adapters as EngageAdapters, initBackstage as initEngageBackstage } from "../../src/engage/backstage"
+import { Adapters } from "../../src/backstage"
+import { Adapters as EngageAdapters } from "../../src/engage/backstage"
 import { createServer as createViteServer } from "vite"
-import fs from "fs"
-import { renderTemplate } from "../../api/common/render"
-import { azureUserParser, Request } from "../../api/common/azureUserParser"
-import { IncomingMessage } from "http"
+import { AzureFunctionAdapter } from "./azureFunctionAdapter"
+import { generateEngageFunction } from "../../api/engage/function"
+import { generateRootFunction } from "../../api/root/function"
+import { generateBackstageFunction } from "../../api/backstage/function"
 
 const vite = await createViteServer({
   server: { middlewareMode: 'ssr' }
@@ -25,56 +25,32 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
     res.json([{ config: { bindings: [{ type: "httpTrigger" }] } }])
   })
 
-  const engageBackstage = initEngageBackstage(adapters)
+  const backstageFunctionAdapter = new AzureFunctionAdapter(generateBackstageFunction(adapters))
 
   app.post('/api/backstage', async (req, res) => {
-    const user = azureUserParser(normalizeRequest(req))
-    const result = await engageBackstage.messageHandler(user, req.body)
-    res.send(result)
+    await backstageFunctionAdapter.run(req, res)
   })
 
   app.use(vite.middlewares)
 
-  const backstage = initBackstage(adapters)
+  const rootFunctionAdapter = new AzureFunctionAdapter(generateRootFunction(adapters))
+  rootFunctionAdapter.context.executionContext.functionDirectory = "./src"
 
   app.use("/api/root", async (req, res, next) => {
     try {
-      let template = fs.readFileSync("./src/index.html", 'utf-8')
-
-      const html = await renderTemplate(backstage, template, {
-        user: azureUserParser(normalizeRequest(req)),
-        attributes: null
-      })
-
-      res.status(200).set({
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-store',
-      }).end(html)
+      await rootFunctionAdapter.run(req, res)
     } catch (err: any) {
       vite.ssrFixStacktrace(err)
       next(err)
     }
   })
 
+  const engageFunctionAdapter = new AzureFunctionAdapter(generateEngageFunction(adapters))
+  engageFunctionAdapter.context.executionContext.functionDirectory = "./src/engage"
 
   app.use("/api/engage", async (req, res, next) => {
-    const url = new URL(req.headers["x-ms-original-url"] as string)
-    const areaId = url.pathname.split("/").pop() ?? ""
-
     try {
-      let template = fs.readFileSync("./src/engage/index.html", 'utf-8')
-
-      const html = await renderTemplate(engageBackstage, template, {
-        user: azureUserParser(normalizeRequest(req)), 
-        attributes: {
-          learningAreaId: areaId
-        }
-      })
-
-      res.status(200).set({
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-store'
-      }).end(html)
+      await engageFunctionAdapter.run(req, res)
     } catch (err: any) {
       vite.ssrFixStacktrace(err)
       next(err)
@@ -82,15 +58,4 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   })
 
   return app
-}
-
-function normalizeRequest(req: IncomingMessage): Request {
-  let headers: { [name: string]: string } = {}
-  for (let i = 0; i < req.rawHeaders.length; i = i + 2) {
-    headers[req.rawHeaders[i].toLowerCase()] = req.rawHeaders[i + 1]
-  }
-
-  return {
-    headers
-  }
 }

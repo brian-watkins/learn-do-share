@@ -1,8 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { StaticLearningAreaReader } from "../../src/staticLearningAreasReader"
-import { Adapters, initBackstage } from "../../src/engage/backstage"
+import { Adapters } from "../../src/engage/backstage"
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository"
-import { azureUserParser } from "../common/azureUserParser.js"
+import { generateBackstageFunction } from "./function"
 
 const cosmosDB = new CosmosEngagementPlanRepository({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
@@ -17,14 +16,4 @@ const adapters: Adapters = {
   engagementPlanWriter: cosmosDB
 }
 
-const backstage = initBackstage(adapters)
-
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-  const result = await backstage.messageHandler(azureUserParser(req, context), req.body)
-
-  context.res = {
-    body: result
-  };
-};
-
-export default httpTrigger;
+export default generateBackstageFunction(adapters)

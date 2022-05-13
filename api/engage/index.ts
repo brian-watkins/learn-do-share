@@ -1,11 +1,7 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Adapters, initBackstage } from "../../src/engage/backstage";
+import { Adapters } from "../../src/engage/backstage";
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository";
 import { StaticLearningAreaReader } from "../../src/staticLearningAreasReader";
-import fs from "fs"
-import path from "path"
-import { azureUserParser } from "../common/azureUserParser";
-import { renderTemplate } from "../common/render";
+import { generateEngageFunction } from "./function";
 
 const cosmosDB = new CosmosEngagementPlanRepository({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
@@ -20,29 +16,4 @@ const adapters: Adapters = {
   engagementPlanWriter: cosmosDB
 }
 
-const backstage = initBackstage(adapters)
-
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-  // this needs to be consolidate with the local version
-  const url = new URL(req.headers["x-ms-original-url"] as string)
-  const areaId = url.pathname.split("/").pop() ?? ""
-
-  let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
-
-  const html = await renderTemplate(backstage, template, {
-    user: azureUserParser(req, context),
-    attributes: {
-      learningAreaId: areaId
-    }
-  })
-
-  context.res = {
-    headers: {
-      'Content-Type': 'text/html',
-      'Cache-Control': 'no-store'
-    },
-    body: html
-  }
-};
-
-export default httpTrigger;
+export default generateEngageFunction(adapters)
