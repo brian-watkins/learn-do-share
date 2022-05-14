@@ -769,3 +769,89 @@ exposed AzureFunction and then there's an AzureFunctionAdapter that adapts this
 to run in an express route with express request and response objects. So now we
 should not have to change the local server as much, and we are exercising the
 very same code that will run in production.
+
+
+### Cleaning things up a bit
+
+The `Backstage` abstraction had functions for both getting the initial state and
+performing backstage actions. But these are two totally separate cases, and some
+pages might not even need to do both. So, we separated these out into two
+distinct things. Now, a page can expose a function to create a
+`BackstageRenderer` -- which right now just has a function to get the initial
+state. And a separate function to create a `Backstage` which handles messages
+from the display.
+
+We could probably improve the `BackstageRenderer` abstraction. Right now there's
+some common code in the API that handles fetching the template and replacing
+some text with the stringified initial state. This feels like it is not Azure
+specific and so could be abstracted away somehow. 
+
+The other thing we did was to introduce another source directory called
+`overview`. So now, there is `engage` and `overview` as the main pages of the
+app. And because we run requests for pages through the backstage renderers, we
+effectively have decoupled the pages of our app from how they appear in the UI,
+ie what order or at what url. This is interesting but might be kind of weird as
+we add more links among sections of the app.
+
+But it raises an interesting idea ... to what extent should your source code
+care about the navigation and structure of the app. Maybe that too is more a
+function of how the app is deployed. The structure of your source code perhaps
+should allow you to understand what the application does and just make it easy
+to find things. The important thing is to have certain capabilities available.
+How those capabilities are wired together could/should be externalized. (maybe
+this is kind of what azure functions does with the `function.json` file)
+
+But there are a few problems to consider with this:
+
+1. How do we handle `shared` things. For example, each page needs to display the
+logged in user, and should do so in a similar way. Is that a different
+capability? Or do we have a folder of shared things? 
+2. What about adapters and other parts of the system that touch the outside
+world? Some of these things may be tied to the deployment environment (we
+probably would not use CosmosDB if we were not deploying to Azure, for example).
+So maybe they should be outside the src directory? But then should there be a
+top level directory called adapters?
+
+I think for (2) we probably do want a top-level directory. And maybe we call
+that directory `azure` -- ie call it after the deployment environment. It would
+contain all the serverless function stuff and deployment-environment-specific
+adapters.
+
+For (1) I think the idea is to have a shared function probably. The alternative
+would probably be to have something like a frame that capabilities fit into. And
+so the page html itself might get more complicated. Or something like that ...
+displaying the user/logging out/logging in seems like a very simple 'application
+capability'. Why can't you have multiple capabilities on a page? (This is what
+remix does I think)
+
+So in that case there would be another capability (another folder) called
+'auth' or something.
+
+But how would you put these capabilities together on the page, and how would
+they get the necessary initial state etc? 
+
+There's another kind of shared thing too ... constants like
+`LearningAreaCategory` and `EngagementLevel`. These are basically strings or
+identifiers that both capabilities need. We could duplicate them but then it
+seems like that would make things harder to change since they need to stay in
+sync.
+
+I have less problem duplicating data types. So I think there's a difference here
+between values and shapes ... we have `LearningArea` repeated. But in one case
+it contains a `content` attribute and in the other it does not.
+
+One thing to consider is that the type may not matter. In some cases, maybe we
+just treat the engagement level like a string. In other cases, maybe it's
+important to make it typed, if we have to do stuff with it. 
+
+So, for now, only in the engage capability will I have typed values for
+`EngagementLevel`; for the overview capability this will still be its own type
+but it will just be a type alias for a `string`. And, similarly, for the
+`LearningAreaCategory` type ... this will only be a typed value for the overview
+capability; for engage it will be a string.
+
+So, on one view we are duplicating code ... but actually we just have different
+types with the same names. This is similar to what we do with the shape of data.
+There are two types called `LearningArea` but they actually have different
+properties depending on what the capability they are associated with actually
+needs. 
