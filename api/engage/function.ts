@@ -13,7 +13,7 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
     const url = new URL(req.headers["x-ms-original-url"] as string)
     const areaId = url.pathname.split("/").pop() ?? ""
   
-    let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
+    let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
   
     const html = await renderTemplate(renderer, template, {
       user: azureUserParser(req, context),

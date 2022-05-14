@@ -34,7 +34,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   app.use(vite.middlewares)
 
   const rootFunctionAdapter = new AzureFunctionAdapter(generateRootFunction(adapters))
-  rootFunctionAdapter.context.executionContext.functionDirectory = "./src/overview"
+  rootFunctionAdapter.context.executionContext.functionDirectory = "./src"
 
   app.use("/api/root", async (req, res, next) => {
     try {
@@ -46,7 +46,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   })
 
   const engageFunctionAdapter = new AzureFunctionAdapter(generateEngageFunction(adapters))
-  engageFunctionAdapter.context.executionContext.functionDirectory = "./src/engage"
+  engageFunctionAdapter.context.executionContext.functionDirectory = "./src"
 
   app.use("/api/engage", async (req, res, next) => {
     try {

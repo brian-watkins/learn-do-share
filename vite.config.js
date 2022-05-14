@@ -7,18 +7,11 @@ import { fileURLToPath } from 'url';
  */
 const config = {
   root: "./src",
-  // server: {
-    // port: 7663,
-    // open: true,
-    // proxy: {
-      // "/api/backstage": "http://localhost:7664"
-    // }
-  // },
   build: {
     rollupOptions: {
       input: {
-        main: path.resolve(dirname(), "src/overview/index.html"),
-        engage: path.resolve(dirname(), "src/engage/index.html")
+        main: path.resolve(dirname(), "src/index.html"),
+        engage: path.resolve(dirname(), "src/engage.html")
       }
     },
     outDir: "../build/display",
@@ -26,8 +19,8 @@ const config = {
     sourcemap: true
   },
   plugins: [
-    copyHtml("overview/index.html", "./api/root/index.html"),
-    copyHtml("engage/index.html", "./api/engage/index.html")
+    copyHtml("index.html", "./api/root/index.html"),
+    copyHtml("engage.html", "./api/engage/engage.html")
   ]
 }
 
