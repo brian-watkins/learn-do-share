@@ -1,13 +1,13 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { renderTemplate } from "../common/render";
 import { azureUserParser } from "../common/azureUserParser";
-import { Adapters, initBackstage } from "../../src/engage/backstage";
+import { Adapters, initRenderer } from "../../src/engage/backstage";
 import fs from "fs"
 import path from "path"
 
 
 export function generateEngageFunction(adapters: Adapters): AzureFunction {
-  const backstage = initBackstage(adapters)
+  const renderer = initRenderer(adapters)
 
   return async function (context: Context, req: HttpRequest): Promise<void> {
     const url = new URL(req.headers["x-ms-original-url"] as string)
@@ -15,7 +15,7 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
   
     let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
   
-    const html = await renderTemplate(backstage, template, {
+    const html = await renderTemplate(renderer, template, {
       user: azureUserParser(req, context),
       attributes: {
         learningAreaId: areaId

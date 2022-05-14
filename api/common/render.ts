@@ -1,7 +1,16 @@
-import { Backstage, BackstageContext } from "../backstage/backstage"
+import { User } from "./user"
 
-export async function renderTemplate<C, T, M>(backstage: Backstage<C, T, M>, template: string, context: BackstageContext<C>): Promise<string> {
-  const state = await backstage.initialState(context)
+export interface RenderContext<C> {
+  user: User | null
+  attributes: C
+}
+
+export interface BackstageRenderer<C, M> {
+  initialState(context: RenderContext<C>): Promise<M>
+}
+
+export async function renderTemplate<C, M>(renderer: BackstageRenderer<C, M>, template: string, context: RenderContext<C>): Promise<string> {
+  const state = await renderer.initialState(context)
 
   const content = `window._display_initial_state = ${JSON.stringify(state)};`
 

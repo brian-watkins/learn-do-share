@@ -1,13 +1,13 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { renderTemplate } from "../common/render";
 import { azureUserParser } from "../common/azureUserParser";
-import { Adapters, initBackstage } from "../../src/backstage";
+import { Adapters, initRenderer } from "../../src/backstage";
 import fs from "fs"
 import path from "path"
 
 
 export function generateRootFunction(adapters: Adapters): AzureFunction {
-  const backstage = initBackstage(adapters)
+  const backstage = initRenderer(adapters)
 
   return async function (context: Context, req: HttpRequest): Promise<void> {
     let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')

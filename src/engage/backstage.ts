@@ -1,9 +1,10 @@
-import { Backstage, BackstageContext } from "../../api/backstage/backstage.js";
+import { Backstage } from "../../api/backstage/backstage.js";
 import { User } from "../../api/common/user.js";
 import { EngagementPlanReader } from "../readEngagementPlans.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
+import { BackstageRenderer, RenderContext } from "../../api/common/render.js";
 
 export interface Adapters {
   learningAreaReader: LearningAreaReader
@@ -32,7 +33,7 @@ export interface EngageContext {
   learningAreaId: string
 }
 
-const initialState = (adapters: Adapters) => async (context: BackstageContext<EngageContext>): Promise<Model> => {
+const initialState = (adapters: Adapters) => async (context: RenderContext<EngageContext>): Promise<Model> => {
   const learningArea = await adapters.learningAreaReader.read(context.attributes.learningAreaId)
 
   if (learningArea == null) {
@@ -62,9 +63,14 @@ const initialState = (adapters: Adapters) => async (context: BackstageContext<En
   }
 }
 
-export function initBackstage(adapters: Adapters): Backstage<EngageContext, any, Model> {
+export function initRenderer(adapters: Adapters): BackstageRenderer<EngageContext, Model> {
   return {
-    messageHandler: update(adapters),
     initialState: initialState(adapters)
+  }
+}
+
+export function initBackstage(adapters: Adapters): Backstage<any> {
+  return {
+    messageHandler: update(adapters)
   }
 }

@@ -1,4 +1,4 @@
-import { Backstage, BackstageContext } from "../api/backstage/backstage.js";
+import { BackstageRenderer, RenderContext } from "../api/common/render.js";
 import { AppModel } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
 import { EngagementPlanReader } from "./readEngagementPlans.js";
@@ -9,7 +9,7 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-const initialState = (adapters: Adapters) => async (context: BackstageContext<never>): Promise<AppModel> => {
+const initialState = (adapters: Adapters) => async (context: RenderContext<never>): Promise<AppModel> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
   if (context.user === null) {
@@ -43,9 +43,8 @@ function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Arra
   return map
 }
 
-export function initBackstage(adapters: Adapters): Backstage<never, never, AppModel> {
+export function initRenderer(adapters: Adapters): BackstageRenderer<never, AppModel> {
   return {
-    messageHandler: () => Promise.reject("unused"),
     initialState: initialState(adapters)
   }
 }
