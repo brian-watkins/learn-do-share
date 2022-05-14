@@ -1,4 +1,4 @@
-import { LearningArea } from "./learningAreas"
+import { LearningArea } from "./learningArea"
 
 export enum EngagementLevel {
   None = "none",

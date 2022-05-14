@@ -1,8 +1,8 @@
 import { LearningArea as AreaToEngage } from "./engage/learningArea.js";
 import { LearningAreaReader } from "./engage/learningAreaReader.js";
-import { LearningAreaCategory } from "./learningAreaCategory.js";
-import { LearningArea } from "./learningAreas.js";
-import { LearningAreasReader } from "./readLearningAreas.js";
+import { LearningAreaCategory } from "./overview/learningAreaCategory.js";
+import { LearningArea } from "./overview/learningAreas.js";
+import { LearningAreasReader } from "./overview/backstage";
 
 const learningAreas: Array<AreaToEngage> = [
   {
@@ -63,6 +63,6 @@ export class StaticLearningAreaReader implements LearningAreaReader {
 
 export class StaticLearningAreasReader implements LearningAreasReader {
   async read(): Promise<LearningArea[]> {
-    return learningAreas.map(({ content, ...props }: AreaToEngage) => props)
+    return learningAreas.map(({ content, ...props }) => props as LearningArea)
   }
 }

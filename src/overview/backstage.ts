@@ -1,8 +1,16 @@
-import { BackstageRenderer, RenderContext } from "../api/common/render.js";
+import { BackstageRenderer, RenderContext } from "../../api/common/render.js";
 import { AppModel } from "./app.js";
-import { EngagementLevel, EngagementPlan } from "./engagementPlans.js";
-import { EngagementPlanReader } from "./readEngagementPlans.js";
-import { LearningAreasReader } from "./readLearningAreas.js";
+import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans.js";
+import { User } from "../../api/common/user.js";
+import { LearningArea } from "./learningAreas.js";
+
+export interface EngagementPlanReader {
+  read(user: User): Promise<Array<EngagementPlan>>
+}
+
+export interface LearningAreasReader {
+  read(): Promise<Array<LearningArea>>
+}
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader

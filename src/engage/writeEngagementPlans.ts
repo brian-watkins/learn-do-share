@@ -1,7 +1,7 @@
 import { User } from "../../api/common/user"
 import { BackstageMessage, backstageMessage } from "../../display/backstage"
-import { EngagementPlan } from "../engagementPlans"
-import { LearningArea } from "../learningAreas"
+import { EngagementPlan } from "./engagementPlans"
+import { LearningArea } from "./learningArea"
 
 export interface EngagementPlanWriter {
   write(user: User, plan: EngagementPlan): Promise<EngagementPlan>

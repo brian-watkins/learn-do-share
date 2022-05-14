@@ -1,5 +1,5 @@
 import * as Html from "../../display/markup"
-import { EngagementLevel, engagementPlan } from "../engagementPlans"
+import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
 
@@ -8,27 +8,11 @@ export interface PersonalizedLearningArea extends LearningArea {
 }
 
 export function engagementPlansView(engagementLevels: Array<EngagementLevel>): Html.ViewChild {
-  let levelViews: Array<Html.ViewChild> = []
-
-  for (const level of engagementLevels) {
-    switch (level) {
-      case EngagementLevel.Doing:
-        levelViews.push(engagementPlanView("Doing"))
-        break
-      case EngagementLevel.Learning:
-        levelViews.push(engagementPlanView("Learning"))
-        break
-      case EngagementLevel.Sharing:
-        levelViews.push(engagementPlanView("Sharing"))
-        break
-    }
-  }
-
   return Html.div([
     Html.cssClassList([
       { "grow": true }
     ])
-  ], levelViews)
+  ], engagementLevels.map(engagementPlanView))
 }
 
 function engagementPlanView(level: string): Html.ViewChild {
@@ -42,7 +26,8 @@ function engagementPlanView(level: string): Html.ViewChild {
       { "rounded": true },
       { "text-neutral-50": true },
       { "w-auto": true },
-      { "inline-block": true }
+      { "inline-block": true },
+      { "capitalize": true }
     ]),
     Html.data("engagement-indicator")
   ], [

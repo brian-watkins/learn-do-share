@@ -1,4 +1,4 @@
-import * as Html from "../display/markup"
+import * as Html from "../../display/markup"
 
 export enum LearningAreaCategory {
   Team = "team",

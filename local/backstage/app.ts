@@ -1,5 +1,5 @@
 import express, { Express } from "express"
-import { Adapters } from "../../src/backstage"
+import { Adapters } from "../../src/overview/backstage"
 import { Adapters as EngageAdapters } from "../../src/engage/backstage"
 import { createServer as createViteServer } from "vite"
 import { AzureFunctionAdapter } from "./azureFunctionAdapter"
@@ -34,7 +34,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   app.use(vite.middlewares)
 
   const rootFunctionAdapter = new AzureFunctionAdapter(generateRootFunction(adapters))
-  rootFunctionAdapter.context.executionContext.functionDirectory = "./src"
+  rootFunctionAdapter.context.executionContext.functionDirectory = "./src/overview"
 
   app.use("/api/root", async (req, res, next) => {
     try {

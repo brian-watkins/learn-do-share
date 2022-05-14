@@ -1,4 +1,3 @@
-import { Adapters } from "../../src/backstage.js";
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository.js";
 import { StaticLearningAreaReader, StaticLearningAreasReader } from "../../src/staticLearningAreasReader.js"
 import { createServer } from "./app.js";

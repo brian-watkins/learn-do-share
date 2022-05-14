@@ -1,6 +1,7 @@
-import { LearningAreaCategory } from "../learningAreaCategory"
 import * as Html from "../../display/markup"
 import { decorate, markdownToHTML } from "../util/markdownParser"
+
+type LearningAreaCategory = string
 
 export interface LearningArea {
   id: string

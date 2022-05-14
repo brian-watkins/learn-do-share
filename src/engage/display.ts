@@ -51,7 +51,7 @@ function view(model: Model): Html.View {
   switch (model.type) {
     case "unknown-area":
       return Html.div([], [
-        Html.text("Not done yet!")
+        Html.text("UNKNOWN LEARNING AREA!! WHAT!?!?!")
       ])
     case "informative":
       return Html.article([], [

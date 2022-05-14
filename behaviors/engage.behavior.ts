@@ -139,12 +139,12 @@ function increaseEngagementLevel(learningArea: TestLearningArea, engagementLevel
 
 function engagementLevelSelected(learningArea: TestLearningArea, indicator: string): Effect<TestContext> {
   return effect(`Engagement level '${indicator}' shown for Learning Area ${learningArea.testId}`, async (testContext) => {
-    const engagementTextIsVisible = await testContext.display
+    const engagementTexts = await testContext.display
       .select('article', { withText: learningArea.title })
-      .selectDescendant('[data-engagement-indicator]', { withText: indicator })
-      .isVisible()
+      .selectAllDescendants('[data-engagement-indicator]')
+      .mapElements(el => el.text())
 
-    expect(engagementTextIsVisible).to.be.true
+    expect(engagementTexts).to.include(indicator)
   })
 }
 

@@ -17,7 +17,7 @@ const config = {
   build: {
     rollupOptions: {
       input: {
-        main: path.resolve(dirname(), "src/index.html"),
+        main: path.resolve(dirname(), "src/overview/index.html"),
         engage: path.resolve(dirname(), "src/engage/index.html")
       }
     },
@@ -26,7 +26,7 @@ const config = {
     sourcemap: true
   },
   plugins: [
-    copyHtml("index.html", "./api/root/index.html"),
+    copyHtml("overview/index.html", "./api/root/index.html"),
     copyHtml("engage/index.html", "./api/engage/index.html")
   ]
 }

@@ -1,6 +1,6 @@
-import * as Html from "../display/markup"
+import * as Html from "../../display/markup"
 import { LearningAreaCategory, learningAreaCategoryView } from "./learningAreaCategory"
-import { cardView } from "./viewElements"
+import { cardView } from "../viewElements"
 
 export interface LearningArea {
   id: string

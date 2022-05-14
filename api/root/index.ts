@@ -1,4 +1,4 @@
-import { Adapters } from "../../src/backstage";
+import { Adapters } from "../../src/overview/backstage";
 import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository";
 import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader";
 import { generateRootFunction } from "./function";

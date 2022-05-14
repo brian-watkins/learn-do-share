@@ -1,6 +1,6 @@
 import display from "./app"
-import { AppDisplay } from "../display/display"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+import { AppDisplay } from "../../display/display";
 
 const appInsights = new ApplicationInsights({
   config: {

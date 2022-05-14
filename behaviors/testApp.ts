@@ -1,13 +1,13 @@
 import { Context } from "esbehavior"
-import { LearningArea } from "../src/learningAreas"
+import { LearningArea } from "../src/overview/learningAreas"
 import { TestDisplay } from "./testDisplay"
 import https from 'https'
 import { ResetableEngagementPlanRepo } from "./testStore"
-import { LearningAreasReader } from "../src/readLearningAreas"
 import { TestServer } from "./testServer"
-import { LearningAreaCategory } from "../src/learningAreaCategory"
+import { LearningAreaCategory } from "../src/overview/learningAreaCategory"
 import { LearningAreaReader } from "../src/engage/learningAreaReader"
 import { LearningArea as EngageLearningArea } from "../src/engage/learningArea"
+import { LearningAreasReader } from "../src/overview/backstage"
 
 export function testContext(): Context<TestContext> {
   return {
@@ -79,7 +79,7 @@ class FakeLearningAreaReader implements LearningAreaReader {
   public areas: TestLearningArea[] = []
 
   async read(id: string): Promise<EngageLearningArea | null> {
-    return this.areas.filter(area => area.id === id).map(toLearningArea)[0] ?? null
+    return this.areas.filter(area => area.id === id).map(toAreaToEngage)[0] ?? null
   }
 }
 
@@ -109,10 +109,18 @@ export class TestLearningArea implements LearningArea {
   }
 }
 
-function toLearningArea(area: TestLearningArea): EngageLearningArea {
+function toAreaToEngage(area: TestLearningArea): EngageLearningArea {
   return {
     id: area.id,
     content: area.content,
+    title: area.title,
+    category: area.category
+  }
+}
+
+function toLearningArea(area: TestLearningArea): LearningArea {
+  return {
+    id: area.id,
     title: area.title,
     category: area.category
   }

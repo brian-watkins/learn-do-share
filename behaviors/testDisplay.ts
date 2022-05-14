@@ -23,11 +23,11 @@ export class TestDisplay {
   }
 
   select(selector: string, options: SelectorOptions = {}): DisplayElement {
-    return DisplayElement.New(this.page!, buildSelector(selector, options))
+    return new DisplayElement(this.page!.locator(buildSelector(selector, options)))
   }
 
   selectAll(selector: string): DisplayElementList {
-    return new DisplayElementList(this.page!, selector)
+    return new DisplayElementList(this.page!.locator(selector))
   }
 }
 
@@ -56,10 +56,6 @@ export interface TypingOptions {
 }
 
 export class DisplayElement {
-  static New(page: Page, selector: string): DisplayElement {
-    return new DisplayElement(page.locator(selector))
-  }
-
   constructor(private locator: Locator) {}
 
   async tagName(): Promise<string> {
@@ -98,7 +94,7 @@ export class DisplayElement {
   }
 
   selectAllDescendants(selector: string): DisplayElementList {
-    return new DisplayElementList(this.locator.page(), selector)
+    return new DisplayElementList(this.locator.locator(selector))
   }
 
   selectDescendantWithText(text: string): DisplayElement {
@@ -107,11 +103,7 @@ export class DisplayElement {
 }
 
 export class DisplayElementList {
-  locator: Locator
-
-  constructor(page: Page, selector: string) {
-    this.locator = page.locator(selector)
-  }
+  constructor(private locator: Locator) {}
 
   async mapElements<T>(handler: (element: DisplayElement) => Promise<T>): Promise<Array<T>> {
     let promises = new Array<Promise<T>>()
