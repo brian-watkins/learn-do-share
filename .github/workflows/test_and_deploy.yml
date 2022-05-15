@@ -37,7 +37,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_KEY }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "azure"
+          app_location: "/"
           api_location: "azure/api"
-          output_location: "build/display"
+          output_location: "azure/build/display"
           app_build_command: "npm run build:display"
