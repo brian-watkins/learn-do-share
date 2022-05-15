@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { behavior, condition, effect, example, pick, step } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
-import { loginUser, selectLearningArea } from "./steps";
+import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext } from "./testApp";
-import { contentArea, title } from "./testDisplay";
+import { contentArea, disciplineLearningAreas, teamLearningAreas, theoryLearningAreas, title } from "./testDisplay";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { Step } from "esbehavior/dist/Assumption";
-import { engagementLevelSelected } from "./effects";
+import { engagementLevelSelected, learningAreaDisplayed } from "./effects";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -14,13 +14,13 @@ const coolLearningArea =
     .withCategory(LearningAreaCategory.Theory)
 
 const superLearningArea =
-  FakeLearningArea(1)
+  FakeLearningArea(2)
     .withTitle("Super Learning Area")
     .withCategory(LearningAreaCategory.Discipline)
     .withContent("Learn this stuff!")
 
 const awesomeLearningArea =
-  FakeLearningArea(1)
+  FakeLearningArea(3)
     .withTitle("Awesome Learning Area")
     .withCategory(LearningAreaCategory.Team)
     .withContent("Learn this stuff!")
@@ -35,6 +35,8 @@ export default
           condition("the app loads the page for a learning area", async (testContext) => {
             await testContext
               .withLearningAreas([
+                coolLearningArea,
+                awesomeLearningArea,
                 superLearningArea
               ])
               .start(`/learning-areas/${superLearningArea.id}`)
@@ -44,6 +46,15 @@ export default
           titleDisplayed("Super Learning Area"),
           contentDisplayed("Learn this stuff!"),
           categoryDisplayed("Discipline")
+        ]
+      }).andThen({
+        perform: [
+          gotoLearningAreas()
+        ],
+        observe: [
+          learningAreaDisplayed(awesomeLearningArea, { in: teamLearningAreas() }),
+          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() }),
+          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() })
         ]
       }),
     example(testContext())
@@ -74,7 +85,8 @@ export default
           condition("the app loads", async (testContext) => {
             await testContext
               .withLearningAreas([
-                coolLearningArea
+                coolLearningArea,
+                superLearningArea
               ])
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Learning)
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Doing)
@@ -91,6 +103,14 @@ export default
           contentDisplayed(coolLearningArea.content),
           engagementLevelSelected(coolLearningArea, "Learning"),
           engagementLevelSelected(coolLearningArea, "Doing"),
+        ]
+      }).andThen({
+        perform: [
+          gotoLearningAreas()
+        ],
+        observe: [
+          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() }),
+          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() })
         ]
       }),
     example(testContext())

@@ -55,27 +55,42 @@ function view(model: Model): Html.View {
       ])
     case "informative":
       return Html.article([], [
+        learningAreasLink(),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
     case "personalized":
       return Html.article([], [
-        Html.div([
-          Html.cssClassList([
-            { "flex": true },
-            { "flex-col": true },
-          ])
-        ], [
-          learningAreaCategoryView(model.learningArea),
-          learningAreaTitleView(model.learningArea),
-          engagementPlansView(model.learningArea),
-        ]),
-        Html.div([], [
-          learningAreaContentView(model.learningArea),
-        ])
+        learningAreasLink(),
+        learningAreaCategoryView(model.learningArea),
+        learningAreaTitleView(model.learningArea),
+        engagementPlansView(model.learningArea),
+        learningAreaContentView(model.learningArea),
       ])
   }
+}
+
+function learningAreasLink(): Html.View {
+  return Html.button([
+    Html.cssClassList([
+      { "mt-8": true },
+      { "mx-16": true },
+      { "px-4": true },
+      { "py-2": true },
+      { "rounded": true },
+      { "border-cyan-800": true },
+      { "border-2": true },
+      { "border-dotted": true },
+      { "text-cyan-800": true },
+      { "font-bold": true },
+      { "block": true }
+    ])
+  ], [
+    Html.a([ Html.href("/") ], [
+      Html.text("All Learning Areas")
+    ])
+  ])
 }
 
 const display: DisplayConfig<Model, any> = {

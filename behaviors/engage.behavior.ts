@@ -1,7 +1,7 @@
 import { behavior, condition, example, step } from "esbehavior";
 import { Step } from "esbehavior/dist/Assumption";
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
-import { loginUser, reloadTheApp, returnToLearningAreas, selectLearningArea } from "./steps";
+import { loginUser, reloadTheApp, goBackToLearningAreas, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
 
 export default
@@ -25,16 +25,16 @@ export default
           loginUser("funny-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
           increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
-          returnToLearningAreas(),
+          goBackToLearningAreas(),
           selectLearningArea(FakeLearningArea(2)),
           increaseEngagementLevel(FakeLearningArea(2), "I'm ready to learn!"),
           increaseEngagementLevel(FakeLearningArea(2), "Let's do it!"),
-          returnToLearningAreas(),
+          goBackToLearningAreas(),
           selectLearningArea(FakeLearningArea(4)),
           increaseEngagementLevel(FakeLearningArea(4), "I'm ready to learn!"),
           increaseEngagementLevel(FakeLearningArea(4), "Let's do it!"),
           increaseEngagementLevel(FakeLearningArea(4), "I'm ready to share!"),
-          returnToLearningAreas()
+          goBackToLearningAreas()
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),

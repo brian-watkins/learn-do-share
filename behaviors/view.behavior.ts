@@ -1,8 +1,8 @@
-import { behavior, condition, effect, example, pick } from "esbehavior"
-import { expect } from "chai"
+import { behavior, condition, example, pick } from "esbehavior"
 import { FakeLearningArea, testContext } from "./testApp"
 import { disciplineLearningAreas, teamLearningAreas, theoryLearningAreas } from "./testDisplay"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
+import { learningAreaDisplayed } from "./effects"
 
 export default
   behavior("viewing items", [
@@ -23,20 +23,11 @@ export default
           )
         ],
         observe: [
-          effect("it shows the team learning areas", async (testContext) => {
-            const text = await testContext.display.select(teamLearningAreas()).text()
-            expect(text).to.contain(FakeLearningArea(1).title)
-            expect(text).to.contain(FakeLearningArea(2).title)
-          }),
-          effect("it shows the discipline learning areas", async (testContext) => {
-            const text = await testContext.display.select(disciplineLearningAreas()).text()
-            expect(text).to.contain(FakeLearningArea(3).title)
-          }),
-          effect("it shows the theory learning areas", async (testContext) => {
-            const text = await testContext.display.select(theoryLearningAreas()).text()
-            expect(text).to.contain(FakeLearningArea(4).title)
-            expect(text).to.contain(FakeLearningArea(5).title)
-          })
+          learningAreaDisplayed(FakeLearningArea(1), { in: teamLearningAreas() }),
+          learningAreaDisplayed(FakeLearningArea(2), { in: teamLearningAreas() }),
+          learningAreaDisplayed(FakeLearningArea(3), { in: disciplineLearningAreas() }),
+          learningAreaDisplayed(FakeLearningArea(4), { in: theoryLearningAreas() }),
+          learningAreaDisplayed(FakeLearningArea(5), { in: theoryLearningAreas() }),
         ]
       })
   ])

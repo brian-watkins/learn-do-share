@@ -23,8 +23,6 @@ export function learningAreaCategoryView(area: LearningArea): Html.ViewChild {
     { "text-neutral-50": true },
     { "border-2": true },
     { "border-fuchsia-500": true },
-    { "w-auto": true },
-    { "inline-block": true },
     { "capitalize": true },
     { "font-bold": true }
   ])], [
@@ -49,7 +47,7 @@ export function learningAreaContentView(area: LearningArea): Html.ViewChild {
     Html.id("learning-area-content"),
     Html.cssClassList([
       { "mx-16": true },
-      { "mt-8": true },
+      { "mt-12": true },
       { "max-w-xl": true },
       { "border-l-8": true },
       { "border-solid": true },

@@ -23,3 +23,18 @@ export function noEngagementLevelsSelected(learningArea: TestLearningArea): Effe
     expect(engagementLevelsHidden).to.not.include(false, "Expected no engagement levels but found some")
   })
 }
+
+export interface LearningAreaDisplayOptions {
+  in: string
+}
+
+const defaultLearningAreaDisplayOptions = {
+  in: "#learning-areas"
+}
+
+export function learningAreaDisplayed(learningArea: TestLearningArea, options: LearningAreaDisplayOptions = defaultLearningAreaDisplayOptions): Effect<TestContext> {
+  return effect(`Learning area '${learningArea.title}' is displayed in the expected category`, async (testContext) => {
+    const teamAreas = await testContext.display.select(options.in).text()
+    expect(teamAreas).to.contain(learningArea.title)
+  })
+}
