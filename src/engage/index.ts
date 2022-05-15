@@ -17,7 +17,7 @@ appInsights.loadAppInsights();
 appInsights.addTelemetryInitializer(function (envelope) {
   envelope.tags!["ai.cloud.role"] = "display";
 });
-appInsights.trackPageView();
+appInsights.trackPageView({ name: "engage" });
 
 const app = new AppDisplay(display)
 app.mount("#app")
