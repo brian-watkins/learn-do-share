@@ -1,5 +1,5 @@
 import { LearningArea, learningAreaTitleView } from "./learningAreas"
-import * as Html from '../../display/markup'
+import * as Html from '@/display/markup'
 import { cardView } from "../viewElements"
 
 type EngagementLevel = string

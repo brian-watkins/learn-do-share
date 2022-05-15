@@ -1,13 +1,13 @@
-import { Context } from "esbehavior"
-import { LearningArea } from "../src/overview/learningAreas"
-import { TestDisplay } from "./testDisplay"
 import https from 'https'
+import { Context } from "esbehavior"
+import { TestDisplay } from "./testDisplay"
 import { ResetableEngagementPlanRepo } from "./testStore"
 import { TestServer } from "./testServer"
-import { LearningAreaCategory } from "../src/overview/learningAreaCategory"
-import { LearningAreaReader } from "../src/engage/learningAreaReader"
-import { LearningArea as EngageLearningArea } from "../src/engage/learningArea"
-import { LearningAreasReader } from "../src/overview/backstage"
+import { LearningArea } from "@/src/overview/learningAreas"
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
+import { LearningAreaReader } from "@/src/engage/learningAreaReader"
+import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea"
+import { LearningAreasReader } from "@/src/overview/backstage"
 
 export function testContext(): Context<TestContext> {
   return {

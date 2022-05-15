@@ -1,9 +1,9 @@
-import { Backstage } from "../../api/backstage/backstage.js";
-import { User } from "../../api/common/user.js";
+import { Backstage } from "@/api/backstage/backstage.js";
+import { User } from "@/api/common/user.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
-import { BackstageRenderer, RenderContext } from "../../api/common/render.js";
+import { BackstageRenderer, RenderContext } from "@/api/common/render.js";
 import { EngagementPlan } from "./engagementPlans.js";
 
 export interface EngagementPlanReader {

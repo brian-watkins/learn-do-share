@@ -1,7 +1,7 @@
-import * as Html from "../../display/markup"
-import { DisplayConfig } from "../../display/display"
+import * as Html from "@/display/markup"
+import { DisplayConfig } from "@/display/display"
 import { LearningArea, learningAreaContentView, learningAreaTitleView } from "./learningArea"
-import { User } from "../../api/common/user"
+import { User } from "@/api/common/user"
 import { engagementPlansView, increaseEngagementButton, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 

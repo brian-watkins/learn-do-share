@@ -1,8 +1,8 @@
 import { BulkOperationType, Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
 import { User } from "../api/common/user";
-import { EngagementPlan } from "./engage/engagementPlans";
-import { EngagementPlanReader } from "./overview/backstage";
-import { EngagementPlanWriter } from "./engage/writeEngagementPlans";
+import { EngagementPlan } from "@/src/engage/engagementPlans";
+import { EngagementPlanReader } from "@/src/overview/backstage";
+import { EngagementPlanWriter } from "@/src/engage/writeEngagementPlans";
 
 export interface CosmosConfig extends CosmosClientOptions {
   endpoint: string

@@ -2,7 +2,7 @@ import { behavior, condition, effect, example, pick } from "esbehavior"
 import { expect } from "chai"
 import { FakeLearningArea, testContext } from "./testApp"
 import { disciplineLearningAreas, teamLearningAreas, theoryLearningAreas } from "./testDisplay"
-import { LearningAreaCategory } from "../src/overview/learningAreaCategory"
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 
 export default
   behavior("viewing items", [

@@ -1,5 +1,5 @@
-import { User } from "../api/common/user"
-import * as Html from "../display/markup"
+import { User } from "@/api/common/user"
+import * as Html from "@/display/markup"
 
 export function loginView(): Html.View {
   return Html.div([userStyle()], [

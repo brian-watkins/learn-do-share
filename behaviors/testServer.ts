@@ -1,8 +1,8 @@
 import { Server } from "http"
 import { ChildProcess, spawn } from "child_process"
-import { createServer, stopVite } from "../local/backstage/app"
-import { Adapters } from "../src/backstage"
-import { Adapters as EngageAdapters } from "../src/engage/backstage"
+import { createServer, stopVite } from "@/local/backstage/app"
+import { Adapters } from "@/src/overview/backstage"
+import { Adapters as EngageAdapters } from "@/src/engage/backstage"
 
 let SWA_SERVER: ChildProcess | null = null
 

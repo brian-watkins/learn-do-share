@@ -1,5 +1,5 @@
 import display from "./display"
-import { AppDisplay } from "../../display/display"
+import { AppDisplay } from "@/display/display"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 
 const appInsights = new ApplicationInsights({

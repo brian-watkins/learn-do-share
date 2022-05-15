@@ -1,6 +1,6 @@
 import cosmosServer from "@zeit/cosmosdb-server"
 import { Server } from "https";
-import { CosmosConfig, CosmosEngagementPlanRepository } from "../src/cosmosEngagementPlanRepository";
+import { CosmosConfig, CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
 
 let database: Server
 

@@ -1,4 +1,4 @@
-import * as Html from "../../display/markup"
+import * as Html from "@/display/markup"
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"

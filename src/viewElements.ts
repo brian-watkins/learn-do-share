@@ -1,4 +1,4 @@
-import * as Html from "../display/markup"
+import * as Html from "@/display/markup"
 
 export function cardView(attributes: Array<Html.ViewAttribute>, children: Array<Html.ViewChild>): Html.View {
   return Html.article([cardViewStyle(), ...attributes], children)

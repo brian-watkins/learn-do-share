@@ -1,14 +1,16 @@
 import express, { Express } from "express"
-import { Adapters } from "../../src/overview/backstage"
-import { Adapters as EngageAdapters } from "../../src/engage/backstage"
+import { Adapters } from "@/src/overview/backstage"
+import { Adapters as EngageAdapters } from "@/src/engage/backstage"
 import { createServer as createViteServer } from "vite"
 import { AzureFunctionAdapter } from "./azureFunctionAdapter"
-import { generateEngageFunction } from "../../api/engage/function"
-import { generateRootFunction } from "../../api/root/function"
-import { generateBackstageFunction } from "../../api/backstage/function"
+import { generateBackstageFunction } from "@/api/backstage/function"
+import { generateRootFunction } from "@/api/root/function"
+import { generateEngageFunction } from "@/api/engage/function"
+// import tsConfigPaths from "vite-tsconfig-paths"
 
 const vite = await createViteServer({
-  server: { middlewareMode: 'ssr' }
+  server: { middlewareMode: 'ssr' },
+  // plugins: [tsConfigPaths()]
 })
 
 export async function stopVite() {
@@ -34,7 +36,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   app.use(vite.middlewares)
 
   const rootFunctionAdapter = new AzureFunctionAdapter(generateRootFunction(adapters))
-  rootFunctionAdapter.context.executionContext.functionDirectory = "./src"
+  rootFunctionAdapter.context.executionContext.functionDirectory = "."
 
   app.use("/api/root", async (req, res, next) => {
     try {
@@ -46,7 +48,7 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   })
 
   const engageFunctionAdapter = new AzureFunctionAdapter(generateEngageFunction(adapters))
-  engageFunctionAdapter.context.executionContext.functionDirectory = "./src"
+  engageFunctionAdapter.context.executionContext.functionDirectory = "."
 
   app.use("/api/engage", async (req, res, next) => {
     try {

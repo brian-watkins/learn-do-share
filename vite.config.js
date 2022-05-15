@@ -1,26 +1,28 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url';
+import tsConfigPaths from "vite-tsconfig-paths"
 
 /**
  * @type {import('vite').UserConfig}
  */
 const config = {
-  root: "./src",
+  root: ".",
   build: {
     rollupOptions: {
       input: {
-        main: path.resolve(dirname(), "src/index.html"),
-        engage: path.resolve(dirname(), "src/engage.html")
+        main: path.resolve(dirname(), "index.html"),
+        engage: path.resolve(dirname(), "engage.html")
       }
     },
-    outDir: "../build/display",
+    outDir: "azure/build/display",
     emptyOutDir: true,
     sourcemap: true
   },
   plugins: [
-    copyHtml("index.html", "./api/root/index.html"),
-    copyHtml("engage.html", "./api/engage/engage.html")
+    copyHtml("index.html", "./azure/api/root/index.html"),
+    copyHtml("engage.html", "./azure/api/engage/engage.html"),
+    tsConfigPaths()
   ]
 }
 

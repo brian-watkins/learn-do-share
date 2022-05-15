@@ -1,6 +1,6 @@
-import { Adapters } from "../../src/engage/backstage";
-import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository";
-import { StaticLearningAreaReader } from "../../src/staticLearningAreasReader";
+import { Adapters } from "@/src/engage/backstage";
+import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
+import { StaticLearningAreaReader } from "@/adapters/staticLearningAreasReader";
 import { generateEngageFunction } from "./function";
 
 const cosmosDB = new CosmosEngagementPlanRepository({

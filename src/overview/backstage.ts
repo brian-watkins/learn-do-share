@@ -1,7 +1,7 @@
-import { BackstageRenderer, RenderContext } from "../../api/common/render.js";
+import { BackstageRenderer, RenderContext } from "@/api/common/render.js";
 import { AppModel } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans.js";
-import { User } from "../../api/common/user.js";
+import { User } from "@/api/common/user.js";
 import { LearningArea } from "./learningAreas.js";
 
 export interface EngagementPlanReader {

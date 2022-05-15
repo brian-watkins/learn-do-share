@@ -1,8 +1,8 @@
-import { LearningArea as AreaToEngage } from "./engage/learningArea.js";
-import { LearningAreaReader } from "./engage/learningAreaReader.js";
-import { LearningAreaCategory } from "./overview/learningAreaCategory.js";
-import { LearningArea } from "./overview/learningAreas.js";
-import { LearningAreasReader } from "./overview/backstage";
+import { LearningArea as AreaToEngage } from "@/src/engage/learningArea.js";
+import { LearningAreaReader } from "@/src/engage/learningAreaReader.js";
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js";
+import { LearningArea } from "@/src/overview/learningAreas.js";
+import { LearningAreasReader } from "@/src/overview/backstage";
 
 const learningAreas: Array<AreaToEngage> = [
   {

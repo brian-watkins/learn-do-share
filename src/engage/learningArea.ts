@@ -1,4 +1,4 @@
-import * as Html from "../../display/markup"
+import * as Html from "@/display/markup"
 import { decorate, markdownToHTML } from "../util/markdownParser"
 
 type LearningAreaCategory = string

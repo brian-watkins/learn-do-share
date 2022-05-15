@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { renderTemplate } from "../common/render";
 import { azureUserParser } from "../common/azureUserParser";
-import { Adapters, initRenderer } from "../../src/engage/backstage";
+import { Adapters, initRenderer } from "@/src/engage/backstage";
 import fs from "fs"
 import path from "path"
 

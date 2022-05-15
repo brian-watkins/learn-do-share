@@ -1,6 +1,6 @@
-import { Adapters } from "../../src/overview/backstage";
-import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository";
-import { StaticLearningAreasReader } from "../../src/staticLearningAreasReader";
+import { Adapters } from "@/src/overview/backstage";
+import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
+import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader";
 import { generateRootFunction } from "./function";
 
 const cosmosDB = new CosmosEngagementPlanRepository({

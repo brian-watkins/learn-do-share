@@ -1,5 +1,5 @@
-import { User } from "../../api/common/user"
-import { BackstageMessage, backstageMessage } from "../../display/backstage"
+import { User } from "@/api/common/user"
+import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { EngagementPlan } from "./engagementPlans"
 import { LearningArea } from "./learningArea"
 

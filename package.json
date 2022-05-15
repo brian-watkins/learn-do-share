@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "validate:display": "tsc --noEmit -p ./display",
-    "validate:backstage": "tsc --noEmit -p ./api",
+    "validate:backstage": "tsc --noEmit -p ./azure/api",
     "validate": "npm run validate:display && npm run validate:backstage",
     "build:display": "npm run validate:display && vite build",
     "start:server": "node --loader esbuild-node-loader --no-warnings ./local/backstage/index.ts",
@@ -38,6 +38,7 @@
     "tailwindcss": "^3.0.23",
     "typescript": "^4.6.2",
     "vite": "^2.8.6",
+    "vite-tsconfig-paths": "^3.4.1",
     "wait-on": "^6.0.1"
   },
   "engines": {

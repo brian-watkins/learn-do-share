@@ -1,5 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { Adapters, initBackstage } from "../../src/engage/backstage";
+import { Adapters, initBackstage } from "@/src/engage/backstage";
 import { azureUserParser } from "../common/azureUserParser";
 
 

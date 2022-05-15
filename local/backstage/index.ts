@@ -1,5 +1,5 @@
-import { CosmosEngagementPlanRepository } from "../../src/cosmosEngagementPlanRepository.js";
-import { StaticLearningAreaReader, StaticLearningAreasReader } from "../../src/staticLearningAreasReader.js"
+import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository.js";
+import { StaticLearningAreaReader, StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader.js"
 import { createServer } from "./app.js";
 import cosmosServer from "@zeit/cosmosdb-server"
 import https from 'https'
