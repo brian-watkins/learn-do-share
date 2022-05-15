@@ -7,12 +7,15 @@ export interface PersonalizedLearningArea extends LearningArea {
   engagementLevels: Array<EngagementLevel>
 }
 
-export function engagementPlansView(engagementLevels: Array<EngagementLevel>): Html.ViewChild {
+export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewChild {
   return Html.div([
     Html.cssClassList([
-      { "grow": true }
+      { "ml-16": true },
+      { "mb-8": true },
+      { "flex": true },
+      { "gap-4": true }
     ])
-  ], engagementLevels.map(engagementPlanView))
+  ], [...area.engagementLevels.map(engagementPlanView), increaseEngagementButton(area)])
 }
 
 function engagementPlanView(level: string): Html.ViewChild {
@@ -20,14 +23,15 @@ function engagementPlanView(level: string): Html.ViewChild {
     Html.cssClassList([
       { "py-2": true },
       { "px-4": true },
-      { "my-2": true },
-      { "mr-2": true },
       { "bg-cyan-500": true },
       { "rounded": true },
+      { "border-2": true },
+      { "border-cyan-500": true },
       { "text-neutral-50": true },
       { "w-auto": true },
       { "inline-block": true },
-      { "capitalize": true }
+      { "capitalize": true },
+      { "font-bold": true }
     ]),
     Html.data("engagement-indicator")
   ], [
@@ -36,28 +40,22 @@ function engagementPlanView(level: string): Html.ViewChild {
 }
 
 export function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.ViewChild {
-  return Html.section([
+  return Html.button([
     Html.cssClassList([
-      { "mt-8": true },
-      { "max-w-lg": true }
-    ])
+      { "px-4": true },
+      { "py-2": true },
+      { "rounded": true },
+      { "border-cyan-800": true },
+      { "border-2": true },
+      { "border-dotted": true },
+      { "text-cyan-800": true },
+      { "inline-block": true },
+      { "font-bold": true }
+    ]),
+    Html.data("increase-engagement"),
+    Html.onClick(nextEngagementLevelMessage(learningArea))
   ], [
-    Html.button([
-      Html.cssClassList([
-        { "w-full": true },
-        { "px-4": true },
-        { "py-2": true },
-        { "rounded": true },
-        { "border-2": true },
-        { "border-sky-200": true },
-        { "border-solid": true },
-        { "text-sky-400": true }
-      ]),
-      Html.data("increase-engagement"),
-      Html.onClick(nextEngagementLevelMessage(learningArea))
-    ], [
-      Html.text(increaseEngagementText(learningArea))
-    ])
+    Html.text(increaseEngagementText(learningArea))
   ])
 }
 

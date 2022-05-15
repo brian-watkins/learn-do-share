@@ -1,8 +1,8 @@
 import * as Html from "@/display/markup"
 import { DisplayConfig } from "@/display/display"
-import { LearningArea, learningAreaContentView, learningAreaTitleView } from "./learningArea"
+import { LearningArea, learningAreaCategoryView, learningAreaContentView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
-import { engagementPlansView, increaseEngagementButton, PersonalizedLearningArea } from "./personalizedLearningArea"
+import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 
 export interface Informative {
@@ -55,11 +55,7 @@ function view(model: Model): Html.View {
       ])
     case "informative":
       return Html.article([], [
-        Html.div([Html.id("learning-area-category"), Html.cssClassList([
-          { "capitalize": true }
-        ])], [
-          Html.text(model.learningArea.category)
-        ]),
+        learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
@@ -67,21 +63,16 @@ function view(model: Model): Html.View {
       return Html.article([], [
         Html.div([
           Html.cssClassList([
-            { "basis-1/4": true },
             { "flex": true },
             { "flex-col": true },
           ])
         ], [
+          learningAreaCategoryView(model.learningArea),
           learningAreaTitleView(model.learningArea),
-          engagementPlansView(model.learningArea.engagementLevels),
+          engagementPlansView(model.learningArea),
         ]),
-        Html.div([
-          Html.cssClassList([
-            { "basis-3/4": true }
-          ])
-        ], [
+        Html.div([], [
           learningAreaContentView(model.learningArea),
-          increaseEngagementButton(model.learningArea)
         ])
       ])
   }

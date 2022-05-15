@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import { behavior, condition, Effect, effect, example, pick, step } from "esbehavior";
+import { behavior, condition, example, step } from "esbehavior";
 import { Step } from "esbehavior/dist/Assumption";
+import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
 import { loginUser, reloadTheApp, returnToLearningAreas, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
 
@@ -137,24 +137,3 @@ function increaseEngagementLevel(learningArea: TestLearningArea, engagementLevel
   })
 }
 
-function engagementLevelSelected(learningArea: TestLearningArea, indicator: string): Effect<TestContext> {
-  return effect(`Engagement level '${indicator}' shown for Learning Area ${learningArea.testId}`, async (testContext) => {
-    const engagementTexts = await testContext.display
-      .select('article', { withText: learningArea.title })
-      .selectAllDescendants('[data-engagement-indicator]')
-      .mapElements(el => el.text())
-
-    expect(engagementTexts).to.include(indicator)
-  })
-}
-
-function noEngagementLevelsSelected(learningArea: TestLearningArea): Effect<TestContext> {
-  return effect(`No engagement shown for Learning Area ${learningArea.testId}`, async (testContext) => {
-    const engagementLevelsHidden = await testContext.display
-      .select('article', { withText: learningArea.title })
-      .selectAllDescendants('[data-engagement-indicator]')
-      .mapElements(element => element.isHidden())
-
-    expect(engagementLevelsHidden).to.not.include(false, "Expected no engagement levels but found some")
-  })
-}

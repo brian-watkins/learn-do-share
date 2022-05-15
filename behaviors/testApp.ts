@@ -8,6 +8,9 @@ import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { LearningAreaReader } from "@/src/engage/learningAreaReader"
 import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea"
 import { LearningAreasReader } from "@/src/overview/backstage"
+import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
+import { User } from "@/api/common/user"
+import { userIdentifierFor } from './helpers'
 
 export function testContext(): Context<TestContext> {
   return {
@@ -32,6 +35,7 @@ export class TestContext {
     container: "engagement-plans-test",
     agent: new https.Agent({ rejectUnauthorized: false })
   })
+  engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
     this.learningAreasReader.resolveImmediatelyWith(learningAreas)
@@ -39,7 +43,31 @@ export class TestContext {
     return this
   }
 
+  withEngagementPlan(userName: string, learningArea: TestLearningArea, engagementLevel: EngagementLevel): TestContext {
+    let plans = this.engagementPlans.get(userName)
+    if (!plans) {
+      plans = [{ learningArea: learningArea.id, level: engagementLevel }]
+      this.engagementPlans.set(userName, plans)
+    } else {
+      plans.push({ learningArea: learningArea.id, level: engagementLevel })
+    }
+    return this
+  }
+
+  async writeEngagementPlans(): Promise<void> {
+    for (const [userName, plans] of this.engagementPlans) {
+      const user: User = {
+        identifier: userIdentifierFor(userName),
+        name: userName
+      }
+      for (const plan of plans) {
+        await this.engagementPlanRepo.write(user, plan)
+      }
+    }
+  }
+
   async start(path: string = ""): Promise<void> {
+    await this.writeEngagementPlans()
     await this.server.start({
       learningAreaReader: this.learningAreaReader,
       learningAreasReader: this.learningAreasReader,
@@ -96,6 +124,11 @@ export class TestLearningArea implements LearningArea {
     this.content = `Here is some content for learning Area ${testId}!`
     this.selected = false
     this.category = LearningAreaCategory.Discipline
+  }
+
+  withTitle(title: string): TestLearningArea {
+    this.title = title
+    return this
   }
 
   withContent(content: string): TestLearningArea {
