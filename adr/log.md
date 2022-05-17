@@ -855,3 +855,37 @@ types with the same names. This is similar to what we do with the shape of data.
 There are two types called `LearningArea` but they actually have different
 properties depending on what the capability they are associated with actually
 needs. 
+
+
+### Redirecting on bad requests
+
+Azure static web apps has the ability to do 'response overrides' -- so if a 404
+is found then you can redirect to another page. We'd like to make it so that if
+someone tries to load a learning area page that doesn't exist, they get
+redirected back to the main page.
+
+In order to do this, we need to allow the `getInitialState` function to return a
+more complicated message ... it needs to specify whether a template should be
+rendered or something else should happen (like return not found or redirect or
+something).
+
+We first tried returning a NotFound message and then having Azure Static Web
+Apps notice this and do a redirect. It didn't work. With the emulator, none of
+the response overrides stuff worked -- this could be because we're using a local
+server rather than having the emulator serve the files. We deployed on a branch
+and random 404s would get redirected as expected, but the 404 from the function
+was not redirected, perhaps because it's a function and handled separately.
+
+In any case, we decided to make it so that the function returns an actual `301`
+response, thus accomplishing the redirect itself. We left the config in place to
+redirect other 404s to the main page, but there's not a good way to test this
+locally I think. 
+
+One interesting thing is that we utilized the Azure static web apps ability to
+deploy pull requests at a preview url. We added to our github workflow the
+ability to trigger on pull requests and these get automatically pushed to a
+preview environment. Pretty cool! The clean up didn't appear to work though, so
+I think we have to go in and manually delete the preview environments when we're
+done. There does seem to be a github action job for this, but it didn't work
+when we tried it for some reason. We probably won't use this very often so it's
+fine to delete manually for now.
