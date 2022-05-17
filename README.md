@@ -21,6 +21,7 @@ $ npm run start
 
 ```
 $ npm run test
+$ npm run test:debug (to view the tests)
 ```
 
 Note that our code is written with Typescript, but we use tooling that's based on
@@ -38,6 +39,16 @@ $ npm run validate
 We have a github action that validates types, runs the tests, builds and deploys
 our software to Azure as a static web app with a serverless function for the backstage
 component. This all occurs via a github action that's defined in `.github/workflows`.
+
+
+### Deploy a Preview Environment
+
+Azure has the concept of preview environments. To create one, put your changes on a
+branch and create a pull request to the main branch. This will automatically trigger
+the workflow and deploy the changes in the pull request at a new (preview) url.
+
+When you're done, merge the changes into master and close the pull request.
+You'll need to go to the Azure portal and manually delete the preview environment.
 
 
 ### Deploy Infrastructure
