@@ -19,10 +19,11 @@ export class AzureFunctionAdapter {
     await this.func(this.context, functionRequest)
 
     const functionResponse = this.context.res
+    const body = functionResponse?.body ?? ""
     const status = functionResponse?.status ?? 200
     const headers = functionResponse?.headers ?? {}
 
-    res.status(status).set(headers).send(functionResponse?.body)
+    res.status(status).set(headers).send(body)
   }
 
   private normalizeRequest(req: Request): HttpRequest {

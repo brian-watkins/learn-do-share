@@ -1,4 +1,4 @@
-import { BackstageRenderer, RenderContext } from "@/api/common/render.js";
+import { BackstageRenderer, InitialStateResult, templateResult, RenderContext } from "@/api/common/render.js";
 import { AppModel } from "./app.js";
 import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans.js";
 import { User } from "@/api/common/user.js";
@@ -17,14 +17,14 @@ export interface Adapters {
   engagementPlanReader: EngagementPlanReader
 }
 
-const initialState = (adapters: Adapters) => async (context: RenderContext<never>): Promise<AppModel> => {
+const initialState = (adapters: Adapters) => async (context: RenderContext<null>): Promise<InitialStateResult<AppModel>> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
   if (context.user === null) {
-    return {
+    return templateResult("index.html", {
       state: { type: "informative" },
       learningAreas: learningAreas,
-    }
+    })
   } else {
     const plans = await adapters.engagementPlanReader.read(context.user)
     const state: AppModel = {
@@ -32,7 +32,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<never
       learningAreas: learningAreas,
     }
 
-    return state
+    return templateResult("index.html", state)
   }
 }
 
@@ -51,7 +51,7 @@ function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Arra
   return map
 }
 
-export function initRenderer(adapters: Adapters): BackstageRenderer<never, AppModel> {
+export function initRenderer(adapters: Adapters): BackstageRenderer<null, AppModel> {
   return {
     initialState: initialState(adapters)
   }

@@ -29,6 +29,15 @@ export class TestDisplay {
   selectAll(selector: string): DisplayElementList {
     return new DisplayElementList(this.page!.locator(selector))
   }
+
+  path(): string | undefined {
+    const url = new URL(this.page?.url() ?? "")
+    if (url) {
+      return url.pathname
+    } else {
+      return undefined
+    }
+  }
 }
 
 export function title() {

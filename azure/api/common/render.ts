@@ -1,18 +1,70 @@
+import { Context } from "@azure/functions"
 import { User } from "./user"
+import fs from "fs"
+import path from "path"
 
 export interface RenderContext<C> {
   user: User | null
   attributes: C
 }
 
-export interface BackstageRenderer<C, M> {
-  initialState(context: RenderContext<C>): Promise<M>
+export interface TemplateResult<M> {
+  type: "template"
+  templateName: string
+  state: M
 }
 
-export async function renderTemplate<C, M>(renderer: BackstageRenderer<C, M>, template: string, context: RenderContext<C>): Promise<string> {
-  const state = await renderer.initialState(context)
+export function templateResult<M>(templateName: string, state: M): TemplateResult<M> {
+  return {
+    type: "template",
+    templateName,
+    state
+  }
+}
 
-  const content = `window._display_initial_state = ${JSON.stringify(state)};`
+export interface RedirectResult {
+  type: "redirect"
+  location: string
+}
 
-  return template.replace("/* DISPLAY_INITIAL_STATE */", content)
+export function redirectResult(location: string): RedirectResult {
+  return {
+    type: "redirect",
+    location
+  }
+}
+
+export type InitialStateResult<M> = TemplateResult<M> | RedirectResult
+
+export interface BackstageRenderer<C, M> {
+  initialState(context: RenderContext<C>): Promise<InitialStateResult<M>>
+}
+
+export function render<M>(context: Context, result: InitialStateResult<M>) {
+  switch (result.type) {
+    case "redirect":
+      context.res = {
+        status: 301,
+        headers: {
+          "Location": result.location
+        }
+      }
+      break
+    case "template":
+      let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, result.templateName), 'utf-8')
+      const html = renderTemplate(template, result.state)
+      context.res = {
+        headers: {
+          'Content-Type': 'text/html',
+          'Cache-Control': 'no-store'
+        },
+        body: html
+      }
+      break
+  }
+}
+
+function renderTemplate(template: string, content: any): string {
+  const jsContent = `window._display_initial_state = ${JSON.stringify(content)};`
+  return template.replace("/* DISPLAY_INITIAL_STATE */", jsContent)
 }
