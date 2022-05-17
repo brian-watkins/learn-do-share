@@ -3,7 +3,7 @@ import { User } from "@/api/common/user.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
-import { BackstageRenderer, RenderContext } from "@/api/common/render.js";
+import { BackstageRenderer, InitialStateResult, notFoundResult, okResult, RenderContext } from "@/api/common/render.js";
 import { EngagementPlan } from "./engagementPlans.js";
 
 export interface EngagementPlanReader {
@@ -37,20 +37,18 @@ export interface EngageContext {
   learningAreaId: string
 }
 
-const initialState = (adapters: Adapters) => async (context: RenderContext<EngageContext>): Promise<Model> => {
+const initialState = (adapters: Adapters) => async (context: RenderContext<EngageContext>): Promise<InitialStateResult<Model>> => {
   const learningArea = await adapters.learningAreaReader.read(context.attributes.learningAreaId)
 
   if (learningArea == null) {
-    return {
-      type: "unknown-area"
-    }
+    return notFoundResult()
   }
 
   if (context.user === null) {
-    return {
+    return okResult({
       type: "informative",
       learningArea
-    }
+    })
   } else {
     const plans = await adapters.engagementPlanReader.read(context.user)
     const levels = plans
@@ -59,11 +57,11 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
         return plan.level
       })
 
-    return {
+    return okResult({
       type: "personalized",
       learningArea: { ...learningArea, engagementLevels: levels },
       user: context.user
-    }
+    })
   }
 }
 

@@ -10,16 +10,36 @@ export function generateRootFunction(adapters: Adapters): AzureFunction {
   const backstage = initRenderer(adapters)
 
   return async function (context: Context, req: HttpRequest): Promise<void> {
-    let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
-  
-    const html = await renderTemplate(backstage, template, { user: azureUserParser(req, context), attributes: null })
-  
-    context.res = {
-      headers: {
-        "Content-Type": "text/html",
-        "Cache-Control": "no-store"
-      },
-      body: html
-    };
-  };  
+
+    const result = await backstage.initialState({
+      user: azureUserParser(req, context),
+      attributes: null
+    })
+
+    switch (result.type) {
+      case "not-found":
+        break
+      case "ok":
+        let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
+        const html = renderTemplate(template, result.state)
+        context.res = {
+          headers: {
+            "Content-Type": "text/html",
+            "Cache-Control": "no-store"
+          },
+          body: html
+        };
+        break
+    }
+
+    // const html = await renderTemplate(backstage, template, { user: azureUserParser(req, context), attributes: null })
+
+    // context.res = {
+    //   headers: {
+    //     "Content-Type": "text/html",
+    //     "Cache-Control": "no-store"
+    //   },
+    //   body: html
+    // };
+  }
 }

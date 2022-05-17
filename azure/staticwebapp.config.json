@@ -15,5 +15,10 @@
   ],
   "platform": {
     "apiRuntime": "node:16"
+  },
+  "responseOverrides": {
+    "404": {
+      "redirect": "index.html"
+    }
   }
 }

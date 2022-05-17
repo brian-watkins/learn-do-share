@@ -12,22 +12,51 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
   return async function (context: Context, req: HttpRequest): Promise<void> {
     const url = new URL(req.headers["x-ms-original-url"] as string)
     const areaId = url.pathname.split("/").pop() ?? ""
-  
-    let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
-  
-    const html = await renderTemplate(renderer, template, {
+
+    // maybe
+    // 1. get the initial state result
+    const result = await renderer.initialState({
       user: azureUserParser(req, context),
       attributes: {
         learningAreaId: areaId
       }
     })
-  
-    context.res = {
-      headers: {
-        'Content-Type': 'text/html',
-        'Cache-Control': 'no-store'
-      },
-      body: html
+
+    switch (result.type) {
+      case "not-found":
+        // 3. if NOT then return response with status
+        context.res = {
+          status: 404,
+          // headers: {
+            // "Location": "/index.html"
+          // }
+        }
+        break
+      case "ok":
+        // 2. if OK then fetch the template and render it
+        let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
+        const html = renderTemplate(template, result.state)
+        context.res = {
+          headers: {
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-store'
+          },
+          body: html
+        }
+        break
     }
-  };
+
+
+    //   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
+
+    //   const html = await renderTemplate(template, )
+
+    //   context.res = {
+    //     headers: {
+    //       'Content-Type': 'text/html',
+    //       'Cache-Control': 'no-store'
+    //     },
+    //     body: html
+    //   }
+  }
 }
