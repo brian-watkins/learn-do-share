@@ -6,6 +6,10 @@ on:
       - main
     paths-ignore:
       - 'terraform/**'
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
