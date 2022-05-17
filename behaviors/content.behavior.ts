@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example, pick, step } from "esbehavior";
+import { behavior, condition, effect, example, pick, skip, step } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
 import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext } from "./testApp";
@@ -28,6 +28,29 @@ const awesomeLearningArea =
 
 export default
   behavior("viewing learning area content", [
+    example(testContext())
+      .description("when the url for an unknown learning area is visited")
+      .script({
+        prepare: [
+          condition("the app loads the page for a learning area", async (testContext) => {
+            await testContext
+              .withLearningAreas([
+                coolLearningArea,
+                awesomeLearningArea,
+                superLearningArea
+              ])
+              .start(`/learning-areas/some-unknown-id`)
+          })
+        ],
+        observe: [
+          effect("it loads the main page instead", async (testContext) => {
+            expect(testContext.display.path()).to.equal("/index.html")
+          }),
+          learningAreaDisplayed(awesomeLearningArea, { in: teamLearningAreas() }),
+          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() }),
+          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() })
+        ]
+      }),
     example(testContext())
       .description("when the url for a learning area is visited")
       .script({

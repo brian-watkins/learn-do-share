@@ -13,8 +13,6 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
     const url = new URL(req.headers["x-ms-original-url"] as string)
     const areaId = url.pathname.split("/").pop() ?? ""
 
-    // maybe
-    // 1. get the initial state result
     const result = await renderer.initialState({
       user: azureUserParser(req, context),
       attributes: {
@@ -23,17 +21,15 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
     })
 
     switch (result.type) {
-      case "not-found":
-        // 3. if NOT then return response with status
+      case "redirect":
         context.res = {
-          status: 404,
-          // headers: {
-            // "Location": "/index.html"
-          // }
+          status: 301,
+          headers: {
+            "Location": result.location
+          }
         }
         break
       case "ok":
-        // 2. if OK then fetch the template and render it
         let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
         const html = renderTemplate(template, result.state)
         context.res = {
@@ -45,18 +41,5 @@ export function generateEngageFunction(adapters: Adapters): AzureFunction {
         }
         break
     }
-
-
-    //   let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "engage.html"), 'utf-8')
-
-    //   const html = await renderTemplate(template, )
-
-    //   context.res = {
-    //     headers: {
-    //       'Content-Type': 'text/html',
-    //       'Cache-Control': 'no-store'
-    //     },
-    //     body: html
-    //   }
   }
 }

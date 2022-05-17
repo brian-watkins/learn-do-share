@@ -3,7 +3,7 @@ import { User } from "@/api/common/user.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
-import { BackstageRenderer, InitialStateResult, notFoundResult, okResult, RenderContext } from "@/api/common/render.js";
+import { BackstageRenderer, InitialStateResult, okResult, redirectResult, RenderContext } from "@/api/common/render.js";
 import { EngagementPlan } from "./engagementPlans.js";
 
 export interface EngagementPlanReader {
@@ -41,7 +41,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
   const learningArea = await adapters.learningAreaReader.read(context.attributes.learningAreaId)
 
   if (learningArea == null) {
-    return notFoundResult()
+    return redirectResult("/index.html")
   }
 
   if (context.user === null) {

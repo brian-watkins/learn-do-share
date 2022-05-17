@@ -17,29 +17,23 @@ export function okResult<M>(state: M): OkResult<M> {
   }
 }
 
-export interface NotFoundResult {
-  type: "not-found"
+export interface RedirectResult {
+  type: "redirect"
+  location: string
 }
 
-export function notFoundResult(): NotFoundResult {
+export function redirectResult(location: string): RedirectResult {
   return {
-    type: "not-found"
+    type: "redirect",
+    location
   }
 }
 
-export type InitialStateResult<M> = OkResult<M> | NotFoundResult
+export type InitialStateResult<M> = OkResult<M> | RedirectResult
 
 export interface BackstageRenderer<C, M> {
   initialState(context: RenderContext<C>): Promise<InitialStateResult<M>>
 }
-
-// export async function renderTemplate<C, M>(renderer: BackstageRenderer<C, M>, template: string, context: RenderContext<C>): Promise<string> {
-//   const state = await renderer.initialState(context)
-
-//   const content = `window._display_initial_state = ${JSON.stringify(state)};`
-
-//   return template.replace("/* DISPLAY_INITIAL_STATE */", content)
-// }
 
 export function renderTemplate(template: string, content: any): string {
   const jsContent = `window._display_initial_state = ${JSON.stringify(content)};`

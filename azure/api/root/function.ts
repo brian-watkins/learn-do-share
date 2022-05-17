@@ -17,7 +17,7 @@ export function generateRootFunction(adapters: Adapters): AzureFunction {
     })
 
     switch (result.type) {
-      case "not-found":
+      case "redirect":
         break
       case "ok":
         let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, "index.html"), 'utf-8')
@@ -31,15 +31,5 @@ export function generateRootFunction(adapters: Adapters): AzureFunction {
         };
         break
     }
-
-    // const html = await renderTemplate(backstage, template, { user: azureUserParser(req, context), attributes: null })
-
-    // context.res = {
-    //   headers: {
-    //     "Content-Type": "text/html",
-    //     "Cache-Control": "no-store"
-    //   },
-    //   body: html
-    // };
   }
 }
