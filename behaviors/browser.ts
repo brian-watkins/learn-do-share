@@ -10,7 +10,8 @@ export async function startBrowser(): Promise<void> {
 }
 
 export async function newBrowserPage(): Promise<Page> {
-  const page = await browser.newPage()
+  const context = await browser.newContext()
+  const page = await context.newPage()
   page.on("console", (message) => {
     if (message.text().startsWith("[vite]")) {
       return
