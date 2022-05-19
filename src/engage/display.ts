@@ -11,10 +11,6 @@ export interface Informative {
   learningArea: LearningArea
 }
 
-export interface UnknownArea {
-  type: "unknown-area"
-}
-
 export interface Personalized {
   type: "personalized"
   learningArea: PersonalizedLearningArea
@@ -23,7 +19,6 @@ export interface Personalized {
 
 export type Model
   = Informative
-  | UnknownArea
   | Personalized
 
 type EngageMessage
@@ -50,10 +45,6 @@ function update(model: Model, action: EngageMessage): void {
 
 function view(model: Model): Html.View {
   switch (model.type) {
-    case "unknown-area":
-      return Html.div([], [
-        Html.text("UNKNOWN LEARNING AREA!! WHAT!?!?!")
-      ])
     case "informative":
       return Html.article([], [
         learningAreasLink(),
