@@ -5,6 +5,8 @@ import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
 import { EngagementPlan } from "./engagementPlans.js";
+import { markdownToHTML } from "../util/markdownParser.js";
+import { contentTagStyles } from "./learningAreaContent.js";
 
 export interface EngagementPlanReader {
   read(user: User): Promise<Array<EngagementPlan>>
@@ -43,6 +45,8 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
   if (learningArea == null) {
     return redirectResult("/index.html")
   }
+
+  learningArea.content = markdownToHTML(learningArea.content, contentTagStyles())
 
   if (context.user === null) {
     return templateResult("engage.html", {

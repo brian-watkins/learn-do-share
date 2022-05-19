@@ -1,9 +1,10 @@
 import * as Html from "@/display/markup"
 import { DisplayConfig } from "@/display/display"
-import { LearningArea, learningAreaCategoryView, learningAreaContentView, learningAreaTitleView } from "./learningArea"
+import { LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
 import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
+import { learningAreaContentView } from "./learningAreaContent"
 
 export interface Informative {
   type: "informative"
