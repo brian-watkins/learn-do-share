@@ -935,3 +935,20 @@ static html content could just flow around this somehow. I have no idea how this
 might be implemented but something like that might help us handle server-side
 rendering for real and take a more decomposable approach to the UI. 
 
+
+### Keeping an eye on test speed
+
+The tests are getting slower ... up to almost 7 seconds on my machine, from less
+than 6 seconds a few stories ago. We looked over the test suite and probably the
+engage test is the one that takes the longest since it is opening lots of
+windows and logging in multiple times. We changed this so that it only logs in
+again if a different user needs to log in. Otherwise, it simply reloads the
+page, which is sufficient for showing that things have been persisted. This
+shaved off over a second from the run time.
+
+In general, it seems like opening a browser window is what slows the test down
+the most. Nevertheless, it's important to do this so each example is isolated
+from the others. We could try to optimize further but it might just end up
+making the test suite harder to reason about -- like, is this an example in a
+new context or is it sharing a context? etc
+
