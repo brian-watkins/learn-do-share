@@ -6,7 +6,11 @@ export class TestDisplay {
 
   async start(url: string): Promise<void> {
     this.page = await newBrowserPage()
-    await this.page.goto(url)
+    await this.goto(url)
+  }
+
+  async goto(url: string): Promise<void> {
+    await this.page?.goto(url)
   }
 
   async stop(): Promise<void> {

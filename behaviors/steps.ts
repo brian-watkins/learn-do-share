@@ -9,6 +9,12 @@ export function reloadTheApp(): Step<TestContext> {
   })
 }
 
+export function reloadThePage(): Step<TestContext> {
+  return step("Reload the page", async (testContext) => {
+    await testContext.reloadPage()
+  })
+}
+
 export function goBackToLearningAreas(): Step<TestContext> {
   return step("Return to the learning areas list", async (testContext) => {
     await testContext.display.goBack()

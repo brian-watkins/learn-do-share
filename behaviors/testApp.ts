@@ -87,6 +87,10 @@ export class TestContext {
     await this.display.stop()
     await this.display.start(this.server.host())
   }
+
+  async reloadPage(): Promise<void> {
+    await this.display.goto(this.server.host())
+  }
 }
 
 class FakeLearningAreasReader implements LearningAreasReader {

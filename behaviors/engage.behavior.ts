@@ -1,7 +1,8 @@
-import { behavior, condition, example, step } from "esbehavior";
+import { EngagementLevel } from "@/src/engage/engagementPlans";
+import { behavior, condition, example, pick, step } from "esbehavior";
 import { Step } from "esbehavior/dist/Assumption";
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
-import { loginUser, reloadTheApp, goBackToLearningAreas, selectLearningArea } from "./steps";
+import { loginUser, reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage } from "./steps";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
 
 export default
@@ -47,8 +48,7 @@ export default
       })
       .andThen({
         perform: [
-          reloadTheApp(),
-          loginUser("funny-person@email.com")
+          reloadThePage(),
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
@@ -73,33 +73,19 @@ export default
       .description("clear engagement levels")
       .script({
         prepare: [
-          condition("The app loads", async (testContext) => {
+          condition("The app loads with engagement levels set for funny-person@email.com", async (testContext) => {
             await testContext
               .withLearningAreas([
                 FakeLearningArea(1)
               ])
+              .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Learning)
+              .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Doing)
+              .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Sharing)
               .start()
           })
         ],
         perform: [
-          loginUser("funny-person@email.com"),
-          selectLearningArea(FakeLearningArea(1)),
-          increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
-        ],
-        observe: [
-          engagementLevelSelected(FakeLearningArea(1), "Learning")
-        ]
-      }).andThen({
-        perform: [
-          increaseEngagementLevel(FakeLearningArea(1), "Let's do it!")
-        ],
-        observe: [
-          engagementLevelSelected(FakeLearningArea(1), "Learning"),
-          engagementLevelSelected(FakeLearningArea(1), "Doing")
-        ]
-      }).andThen({
-        perform: [
-          increaseEngagementLevel(FakeLearningArea(1), "I'm ready to share!")
+          loginUser("funny-person@email.com")
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
@@ -108,6 +94,7 @@ export default
         ]
       }).andThen({
         perform: [
+          selectLearningArea(FakeLearningArea(1)),
           increaseEngagementLevel(FakeLearningArea(1), "I'm done for now!"),
         ],
         observe: [
@@ -115,8 +102,7 @@ export default
         ]
       }).andThen({
         perform: [
-          reloadTheApp(),
-          loginUser("funny-person@email.com")
+          reloadThePage(),
         ],
         observe: [
           noEngagementLevelsSelected(FakeLearningArea(1))
