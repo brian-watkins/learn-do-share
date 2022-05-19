@@ -889,3 +889,49 @@ I think we have to go in and manually delete the preview environments when we're
 done. There does seem to be a github action job for this, but it didn't work
 when we tried it for some reason. We probably won't use this very often so it's
 fine to delete manually for now.
+
+
+### Rendering markdown on the server
+
+Currently we rendered markdown into html in the UI. But this means we had to
+include all the libraries we were using to do this into the frontend vendor
+bundle. I noticed that this seemed to be pretty large. 
+
+It was actually quiet easy to switch the markdown rendering to the backstage.
+Since we are working in typescript across the entire project, and since the
+library we are using is isomorphic we kind of just did it. Now the learning area
+content is an HTML string rather than a markdown string and we just let snabbdom
+display that directly.
+
+This decreased the frontend vendor bundle size by over 50%! And we were able to
+do it in literally minutes and we could run our test suite to ensure everything
+still works. And we didn't need to make a single change to our test suite at
+all!
+
+Now, I'm not sure this is the ideal end state. It's not great, I think, that
+we're treating the html content as a property of our model. We don't really need
+to hold it in memory because we aren't going to do anything with it -- just
+render it. This was the simplest thing to do that would get things working.
+
+BUT, honestly we had a few problems with this ... First of all, the content
+disappeared after one view because our implementation was actually modifying the
+static learning area content. So we wrapped that in a function to make it
+immutable. Then we remembered that we needed to explicitly externalize any
+dependencies when building the server side so they don't get bundled with the
+code. When we did this, the engage bundle size went from over 300k to around 9k.
+
+Ultimately though it would be good to render the html on the server for the
+content and just have it be part of the web page html somehow. That way we are
+really doing server-side rendering of html content and not just server-side
+fetching of data that's necessary to render the html on the client. But that's a
+bigger change, and we haven't really seen that it's all that necessary.
+
+If we were to do that, there's a few options we could pursue. But one thing that
+might be interesting is to make the areas of the page governed by Snabbdom and
+our app framework be more targeted. So just the part of the engage page that
+deal with incrementing the learning area would be governed by our app. And then
+maybe also the part that displays the user would be another thing. And then any
+static html content could just flow around this somehow. I have no idea how this
+might be implemented but something like that might help us handle server-side
+rendering for real and take a more decomposable approach to the UI. 
+
