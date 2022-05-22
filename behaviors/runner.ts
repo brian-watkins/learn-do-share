@@ -3,13 +3,20 @@ import { startBrowser, stopBrowser } from "./browser"
 import viewBehavior from "./view.behavior"
 import contentBehavior from "./content.behavior"
 import engageBehavior from "./engage.behavior"
-import authBehavior  from "./auth.behavior"
+import authBehavior from "./auth.behavior"
 import { isDebug } from "./helpers"
 import { startCosmos, stopCosmos } from "./testStore"
 import { stopServer } from "./testServer"
 
-await startBrowser()
-await startCosmos()
+process.on("uncaughtException", async (error) => {
+  console.log("A horrible error occurred:", error)
+  try {
+    await shutdown()
+  } catch (_) {}
+  process.exit(5)
+})
+
+await start()
 
 const summary = await validate([
   viewBehavior,
@@ -22,8 +29,20 @@ if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1
 }
 
-if (!isDebug()) {
-  await stopServer()
-  await stopCosmos()
-  await stopBrowser()
+await shutdown()
+
+
+// Helper functions
+
+async function start() {
+  await startBrowser()
+  await startCosmos()
+}
+
+async function shutdown() {
+  if (!isDebug()) {
+    await stopServer()
+    await stopCosmos()
+    await stopBrowser()
+  }
 }
