@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example, pick, skip, step } from "esbehavior";
+import { behavior, condition, effect, example } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
 import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext } from "./testApp";
-import { contentArea, disciplineLearningAreas, teamLearningAreas, theoryLearningAreas, title } from "./testDisplay";
+import { categoryView, contentAreaView, titleView } from "./testDisplay";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { Step } from "esbehavior/dist/Assumption";
 import { engagementLevelSelected, learningAreaDisplayed } from "./effects";
@@ -46,9 +46,9 @@ export default
           effect("it loads the main page instead", async (testContext) => {
             expect(testContext.display.path()).to.equal("/index.html")
           }),
-          learningAreaDisplayed(awesomeLearningArea, { in: teamLearningAreas() }),
-          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() }),
-          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() })
+          learningAreaDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" }),
+          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" })
         ]
       }),
     example(testContext())
@@ -75,9 +75,9 @@ export default
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaDisplayed(awesomeLearningArea, { in: teamLearningAreas() }),
-          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() }),
-          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() })
+          learningAreaDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" }),
+          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" })
         ]
       }),
     example(testContext())
@@ -132,8 +132,8 @@ export default
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaDisplayed(coolLearningArea, { in: theoryLearningAreas() }),
-          learningAreaDisplayed(superLearningArea, { in: disciplineLearningAreas() })
+          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" }),
+          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" })
         ]
       }),
     example(testContext())
@@ -166,15 +166,15 @@ Here is an intro to what you will learn
             expect(actualTag).to.equal("H3")
           }),
           effect("links are displayed", async (testContext) => {
-            const actualTexts = await testContext.display.selectAll(contentArea("a")).mapElements((el) => el.text())
+            const actualTexts = await testContext.display.selectAll(contentAreaView("a")).mapElements((el) => el.text())
             expect(actualTexts).to.deep.equal(["somewhere", "another link"])
           }),
           effect("links should open in a different tab", async (testContext) => {
-            const actualTargets = await testContext.display.selectAll(contentArea("a")).mapElements(el => el.getAttribute("target"))
+            const actualTargets = await testContext.display.selectAll(contentAreaView("a")).mapElements(el => el.getAttribute("target"))
             expect(actualTargets).to.deep.equal(["_blank", "_blank"])
           }),
           effect("links should describe the proper relationship", async (testContext) => {
-            const actualTargets = await testContext.display.selectAll(contentArea("a")).mapElements(el => el.getAttribute("rel"))
+            const actualTargets = await testContext.display.selectAll(contentAreaView("a")).mapElements(el => el.getAttribute("rel"))
             expect(actualTargets).to.deep.equal(["external", "external"])
           })
         ]
@@ -183,21 +183,21 @@ Here is an intro to what you will learn
 
 function titleDisplayed(expected: string): Step<TestContext> {
   return effect("the title is displayed", async (testContext) => {
-    const titleText = await testContext.display.select(title()).text()
+    const titleText = await testContext.display.select(titleView()).text()
     expect(titleText).to.contain(expected)
   })
 }
 
 function contentDisplayed(expected: string): Step<TestContext> {
   return effect("the content is displayed", async (testContext) => {
-    const contentText = await testContext.display.select(contentArea()).text()
+    const contentText = await testContext.display.select(contentAreaView()).text()
     expect(contentText).to.contain(expected)
   })
 }
 
 function categoryDisplayed(expected: string): Step<TestContext> {
   return effect("the learning area category is displayed", async (testContext) => {
-    const categoryText = await testContext.display.select("#learning-area-category").text()
+    const categoryText = await testContext.display.select(categoryView()).text()
     expect(categoryText).to.contain(expected)
   })
 }

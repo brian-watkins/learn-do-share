@@ -1,6 +1,7 @@
 import { LearningArea, learningAreaTitleView } from "./learningAreas"
 import * as Html from '@/display/markup'
 import { cardView } from "../viewElements"
+import { learningAreaCategoryTitle } from "./learningAreaCategory"
 
 type EngagementLevel = string
 
@@ -19,7 +20,10 @@ export function personalizedLearningAreaView(levels: { [key: string]: Array<Enga
   return (learningArea) => {
     const personalized = toPersonalizedLearningArea(levels, learningArea)
     return Html.a([Html.href(`/learning-areas/${personalized.id}`)], [
-      cardView([], [
+      cardView([
+        Html.data("learning-area", personalized.id )
+      ], [
+        learningAreaCategoryTitle(learningArea.category),
         learningAreaTitleView(personalized),
         engagementPlansView(personalized.engagementLevels)
       ])
@@ -28,11 +32,7 @@ export function personalizedLearningAreaView(levels: { [key: string]: Array<Enga
 }
 
 function engagementPlansView(engagementLevels: Array<EngagementLevel>): Html.ViewChild {
-  return Html.div([
-    Html.cssClassList([
-      { "grow": true }
-    ])
-  ], engagementLevels.map(engagementPlanView))
+  return Html.div([], engagementLevels.map(engagementPlanView))
 }
 
 function engagementPlanView(level: string): Html.ViewChild {
@@ -43,6 +43,7 @@ function engagementPlanView(level: string): Html.ViewChild {
       { "my-2": true },
       { "mr-2": true },
       { "bg-cyan-500": true },
+      { "font-bold": true },
       { "rounded": true },
       { "text-neutral-50": true },
       { "w-auto": true },

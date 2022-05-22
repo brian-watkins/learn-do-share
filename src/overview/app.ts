@@ -33,14 +33,49 @@ function view(model: AppModel): Html.View {
     case "informative":
       return Html.div([], [
         loginView(),
+        learningAreasPracticeView(),
+        learningAreasTitleView(),
         learningAreasView(model.learningAreas, learningAreaView)
       ])
     case "personalized":
       return Html.div([], [
         userAccountView(model.state.user),
+        learningAreasPracticeView(),
+        learningAreasTitleView(),
         learningAreasView(model.learningAreas, personalizedLearningAreaView(model.state.engagementLevels)) 
       ])
   }
+}
+
+export function learningAreasTitleView(): Html.ViewChild {
+  return Html.h3([Html.id("learning-area-title"), Html.cssClassList([
+    { "font-bold": true },
+    { "text-sky-800": true },
+    { "text-8xl": true },
+    { "mb-8": true },
+    { "mx-16": true }
+  ])], [
+    Html.text("Principles and Practices"),
+  ])
+}
+
+export function learningAreasPracticeView(): Html.ViewChild {
+  return Html.div([Html.id("learning-area-practice"), Html.cssClassList([
+    { "capitalize": true },
+    { "py-2": true },
+    { "px-4": true },
+    { "my-4": true },
+    { "mx-16": true },
+    { "bg-sky-800": true },
+    { "rounded": true },
+    { "text-neutral-50": true },
+    { "border-2": true },
+    { "border-sky-800": true },
+    { "capitalize": true },
+    { "font-bold": true }
+  ])], [
+    Html.text("Engineering")
+  ])
 }
 
 

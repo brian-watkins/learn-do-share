@@ -1,5 +1,5 @@
 import * as Html from "@/display/markup"
-import { LearningAreaCategory, learningAreaCategoryView } from "./learningAreaCategory"
+import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory"
 import { cardView } from "../viewElements"
 
 export interface LearningArea {
@@ -12,34 +12,17 @@ export function learningAreasView<T extends LearningArea>(learningAreas: Array<T
   return Html.section([
     Html.id("learning-areas"),
     Html.cssClassList([
-      { "mx-auto": true },
-      { "w-fit": true },
-      { "gap-16": true },
-      { "flex": true },
+      { "m-16": true },
     ])
-  ], [
-    learningAreaCategoryView(
-      LearningAreaCategory.Team,
-      filterAreas(LearningAreaCategory.Team, learningAreas).map(toView)
-    ),
-    learningAreaCategoryView(
-      LearningAreaCategory.Discipline,
-      filterAreas(LearningAreaCategory.Discipline, learningAreas).map(toView)
-    ),
-    learningAreaCategoryView(
-      LearningAreaCategory.Theory,
-      filterAreas(LearningAreaCategory.Theory, learningAreas).map(toView)
-    ),
-  ])
-}
-
-function filterAreas<T extends LearningArea>(group: LearningAreaCategory, areas: Array<T>): Array<T> {
-  return areas.filter(area => area.category === group)
+  ], learningAreas.map(toView))
 }
 
 export function learningAreaView(learningArea: LearningArea): Html.View {
   return Html.a([Html.href(`/learning-areas/${learningArea.id}`)], [
-    cardView([], [
+    cardView([
+      Html.data("learning-area", learningArea.id )
+    ], [
+      learningAreaCategoryTitle(learningArea.category),
       learningAreaTitleView(learningArea)
     ])
   ])
@@ -49,7 +32,7 @@ export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
   return Html.h3([Html.cssClassList([
     { "font-bold": true },
     { "text-sky-800": true },
-    { "text-lg": true }
+    { "text-5xl": true },
   ])], [
     Html.text(area.title),
   ])

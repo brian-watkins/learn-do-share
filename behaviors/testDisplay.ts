@@ -44,24 +44,24 @@ export class TestDisplay {
   }
 }
 
-export function title() {
+export function titleView() {
   return "#learning-area-title"
 }
 
-export function contentArea(selector: string = "") {
+export function learningAreaView(id: string) {
+  return `[data-learning-area="${id}"]`
+}
+
+export function engagementIndicatorView() {
+  return '[data-engagement-indicator]'
+}
+
+export function contentAreaView(selector: string = "") {
   return `#learning-area-content ${selector}`
 }
 
-export function teamLearningAreas(selector: string = "") {
-  return `#team-learning-areas ${selector}`
-}
-
-export function disciplineLearningAreas(selector: string = "") {
-  return `#discipline-learning-areas ${selector}`
-}
-
-export function theoryLearningAreas(selector: string = "") {
-  return `#theory-learning-areas ${selector}`
+export function categoryView() {
+  return "#learning-area-category"
 }
 
 export interface TypingOptions {

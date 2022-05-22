@@ -6,37 +6,32 @@ export enum LearningAreaCategory {
   Theory = "theory"
 }
 
-export function learningAreaCategoryView(category: LearningAreaCategory, areaViews: Array<Html.View>): Html.View {
-  return Html.section([
-    Html.id(`${category}-learning-areas`),
-    learningAreaCategoryStyles()
-  ], [
-    learningAreaCategoryTitle(category),
-    ...areaViews
-  ])
-}
+export function learningAreaCategoryTitle(category: LearningAreaCategory): Html.ViewChild {
+  let classes: Array<Html.CssClassToggle> = [
+    { "py-2": true },
+    { "px-4": true },
+    { "my-2": true },
+    { "font-bold": true },
+    { "rounded": true },
+    { "text-neutral-50": true },
+    { "capitalize": true },
+  ]
+  
+  switch (category) {
+    case LearningAreaCategory.Discipline:
+      classes.push({ "bg-fuchsia-500": true })
+      break
+    case LearningAreaCategory.Team:
+      classes.push({ "bg-purple-700": true })
+      break
+    case LearningAreaCategory.Theory:
+      classes.push({ "bg-indigo-600": true })
+      break
+  }
 
-function learningAreaCategoryTitle(title: string): Html.ViewChild {
   return Html.div([
-    Html.cssClassList([
-      { "py-2": true },
-      { "px-4": true },
-      { "my-2": true },
-      { "font-bold": true },
-      { "bg-indigo-700": true },
-      { "rounded": true },
-      { "text-neutral-50": true },
-      { "capitalize": true },
-    ])
+    Html.cssClassList(classes)
   ], [
-    Html.text(title)
-  ])
-}
-
-function learningAreaCategoryStyles(): Html.ViewAttribute {
-  return Html.cssClassList([
-    { "flex": true },
-    { "flex-col": true },
-    { "gap-8": true }
+    Html.text(category)
   ])
 }
