@@ -1,11 +1,10 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example } from "esbehavior";
+import { behavior, condition, effect, example, Step } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
 import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
 import { FakeLearningArea, TestContext, testContext } from "./testApp";
 import { categoryView, contentAreaView, titleView } from "./testDisplay";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
-import { Step } from "esbehavior/dist/Assumption";
 import { engagementLevelSelected, learningAreaDisplayed } from "./effects";
 
 const coolLearningArea =

@@ -1,6 +1,5 @@
 import { EngagementLevel } from "@/src/engage/engagementPlans";
-import { behavior, condition, example, pick, step } from "esbehavior";
-import { Step } from "esbehavior/dist/Assumption";
+import { behavior, condition, example, pick, Step, step } from "esbehavior";
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
 import { loginUser, reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage } from "./steps";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";

@@ -1,5 +1,4 @@
-import { step } from "esbehavior"
-import { Step } from "esbehavior/dist/Assumption"
+import { Step, step } from "esbehavior"
 import { userIdentifierFor } from "./helpers"
 import { TestContext, TestLearningArea } from "./testApp"
 
