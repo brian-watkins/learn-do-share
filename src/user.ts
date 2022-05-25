@@ -1,6 +1,6 @@
 import { User } from "@/api/common/user"
 import * as Html from "@/display/markup"
-import { linkStyles } from "./viewElements"
+import { linkBox } from "./viewElements"
 
 export function loginView(): Html.View {
   return Html.div([
@@ -10,7 +10,7 @@ export function loginView(): Html.View {
       "mb-8"
     ])
   ], [
-    Html.a([linkStyles(), Html.href("/login")], [Html.text("Login")]),
+    linkBox("/login", "Login")
   ])
 }
 
@@ -22,8 +22,6 @@ export function userAccountView(user: User): Html.View {
       "mb-8"
     ])
   ], [
-    Html.button([linkStyles()], [
-      Html.text(user.name)
-    ])
+    linkBox("", user.name)
   ])
 }

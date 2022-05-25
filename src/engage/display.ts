@@ -5,7 +5,7 @@ import { User } from "@/api/common/user"
 import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { learningAreaContentView } from "./learningAreaContent"
-import { linkStyles } from "../viewElements"
+import { linkBox } from "../viewElements"
 
 export interface Informative {
   type: "informative"
@@ -65,9 +65,7 @@ function view(model: Model): Html.View {
 }
 
 function learningAreasLink(): Html.View {
-  return Html.a([linkStyles(), Html.href("/")], [
-    Html.text("All Learning Areas")
-  ])
+  return linkBox("/", "All Learning Areas")
 }
 
 const display: DisplayConfig<Model, any> = {

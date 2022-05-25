@@ -1,4 +1,5 @@
 import * as Html from "@/display/markup"
+import * as Style from "../style"
 import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory"
 import { cardView } from "../viewElements"
 
@@ -29,9 +30,9 @@ export function learningAreaView(learningArea: LearningArea): Html.View {
 }
 
 export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
-  return Html.h3([Html.cssClasses([
+  return Html.h4([Html.cssClasses([
     "font-bold",
-    "text-sky-800",
+    Style.darkTextColor,
     "text-5xl",
   ])], [
     Html.text(area.title),

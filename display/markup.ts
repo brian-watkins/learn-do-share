@@ -109,6 +109,10 @@ export function h3(attributes: Array<ViewAttribute>, children: Array<ViewChild>)
   return h("h3", makeAttributes(attributes), children)
 }
 
+export function h4(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("h4", makeAttributes(attributes), children)
+}
+
 export function ul(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("ul", makeAttributes(attributes), children)
 }
@@ -149,7 +153,7 @@ function makeAttributes(attributes: Array<ViewAttribute>): any {
         dict.attrs[attr.key] = attr.value
         break
       case "css-classes":
-        dict.class = attr.toObject()
+        dict.class = Object.assign(dict.class, attr.toObject())
         break
       case "event":
         dict.on[attr.event] = function (evt: Event) {
