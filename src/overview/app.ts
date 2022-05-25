@@ -48,31 +48,31 @@ function view(model: AppModel): Html.View {
 }
 
 export function learningAreasTitleView(): Html.ViewChild {
-  return Html.h3([Html.id("learning-area-title"), Html.cssClassList([
-    { "font-bold": true },
-    { "text-sky-800": true },
-    { "text-8xl": true },
-    { "mb-8": true },
-    { "mx-16": true }
+  return Html.h3([Html.id("learning-area-title"), Html.cssClasses([
+    "font-bold",
+    "text-sky-800",
+    "text-8xl",
+    "mb-8",
+    "mx-16"
   ])], [
     Html.text("Principles and Practices"),
   ])
 }
 
 export function learningAreasPracticeView(): Html.ViewChild {
-  return Html.div([Html.id("learning-area-practice"), Html.cssClassList([
-    { "capitalize": true },
-    { "py-2": true },
-    { "px-4": true },
-    { "my-4": true },
-    { "mx-16": true },
-    { "bg-sky-800": true },
-    { "rounded": true },
-    { "text-neutral-50": true },
-    { "border-2": true },
-    { "border-sky-800": true },
-    { "capitalize": true },
-    { "font-bold": true }
+  return Html.div([Html.id("learning-area-practice"), Html.cssClasses([
+    "capitalize",
+    "py-2",
+    "px-4",
+    "my-4",
+    "mx-16",
+    "bg-sky-800",
+    "rounded",
+    "text-neutral-50",
+    "border-2",
+    "border-sky-800",
+    "capitalize",
+    "font-bold"
   ])], [
     Html.text("Engineering")
   ])

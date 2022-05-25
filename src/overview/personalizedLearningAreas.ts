@@ -37,18 +37,18 @@ function engagementPlansView(engagementLevels: Array<EngagementLevel>): Html.Vie
 
 function engagementPlanView(level: string): Html.ViewChild {
   return Html.div([
-    Html.cssClassList([
-      { "py-2": true },
-      { "px-4": true },
-      { "my-2": true },
-      { "mr-2": true },
-      { "bg-cyan-500": true },
-      { "font-bold": true },
-      { "rounded": true },
-      { "text-neutral-50": true },
-      { "w-auto": true },
-      { "inline-block": true },
-      { "capitalize": true }
+    Html.cssClasses([
+      "py-2",
+      "px-4",
+      "my-2",
+      "mr-2",
+      "bg-cyan-500",
+      "font-bold",
+      "rounded",
+      "text-neutral-50",
+      "w-auto",
+      "inline-block",
+      "capitalize"
     ]),
     Html.data("engagement-indicator")
   ], [

@@ -3,7 +3,7 @@ import { h, VNode, VNodeChildElement } from "snabbdom";
 export type View = VNode
 export type ViewChild = VNodeChildElement
 
-export type ViewAttribute = Property | Attribute | CSSClass | CSSClassList | EventHandler
+export type ViewAttribute = Property | Attribute | CssClasses | EventHandler
 
 class Property {
   type: "property" = "property"
@@ -15,12 +15,6 @@ class Attribute {
   type: "attribute" = "attribute"
 
   constructor(public key: string, public value: string) { }
-}
-
-class CSSClass {
-  type: "css-class" = "css-class"
-
-  constructor(public value: string) { }
 }
 
 export function id(value: string): ViewAttribute {
@@ -51,28 +45,24 @@ export function text(value: string): ViewChild {
   return value
 }
 
-export function cssClass(value: string): ViewAttribute {
-  return new CSSClass(value)
-}
+export type CssClassname = string
 
-export type CssClassToggle = { [key: string]: boolean }
+class CssClasses {
+  type: "css-classes" = "css-classes"
 
-class CSSClassList {
-  type: "css-class-list" = "css-class-list"
-
-  constructor(private classes: Array<CssClassToggle>) { }
+  constructor(private classes: Array<CssClassname>) { }
 
   toObject(): any {
-    const classObject = {}
-    for (const classToggle of this.classes) {
-      Object.assign(classObject, classToggle)
+    const classObject: { [key:string]: boolean } = {}
+    for (const classname of this.classes) {
+      classObject[classname] = true
     }
     return classObject
   }
 }
 
-export function cssClassList(classes: Array<CssClassToggle>): ViewAttribute {
-  return new CSSClassList(classes)
+export function cssClasses(classes: Array<CssClassname>): ViewAttribute {
+  return new CssClasses(classes)
 }
 
 class EventHandler {
@@ -158,10 +148,7 @@ function makeAttributes(attributes: Array<ViewAttribute>): any {
       case "attribute":
         dict.attrs[attr.key] = attr.value
         break
-      case "css-class":
-        dict.class[attr.value] = true
-        break
-      case "css-class-list":
+      case "css-classes":
         dict.class = attr.toObject()
         break
       case "event":

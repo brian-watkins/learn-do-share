@@ -11,8 +11,8 @@ export interface LearningArea {
 export function learningAreasView<T extends LearningArea>(learningAreas: Array<T>, toView: (area: T) => Html.View): Html.View {
   return Html.section([
     Html.id("learning-areas"),
-    Html.cssClassList([
-      { "m-16": true },
+    Html.cssClasses([
+      "m-16",
     ])
   ], learningAreas.map(toView))
 }
@@ -29,10 +29,10 @@ export function learningAreaView(learningArea: LearningArea): Html.View {
 }
 
 export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
-  return Html.h3([Html.cssClassList([
-    { "font-bold": true },
-    { "text-sky-800": true },
-    { "text-5xl": true },
+  return Html.h3([Html.cssClasses([
+    "font-bold",
+    "text-sky-800",
+    "text-5xl",
   ])], [
     Html.text(area.title),
   ])

@@ -4,10 +4,10 @@ import { linkStyles } from "./viewElements"
 
 export function loginView(): Html.View {
   return Html.div([
-    Html.cssClassList([
-      { "flex": true },
-      { "justify-end": true },
-      { "mb-8": true }
+    Html.cssClasses([
+      "flex",
+      "justify-end",
+      "mb-8"
     ])
   ], [
     Html.a([linkStyles(), Html.href("/login")], [Html.text("Login")]),
@@ -16,10 +16,10 @@ export function loginView(): Html.View {
 
 export function userAccountView(user: User): Html.View {
   return Html.div([
-    Html.cssClassList([
-      { "flex": true },
-      { "justify-end": true },
-      { "mb-8": true }
+    Html.cssClasses([
+      "flex",
+      "justify-end",
+      "mb-8"
     ])
   ], [
     Html.button([linkStyles()], [

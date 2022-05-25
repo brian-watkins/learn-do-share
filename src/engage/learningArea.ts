@@ -11,31 +11,31 @@ export interface LearningArea {
 
 
 export function learningAreaCategoryView(area: LearningArea): Html.ViewChild {
-  return Html.div([Html.id("learning-area-category"), Html.cssClassList([
-    { "capitalize": true },
-    { "py-2": true },
-    { "px-4": true },
-    { "my-8": true },
-    { "mx-16": true },
-    { "bg-fuchsia-500": true },
-    { "rounded": true },
-    { "text-neutral-50": true },
-    { "border-2": true },
-    { "border-fuchsia-500": true },
-    { "capitalize": true },
-    { "font-bold": true }
+  return Html.div([Html.id("learning-area-category"), Html.cssClasses([
+    "capitalize",
+    "py-2",
+    "px-4",
+    "my-8",
+    "mx-16",
+    "bg-fuchsia-500",
+    "rounded",
+    "text-neutral-50",
+    "border-2",
+    "border-fuchsia-500",
+    "capitalize",
+    "font-bold"
   ])], [
     Html.text(area.category)
   ])
 }
 
 export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
-  return Html.h3([Html.id("learning-area-title"), Html.cssClassList([
-    { "font-bold": true },
-    { "text-sky-800": true },
-    { "text-8xl": true },
-    { "mb-8": true },
-    { "mx-16": true }
+  return Html.h3([Html.id("learning-area-title"), Html.cssClasses([
+    "font-bold",
+    "text-sky-800",
+    "text-8xl",
+    "mb-8",
+    "mx-16"
   ])], [
     Html.text(area.title),
   ])

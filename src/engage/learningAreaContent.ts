@@ -5,15 +5,15 @@ import { LearningArea } from "./learningArea";
 export function learningAreaContentView(area: LearningArea): Html.ViewChild {
   return Html.p([
     Html.id("learning-area-content"),
-    Html.cssClassList([
-      { "mx-16": true },
-      { "mt-12": true },
-      { "max-w-xl": true },
-      { "border-l-8": true },
-      { "border-solid": true },
-      { "border-cyan-500": true },
-      { "pl-6": true },
-      { "text-xl": true }
+    Html.cssClasses([
+      "mx-16",
+      "mt-12",
+      "max-w-xl",
+      "border-l-8",
+      "border-solid",
+      "border-cyan-500",
+      "pl-6",
+      "text-xl"
     ]),
     Html.withHTMLContent(area.content)
   ], [])

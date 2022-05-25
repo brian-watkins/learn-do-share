@@ -9,29 +9,29 @@ export interface PersonalizedLearningArea extends LearningArea {
 
 export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewChild {
   return Html.div([
-    Html.cssClassList([
-      { "ml-16": true },
-      { "mb-8": true },
-      { "flex": true },
-      { "gap-4": true }
+    Html.cssClasses([
+      "ml-16",
+      "mb-8",
+      "flex",
+      "gap-4"
     ])
   ], [...area.engagementLevels.map(engagementPlanView), increaseEngagementButton(area)])
 }
 
 function engagementPlanView(level: string): Html.ViewChild {
   return Html.div([
-    Html.cssClassList([
-      { "py-2": true },
-      { "px-4": true },
-      { "bg-cyan-500": true },
-      { "rounded": true },
-      { "border-2": true },
-      { "border-cyan-500": true },
-      { "text-neutral-50": true },
-      { "w-auto": true },
-      { "inline-block": true },
-      { "capitalize": true },
-      { "font-bold": true }
+    Html.cssClasses([
+      "py-2",
+      "px-4",
+      "bg-cyan-500",
+      "rounded",
+      "border-2",
+      "border-cyan-500",
+      "text-neutral-50",
+      "w-auto",
+      "inline-block",
+      "capitalize",
+      "font-bold"
     ]),
     Html.data("engagement-indicator")
   ], [
@@ -41,16 +41,16 @@ function engagementPlanView(level: string): Html.ViewChild {
 
 export function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.ViewChild {
   return Html.button([
-    Html.cssClassList([
-      { "px-4": true },
-      { "py-2": true },
-      { "rounded": true },
-      { "border-cyan-800": true },
-      { "border-2": true },
-      { "border-dotted": true },
-      { "text-cyan-800": true },
-      { "inline-block": true },
-      { "font-bold": true }
+    Html.cssClasses([
+      "px-4",
+      "py-2",
+      "rounded",
+      "border-cyan-800",
+      "border-2",
+      "border-dotted",
+      "text-cyan-800",
+      "inline-block",
+      "font-bold"
     ]),
     Html.data("increase-engagement"),
     Html.onClick(nextEngagementLevelMessage(learningArea))

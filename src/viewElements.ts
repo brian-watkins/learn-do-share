@@ -5,32 +5,32 @@ export function cardView(attributes: Array<Html.ViewAttribute>, children: Array<
 }
 
 function cardViewStyle(): Html.ViewAttribute {
-  return Html.cssClassList([
-    { "p-8": true },
-    { "my-8": true },
-    { "flex": true },
-    { "items-center": true },
-    { "gap-8": true },
-    { "rounded": true },
-    { "border-2": true },
-    { "border-sky-800": true },
-    { "border-dotted": true },
-    { "break-inside-avoid": true },
+  return Html.cssClasses([
+    "p-8",
+    "my-8",
+    "flex",
+    "items-center",
+    "gap-8",
+    "rounded",
+    "border-2",
+    "border-sky-800",
+    "border-dotted",
+    "break-inside-avoid",
   ])
 }
 
 export function linkStyles(): Html.ViewAttribute {
-  return Html.cssClassList([
-    { "mt-8": true },
-    { "mx-16": true },
-    { "px-4": true },
-    { "py-2": true },
-    { "rounded": true },
-    { "border-cyan-800": true },
-    { "border-2": true },
-    { "border-dotted": true },
-    { "text-cyan-800": true },
-    { "font-bold": true },
-    { "inline-block": true }
+  return Html.cssClasses([
+    "mt-8",
+    "mx-16",
+    "px-4",
+    "py-2",
+    "rounded",
+    "border-cyan-800",
+    "border-2",
+    "border-dotted",
+    "text-cyan-800",
+    "font-bold",
+    "inline-block"
   ])
 }

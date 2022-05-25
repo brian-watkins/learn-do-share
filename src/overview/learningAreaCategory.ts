@@ -7,30 +7,30 @@ export enum LearningAreaCategory {
 }
 
 export function learningAreaCategoryTitle(category: LearningAreaCategory): Html.ViewChild {
-  let classes: Array<Html.CssClassToggle> = [
-    { "py-2": true },
-    { "px-4": true },
-    { "my-2": true },
-    { "font-bold": true },
-    { "rounded": true },
-    { "text-neutral-50": true },
-    { "capitalize": true },
+  let classes: Array<Html.CssClassname> = [
+    "py-2",
+    "px-4",
+    "my-2",
+    "font-bold",
+    "rounded",
+    "text-neutral-50",
+    "capitalize",
   ]
   
   switch (category) {
     case LearningAreaCategory.Discipline:
-      classes.push({ "bg-fuchsia-500": true })
+      classes.push("bg-fuchsia-500")
       break
     case LearningAreaCategory.Team:
-      classes.push({ "bg-purple-700": true })
+      classes.push("bg-purple-700")
       break
     case LearningAreaCategory.Theory:
-      classes.push({ "bg-indigo-600": true })
+      classes.push("bg-indigo-600")
       break
   }
 
   return Html.div([
-    Html.cssClassList(classes)
+    Html.cssClasses(classes)
   ], [
     Html.text(category)
   ])
