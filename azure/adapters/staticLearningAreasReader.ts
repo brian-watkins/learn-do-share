@@ -38,19 +38,19 @@ function allLearningAreas(): Array<AreaToEngage> {
     },
     {
       id: "area-6",
-      title: "Explain the Principles and Values Behind Agile",
+      title: "Explain Agile",
       content: "Agile is super cool.",
       category: LearningAreaCategory.Theory
     },
     {
       id: "area-7",
-      title: "Explain the Principles and Values Behind XP",
+      title: "Explain XP",
       content: "XP is EXTREME!",
       category: LearningAreaCategory.Theory
     },
     {
       id: "area-8",
-      title: "Explain the Principles and Values Behind TDD",
+      title: "Explain TDD",
       content: "TDD is the best!",
       category: LearningAreaCategory.Theory
     }
