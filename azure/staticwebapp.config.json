@@ -19,6 +19,10 @@
   "responseOverrides": {
     "404": {
       "redirect": "/index.html"
+    },
+    "401": {
+      "redirect": "/.auth/login/aad?post_login_redirect_uri=.referrer",
+      "statusCode": 302
     }
   }
 }

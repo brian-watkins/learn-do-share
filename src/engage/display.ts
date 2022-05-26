@@ -6,6 +6,7 @@ import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLea
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { learningAreaContentView } from "./learningAreaContent"
 import { linkBox } from "../viewElements"
+import { loginView, userAccountView } from "../user"
 
 export interface Informative {
   type: "informative"
@@ -48,20 +49,34 @@ function view(model: Model): Html.View {
   switch (model.type) {
     case "informative":
       return Html.article([], [
-        learningAreasLink(),
+        // learningAreasLink(),
+        header([
+          loginView()
+        ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
     case "personalized":
       return Html.article([], [
-        learningAreasLink(),
+        // learningAreasLink(),
+        header([
+          userAccountView(model.user)
+        ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         engagementPlansView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
   }
+}
+
+function header(views: Array<Html.View>): Html.View {
+  return Html.div([], [
+    learningAreasLink(),
+    ...views
+    // loginView()
+  ])
 }
 
 function learningAreasLink(): Html.View {
