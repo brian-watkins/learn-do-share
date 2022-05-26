@@ -24,17 +24,25 @@ export function tag(color: Colors): Html.ViewAttribute {
   ])
 }
 
+export function box(): Html.ViewAttribute {
+  return Html.cssClasses([
+    "p-8",
+    "rounded",
+    "border-2",
+    borderColor(Colors.Standard),
+    "border-dotted",
+  ])
+}
+
 export function link(): Html.ViewAttribute {
   return Html.cssClasses([
-    "mt-8",
-    "mx-16",
     "px-4",
     "py-2",
     "rounded",
-    "border-cyan-800",
+    borderColor(Colors.Standard),
     "border-2",
     "border-dotted",
-    "text-cyan-800",
+    darkTextColor,
     "font-bold",
     "inline-block"
   ])
@@ -44,39 +52,44 @@ export enum Colors {
   Standard = "standard",
   Discipline = "discipline",
   Team = "team",
-  Theory = "theory"
+  Theory = "theory",
+  Engagement = "engagement"
 }
 
-export const darkTextColor = "text-sky-800"
+export const darkTextColor = "text-gray-900"
 export const lightTextColor = "text-neutral-50"
 
 function backgroundColor(color: Colors): string {
   switch (color) {
     case Colors.Standard:
-      return "bg-sky-800"
+      return "bg-gray-700"
     case Colors.Discipline:
       return "bg-fuchsia-500"
     case Colors.Team:
       return "bg-purple-700"
     case Colors.Theory:
       return "bg-indigo-600"
+    case Colors.Engagement:
+      return "bg-cyan-700"
   }
 }
 
 function borderColor(color: Colors): string {
   switch (color) {
     case Colors.Standard:
-      return "border-sky-800"
+      return "border-gray-700"
     case Colors.Discipline:
       return "border-fuchsia-500"
     case Colors.Team:
       return "border-purple-700"
     case Colors.Theory:
       return "border-indigo-600"
+    case Colors.Engagement:
+      return "border-cyan-700"
   }
 }
 
-export function colorForCategory(category: LearningAreaCategory): Colors {
+export function colorForCategory(category: string): Colors {
   switch (category) {
     case LearningAreaCategory.Discipline:
       return Colors.Discipline
@@ -84,5 +97,7 @@ export function colorForCategory(category: LearningAreaCategory): Colors {
       return Colors.Team
     case LearningAreaCategory.Theory:
       return Colors.Theory
+    default:
+      return Colors.Standard
   }
 }

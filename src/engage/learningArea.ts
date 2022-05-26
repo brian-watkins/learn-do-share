@@ -13,15 +13,23 @@ export interface LearningArea {
 
 
 export function learningAreaCategoryView(area: LearningArea): Html.ViewChild {
-  return Html.div([Html.id("learning-area-category"), Style.tag(Style.Colors.Discipline), Html.cssClasses([
-    "mt-8",
-    "mb-4",
-    "mx-16",
-  ])], [
+  return Html.div([
+    Html.id("learning-area-category"),
+    Style.tag(Style.colorForCategory(area.category)),
+    Html.cssClasses([
+      "mt-8",
+      "mb-4",
+      "mx-16",
+    ])], [
     Html.text(area.category)
   ])
 }
 
 export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
-  return pageTitle([Html.id("learning-area-title")], area.title)
+  return pageTitle([
+    Html.id("learning-area-title"),
+    Html.cssClasses([
+      Style.darkTextColor
+    ])
+  ], area.title)
 }

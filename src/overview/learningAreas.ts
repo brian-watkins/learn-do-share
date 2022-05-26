@@ -1,7 +1,7 @@
 import * as Html from "@/display/markup"
 import * as Style from "../style"
 import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory"
-import { cardView } from "../viewElements"
+import { cardBox } from "../viewElements"
 
 export interface LearningArea {
   id: string
@@ -20,7 +20,7 @@ export function learningAreasView<T extends LearningArea>(learningAreas: Array<T
 
 export function learningAreaView(learningArea: LearningArea): Html.View {
   return Html.a([Html.href(`/learning-areas/${learningArea.id}`)], [
-    cardView([
+    cardBox([
       Html.data("learning-area", learningArea.id )
     ], [
       learningAreaCategoryTitle(learningArea.category),

@@ -1,4 +1,5 @@
 import * as Html from "@/display/markup"
+import * as Style from "../style"
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
@@ -11,6 +12,7 @@ export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewCh
   return Html.div([
     Html.cssClasses([
       "ml-16",
+      "mt-16",
       "mb-8",
       "flex",
       "gap-4"
@@ -20,19 +22,7 @@ export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewCh
 
 function engagementPlanView(level: string): Html.ViewChild {
   return Html.div([
-    Html.cssClasses([
-      "py-2",
-      "px-4",
-      "bg-cyan-500",
-      "rounded",
-      "border-2",
-      "border-cyan-500",
-      "text-neutral-50",
-      "w-auto",
-      "inline-block",
-      "capitalize",
-      "font-bold"
-    ]),
+    Style.tag(Style.Colors.Engagement),
     Html.data("engagement-indicator")
   ], [
     Html.text(level)
@@ -41,17 +31,7 @@ function engagementPlanView(level: string): Html.ViewChild {
 
 export function increaseEngagementButton(learningArea: PersonalizedLearningArea): Html.ViewChild {
   return Html.button([
-    Html.cssClasses([
-      "px-4",
-      "py-2",
-      "rounded",
-      "border-cyan-800",
-      "border-2",
-      "border-dotted",
-      "text-cyan-800",
-      "inline-block",
-      "font-bold"
-    ]),
+    Style.link(),
     Html.data("increase-engagement"),
     Html.onClick(nextEngagementLevelMessage(learningArea))
   ], [
