@@ -1,20 +1,21 @@
 import { Context, HttpRequest } from "@azure/functions"
 
 export default async function (context: Context, req: HttpRequest): Promise<void> {
+  const authProvider = context.bindingData.authProvider
+  const loginRedirect = getRedirectURI(req)
+
   context.res = {
     status: 307,
     headers: {
-      "Location": buildAzureLoginURI(req)
+      "Location": buildAzureLoginURI(authProvider, loginRedirect)
     }
   }
 }
 
-function buildAzureLoginURI(req: HttpRequest): string {
-  const loginRedirect = getRedirectURI(req)
-
-  let uri = "/.auth/login" + req.url
-  if (loginRedirect) {
-    uri += "?post_login_redirect_uri=" + loginRedirect
+function buildAzureLoginURI(provider: string, redirect: string | null): string {
+  let uri = "/.auth/login/" + provider
+  if (redirect) {
+    uri += "?post_login_redirect_uri=" + redirect
   }
 
   return uri
