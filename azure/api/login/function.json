@@ -8,7 +8,7 @@
       "methods": [
         "get"
       ],
-      "route": "login/{authProvider:alpha:length(10)}"
+      "route": "login/{authProvider:alpha:maxlength(10)}"
     },
     {
       "type": "http",
