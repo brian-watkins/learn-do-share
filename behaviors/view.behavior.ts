@@ -1,7 +1,7 @@
 import { behavior, condition, example, pick } from "esbehavior"
 import { FakeLearningArea, testContext } from "./testApp"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
-import { learningAreaDisplayed } from "./effects"
+import { learningAreaSummaryDisplayed } from "./effects"
 
 export default
   behavior("viewing items", [
@@ -22,11 +22,11 @@ export default
           )
         ],
         observe: [
-          learningAreaDisplayed(FakeLearningArea(1), { withCategory: "Team" }),
-          learningAreaDisplayed(FakeLearningArea(2), { withCategory: "Team" }),
-          learningAreaDisplayed(FakeLearningArea(3), { withCategory: "Discipline" }),
-          learningAreaDisplayed(FakeLearningArea(4), { withCategory: "Theory" }),
-          learningAreaDisplayed(FakeLearningArea(5), { withCategory: "Theory" }),
+          learningAreaSummaryDisplayed(FakeLearningArea(1), { withCategory: "Team" }),
+          learningAreaSummaryDisplayed(FakeLearningArea(2), { withCategory: "Team" }),
+          learningAreaSummaryDisplayed(FakeLearningArea(3), { withCategory: "Discipline" }),
+          learningAreaSummaryDisplayed(FakeLearningArea(4), { withCategory: "Theory" }),
+          learningAreaSummaryDisplayed(FakeLearningArea(5), { withCategory: "Theory" }),
         ]
       })
   ])

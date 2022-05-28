@@ -6,11 +6,10 @@ import { AzureFunctionAdapter } from "./azureFunctionAdapter"
 import { generateBackstageFunction } from "@/api/backstage/function"
 import { generateRootFunction } from "@/api/root/function"
 import { generateEngageFunction } from "@/api/engage/function"
-// import tsConfigPaths from "vite-tsconfig-paths"
+import loginFunction from "@/api/login/index"
 
 const vite = await createViteServer({
   server: { middlewareMode: 'ssr' },
-  // plugins: [tsConfigPaths()]
 })
 
 export async function stopVite() {
@@ -53,6 +52,17 @@ export async function createServer(adapters: Adapters & EngageAdapters): Promise
   app.use("/api/engage", async (req, res, next) => {
     try {
       await engageFunctionAdapter.run(req, res)
+    } catch (err: any) {
+      vite.ssrFixStacktrace(err)
+      next(err)
+    }
+  })
+
+  const loginFunctionAdapter = new AzureFunctionAdapter(loginFunction)
+
+  app.use("/api/login", async (req, res, next) => {
+    try {
+      await loginFunctionAdapter.run(req, res)
     } catch (err: any) {
       vite.ssrFixStacktrace(err)
       next(err)

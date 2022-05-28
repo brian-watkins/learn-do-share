@@ -10,7 +10,7 @@
     },
     {
       "route": "/login",
-      "rewrite": "/.auth/login/aad"
+      "rewrite": "/api/login/aad"
     }
   ],
   "platform": {

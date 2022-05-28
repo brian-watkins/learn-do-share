@@ -52,3 +52,18 @@ await esbuild.build({
     ],
     logLevel: "info"
 })
+
+await esbuild.build({
+    entryPoints: [
+        "./login/index.ts"
+    ],
+    platform: "node",
+    format: "esm",
+    target: "node16",
+    bundle: true,
+    outfile: "./build/login/index.mjs",
+    external: [
+        "@azure/functions"
+    ],
+    logLevel: "info"
+})

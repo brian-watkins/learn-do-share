@@ -1,11 +1,10 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example, Step } from "esbehavior";
+import { behavior, condition, effect, example } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
 import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
-import { FakeLearningArea, TestContext, testContext } from "./testApp";
-import { categoryView, contentAreaView, titleView } from "./testDisplay";
+import { FakeLearningArea, testContext } from "./testApp";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
-import { engagementLevelSelected, learningAreaDisplayed } from "./effects";
+import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -45,9 +44,9 @@ export default
           effect("it loads the main page instead", async (testContext) => {
             expect(testContext.display.path()).to.equal("/index.html")
           }),
-          learningAreaDisplayed(awesomeLearningArea, { withCategory: "Team" }),
-          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" }),
-          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" })
+          learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
+          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
         ]
       }),
     example(testContext())
@@ -65,18 +64,18 @@ export default
           })
         ],
         observe: [
-          titleDisplayed("Super Learning Area"),
-          contentDisplayed("Learn this stuff!"),
-          categoryDisplayed("Discipline")
+          selectedLearningAreaTitleDisplayed("Super Learning Area"),
+          selectedLearningAreaContentDisplayed("Learn this stuff!"),
+          selectedLearningAreaCategoryDisplayed("Discipline")
         ]
       }).andThen({
         perform: [
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaDisplayed(awesomeLearningArea, { withCategory: "Team" }),
-          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" }),
-          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" })
+          learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
+          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
         ]
       }),
     example(testContext())
@@ -95,9 +94,9 @@ export default
           selectLearningArea(awesomeLearningArea)
         ],
         observe: [
-          titleDisplayed("Awesome Learning Area"),
-          contentDisplayed("Learn this stuff!"),
-          categoryDisplayed("Team"),
+          selectedLearningAreaTitleDisplayed("Awesome Learning Area"),
+          selectedLearningAreaContentDisplayed("Learn this stuff!"),
+          selectedLearningAreaCategoryDisplayed("Team"),
         ]
       }),
     example(testContext())
@@ -120,9 +119,9 @@ export default
           selectLearningArea(coolLearningArea)
         ],
         observe: [
-          categoryDisplayed("Theory"),
-          titleDisplayed("Cool Learning Area"),
-          contentDisplayed(coolLearningArea.content),
+          selectedLearningAreaCategoryDisplayed("Theory"),
+          selectedLearningAreaTitleDisplayed("Cool Learning Area"),
+          selectedLearningAreaContentDisplayed(coolLearningArea.content),
           engagementLevelSelected(coolLearningArea, "Learning"),
           engagementLevelSelected(coolLearningArea, "Doing"),
         ]
@@ -131,8 +130,8 @@ export default
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaDisplayed(coolLearningArea, { withCategory: "Theory" }),
-          learningAreaDisplayed(superLearningArea, { withCategory: "Discipline" })
+          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" }),
+          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" })
         ]
       }),
     example(testContext())
@@ -180,23 +179,3 @@ Here is an intro to what you will learn
       })
   ])
 
-function titleDisplayed(expected: string): Step<TestContext> {
-  return effect("the title is displayed", async (testContext) => {
-    const titleText = await testContext.display.select(titleView()).text()
-    expect(titleText).to.contain(expected)
-  })
-}
-
-function contentDisplayed(expected: string): Step<TestContext> {
-  return effect("the content is displayed", async (testContext) => {
-    const contentText = await testContext.display.select(contentAreaView()).text()
-    expect(contentText).to.contain(expected)
-  })
-}
-
-function categoryDisplayed(expected: string): Step<TestContext> {
-  return effect("the learning area category is displayed", async (testContext) => {
-    const categoryText = await testContext.display.select(categoryView()).text()
-    expect(categoryText).to.contain(expected)
-  })
-}

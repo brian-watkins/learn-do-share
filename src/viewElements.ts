@@ -1,6 +1,13 @@
 import * as Html from "@/display/markup"
 import * as Style from "./style"
 
+export function header(attributes: Array<Html.ViewAttribute>, views: Array<Html.View>): Html.View {
+  return Html.div([Html.cssClasses([
+    "flex",
+    "justify-between",
+  ]), ...attributes], views)
+}
+
 export function pageTitle(attributes: Array<Html.ViewAttribute>, text: string): Html.View {
   return Html.h3([...attributes, Style.bannerText(), Html.cssClasses([
     "mb-8",

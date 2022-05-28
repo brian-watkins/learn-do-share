@@ -5,7 +5,8 @@ import { User } from "@/api/common/user"
 import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
 import { learningAreaContentView } from "./learningAreaContent"
-import { linkBox } from "../viewElements"
+import { header, linkBox } from "../viewElements"
+import { userAccountView } from "../user"
 
 export interface Informative {
   type: "informative"
@@ -48,20 +49,34 @@ function view(model: Model): Html.View {
   switch (model.type) {
     case "informative":
       return Html.article([], [
-        learningAreasLink(),
+        pageHeader([
+          learningAreasLink(),
+          loginView(model.learningArea)
+        ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
     case "personalized":
       return Html.article([], [
-        learningAreasLink(),
+        pageHeader([
+          learningAreasLink(),
+          userAccountView(model.user)
+        ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         engagementPlansView(model.learningArea),
         learningAreaContentView(model.learningArea),
       ])
   }
+}
+
+function pageHeader(views: Array<Html.View>): Html.View {
+  return header([], views)
+}
+
+export function loginView(area: LearningArea): Html.View {
+  return linkBox(`/login?redirect=/learning-areas/${area.id}`, "Login")
 }
 
 function learningAreasLink(): Html.View {

@@ -1,7 +1,6 @@
 import { expect } from "chai"
 import { Effect, effect } from "esbehavior"
 import { TestContext, TestLearningArea } from "./testApp"
-import { engagementIndicatorView, learningAreaView } from "./testDisplay"
 
 export function engagementLevelSelected(learningArea: TestLearningArea, indicator: string): Effect<TestContext> {
   return effect(`Engagement level '${indicator}' shown for Learning Area ${learningArea.testId}`, async (testContext) => {
@@ -25,17 +24,65 @@ export function noEngagementLevelsSelected(learningArea: TestLearningArea): Effe
   })
 }
 
-export interface LearningAreaDisplayOptions {
-  withCategory: string
+export function engagementIndicatorView() {
+  return '[data-engagement-indicator]'
 }
 
-export function learningAreaDisplayed(learningArea: TestLearningArea, options: LearningAreaDisplayOptions): Effect<TestContext> {
-  return effect(`Learning area '${learningArea.title}' is displayed in the ${options.withCategory} category`, async (testContext) => {
+export interface LearningAreaDisplayOptions {
+  withCategory: string | null
+}
+
+export function learningAreaSummaryDisplayed(learningArea: TestLearningArea, options: LearningAreaDisplayOptions = { withCategory: null }): Effect<TestContext> {
+  let title = `Learning area '${learningArea.title}' summary is displayed`
+  if (options.withCategory) {
+    title += `in the ${options.withCategory} category`
+  }
+  
+  return effect(title, async (testContext) => {
     const learningAreaText = await testContext.display
       .select(learningAreaView(learningArea.id))
       .text()
     
     expect(learningAreaText).to.contain(learningArea.title)
-    expect(learningAreaText).to.contain(options.withCategory)
+    if (options.withCategory) {
+      expect(learningAreaText).to.contain(options.withCategory)
+    }
   })
+}
+
+export function learningAreaView(id: string) {
+  return `[data-learning-area="${id}"]`
+}
+
+export function selectedLearningAreaTitleDisplayed(expected: string): Effect<TestContext> {
+  return effect("the learning area title is displayed", async (testContext) => {
+    const titleText = await testContext.display.select(titleView()).text()
+    expect(titleText).to.contain(expected)
+  })
+}
+
+export function selectedLearningAreaContentDisplayed(expected: string): Effect<TestContext> {
+  return effect("the learning area content is displayed", async (testContext) => {
+    const contentText = await testContext.display.select(contentAreaView()).text()
+    expect(contentText).to.contain(expected)
+  })
+}
+
+export function selectedLearningAreaCategoryDisplayed(expected: string): Effect<TestContext> {
+  return effect("the learning area category is displayed", async (testContext) => {
+    const categoryText = await testContext.display.select(categoryView()).text()
+    expect(categoryText).to.contain(expected)
+  })
+}
+
+export function titleView() {
+  return "#learning-area-title"
+}
+
+export function contentAreaView(selector: string = "") {
+  return `#learning-area-content ${selector}`
+}
+
+export function categoryView() {
+  return "#learning-area-category"
 }

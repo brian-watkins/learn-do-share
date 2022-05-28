@@ -44,26 +44,6 @@ export class TestDisplay {
   }
 }
 
-export function titleView() {
-  return "#learning-area-title"
-}
-
-export function learningAreaView(id: string) {
-  return `[data-learning-area="${id}"]`
-}
-
-export function engagementIndicatorView() {
-  return '[data-engagement-indicator]'
-}
-
-export function contentAreaView(selector: string = "") {
-  return `#learning-area-content ${selector}`
-}
-
-export function categoryView() {
-  return "#learning-area-category"
-}
-
 export interface TypingOptions {
   clear: boolean
 }
