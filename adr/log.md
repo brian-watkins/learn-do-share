@@ -952,3 +952,187 @@ from the others. We could try to optimize further but it might just end up
 making the test suite harder to reason about -- like, is this an example in a
 new context or is it sharing a context? etc
 
+
+### Cleaning up the styles
+
+We're using tailwind and that can definitely clutter up the view code a lot. We
+also start to get a lot of repitition everywhere, so we tried to dry this up a
+bit. We abstracted in two ways:
+
+1. Pull out collections of styles into a `Style` module
+2. Pull out reusable views into a `ViewElements` module
+
+This allows our view code to reuse code at different levels. Sometimes, we might
+want to have the same style, but it doesn't make sense to make a shared view
+element yet.
+
+Probably the best thing is creating some code for organizing the colors and the
+text colors. One thing with Tailwind, though, you should not dynamically
+construct the class names, since Tailwind actually looks through your code to
+determine the minimum stylesheet to produce. So you have to create functions
+that use the full tailwind class name always.
+
+Our rule for abstracting collections of styles or view elements is to keep the
+styling within the bounds of the element and leave layout info (margins, flex,
+etc) to the elements that use these. So the view code pretty much only has
+styling information about relative positioning -- border, colors, typography,
+padding, etc is all abstracted away as much as possible.
+
+What we discovered in doing this is that we sometimes had duplicated classes
+(even on a single element). We sometimes had slight inconsistencies (different
+border colors that were hard to distinguish). And we sometimes had different
+implementations that resulted in the same thing. So this exercise allowed us to
+get more consistent across the board with the approach to styling, colors, etc.
+
+
+### Logging in on the engage page
+
+When someone clicks a learning area, they are taken to a separate page with the
+full content etc. That page did not have the login button on it yet. So our next
+feature is to allow people to log in from a learning area engagement page. This
+makes sense because we imagine someone might link to a particular page or share
+that link, and then they could log in there.
+
+The first pass at this is straightforward and we modified some tests -- just add
+the login button. But what happens is that upon login one is directed back to
+the main page of the app. Instead, we want to redirect to the same page you
+logged in from.
+
+It turns out that Azure static web apps can do this, by adding a query param to
+the login link. However, we were abstracting this particular link away via a
+rewrite rule in the static web apps config. This is nice, because then we keep
+this Azure specific detail (how to construct the login link) out of our source
+code, making it potentially easier to deploy in another environment.
+
+The first pass to implement this is just to allow the engage page to construct
+the link based on what learning area is displayed.
+
+Interestingly enough, we had thought of the login button / user button as a kind
+of separate capability. But now, what we're seeing, is that the overview page
+needs a certain kind of login button and the engage page needs a slightly
+different one. They both should look the same, however, but it feels weird to
+somehow pass in a redirect link in one case but not in the other. So we have two
+login buttons right now. They share a common view element called a `linkBox` so
+the only difference is really in the particular login url (the `href`) that we
+pass to it.
+
+However, we now have Azure specific details in our source code. How can we
+abstract the login link in some way that insulates our app from this detail and
+works to make it more portable?
+
+It would be great if Azure static web apps was able to rewrite the login url in
+a way that took into account query params we pass, so that we could pass our own
+redirect param and it could rewrite it into the format that static web apps
+wants. However, the static web apps rewrite rule does not seem to be that
+sophisticated.
+
+Maybe we need some kind of frontend adapter? We have these in the `azure`
+directory for the backstage ... is it possible to do this for the frontstage?
+Or, it could be something that we provide from the backstage via the server side
+render of the HTML?
+
+Another thing we could do is just write a serverless function that redirects to
+the azure login link. So in that way we could maintain the `/login` endpoint
+and just add our own query param for redirects, but we would rewrite to
+something like `/api/login` which would in turn redirect to the azure login
+link. This is probably the best approach.
+
+We did this but ran into some problems when deploying, mainly because we tried
+to mimic the same setup from before where we specify the particular auth
+provider in the static web apps config file. But the local `swa` emulator does
+not seem to check all the various rewrite rules etc, so when we actually
+deployed it didn't work. We had to add a `route` attribute to the function.json
+file, and then, again, the `swa` emulator did not check this correctly so there
+was an error.
+
+So there are some limitations with our testing strategy around the rewrite rules
+that Azure will support; they don't seem to be validated locally by the emulator
+in the same way they are validated in production. This could be due to the fact
+that we are providing our own api server to the `swa` tool rather than allowing
+it to redirect to serverless functions running locally. We did this for speed
+and because there was no way we could control the serverless functions in the
+way we need to for the tests if we went this route (at least I don't think there
+is). 
+
+So how can we fix this? We upgraded to the latest version of the `swa` emulator.
+But that's not going to fix this problem since when we run that we provide our
+own api server with hard coded paths etc. What we would need to do is run the
+azure functions emulator and that would actually read the `function.json` files
+etc and presumably do the right thing.
+
+Note that when we run the function emulator, it does accurately validate all the
+routing rules for the functions (like path params and validations etc).
+
+Now, we could try to do this during the unit tests which would probably be ideal
+but it's not clear how we would control the functions since the function
+emulator expects to use the files that the function.json says to use. Note that
+the main thing we control right now is the learning areas. For things like
+setting up the app with a certain engagement plan, we use the CosmosRepository
+to actually insert these into the fake cosmos directly. So, actually, if we
+pulled learning areas from Cosmos, we could control everything we need to just
+by interacting with the Cosmos DB ...
+
+In any case, we could just start the function app emulator for each example,
+like we do with the test server. We would have to build also though. The reason
+we didn't try this before was just because the function app emulator didn't run
+on Apple Silicon. It could work, but it's still pretty slow to start, much
+slower than express.
+
+Alteratively, maybe we need another kind of test? More like what I might call a
+smoke test, ie one that runs the app with the function app tool and the swa tool
+but with a fake cosmos db presumably. And it would test the routing for the
+function apps?
+
+But maybe the best thing is to REALLY have a smoke test that runs on the
+deployed code in production and only make that code live if the smoke test
+passes. That smoke test could log in a test user and see that certain things
+have been selected. But that wouldn't really help our case unless we also tested
+logging in from a learning area page, which feels like kind of a special case.
+And it's not like the routing rules are going to pass or fail based on the
+environment. Feels like I shuold be able to test those locally I guess? It's
+just a matter of how much you trust the emulator I guess.
+
+Potentially, alternatively, we have a kind of shim or adapter that the function
+app emulator uses which proxies requests to our test adapters? But you'd have to
+have some kind of cross-process communication basically somehow. Maybe we just
+build the function apps with a LearningAreaRepository implementation that makes
+a request to our test server to get the list of learning areas. I mean,
+functions are supposed to be stateless, right? So why do we need to start and
+stop them on every example? The trick here would be to build the functions with
+test adapters. But I think that would just require providing a different entry
+point since we already have entrypoints for all the functions except login.
+
+Apparently the `swa` tool can do this for us too and since we already start
+that, then it should work ok I guess so long as we can tell it the right
+directly for the api. Tested this out and we can start the functions fine ...
+just need to build and configure them for running locally against the fake
+cosmos.
+
+Now, I can build the functions using an entrypoint for a local deploy and it
+works fine. The only problem now is referencing the HTML templates. The
+functions expect these to be in their function context folder. We could copy
+them at the beginning of the script, but it's not so great to have those files
+in that location; it's just confusing to have them sitting there. We could make
+an environment variable but I don't know what we would set it to for real. And
+it would be messy to have a conditional on whether to use the environment
+variable. We could always have the html files there but then we'd need to change
+the root for Vite and that would mess things up I think maybe. We could also
+store the html file in Azure blob storage and somehow emulate that locally.
+Seems like too much though.
+
+For now, I'll just go with an environment variable that we set locally. And if
+it's not set, then it uses the function's directory via the executionContext.
+
+So now we can run locally using the Azure functions emulator! The next step is
+to get this working with the tests ...
+
+
+### Further distinguish the Azure specific stuff
+
+We should probably also move the `local` directory inside Azure since it's all
+specific to running the azure stuff locally. And our tests depend on Azure-specific adapters (like Cosmos and the local server) so is there a way to make it so they care less about this stuff?
+
+Note that once we finish getting the tests to use the azure functions emulator,
+we should be able to delete the `local` directory entirely, since we'll have
+moved it inside the `azure` directory ... which is what we want.
+
