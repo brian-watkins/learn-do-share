@@ -51,7 +51,7 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
       }
       break
     case "template":
-      let template = fs.readFileSync(path.join(context.executionContext.functionDirectory, result.templateName), 'utf-8')
+      let template = fetchTemplate(context, result.templateName)
       const html = renderTemplate(template, result.state)
       context.res = {
         headers: {
@@ -62,6 +62,11 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
       }
       break
   }
+}
+
+function fetchTemplate(context: Context, templateName: string): string {
+  const basePath = process.env["BASE_PATH"] ?? context.executionContext.functionDirectory
+  return fs.readFileSync(path.join(basePath, templateName), 'utf-8')
 }
 
 function renderTemplate(template: string, content: any): string {

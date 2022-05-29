@@ -39,7 +39,10 @@ export class TestServer {
         })
 
         SWA_SERVER.stderr?.on("data", (data) => {
-          console.log("SWA CLI ERROR:", String(data))
+          const message = String(data)
+          if (!message.startsWith("*")) {
+            console.log("SWA CLI ERROR:", message)
+          }
         })
       })
     })

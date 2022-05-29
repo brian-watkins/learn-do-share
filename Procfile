@@ -1,2 +1,3 @@
-server: npm run start:server
-swa: npx swa start http://localhost:7778 --swa-config-location "./azure" --api-location http://localhost:7778 --open
+cosmos: npx cosmosdb-server -p 3021
+vite: npx vite --port 7778
+azure: COSMOS_PORT=3021 VITE_PORT=7778 ./azure/local/start.sh
