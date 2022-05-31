@@ -23,13 +23,13 @@ export function serverHost(): string {
 }
 
 export async function startServer(): Promise<void> {
-  // FUNCTION_SERVER.start({
-  //   workingDir: "./azure/api",
-  //   env: {
-  //     COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
-  //   },
-  //   logLevel: LogLevel.Normal
-  // })
+  FUNCTION_SERVER.start({
+    workingDir: "./azure/api",
+    env: {
+      COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
+    },
+    logLevel: LogLevel.Normal
+  })
 
   SWA_SERVER.start({
     logLevel: LogLevel.Normal
@@ -40,7 +40,7 @@ export async function startServer(): Promise<void> {
 
 export async function stopServer(): Promise<void> {
   console.log("Stopping server")
-  // FUNCTION_SERVER.stop(StopSignal.Kill)
+  FUNCTION_SERVER.stop(StopSignal.Kill)
   console.log("Function server killed")
   SWA_SERVER.stop()
   console.log("SWA Server killed")

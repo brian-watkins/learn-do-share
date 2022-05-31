@@ -7,12 +7,13 @@ import authBehavior from "./auth.behavior"
 import { isDebug } from "./helpers"
 import { startCosmos, stopCosmos } from "./testStore"
 import { startServer, stopServer } from "./testServer"
+import { LogLevel, TestProcess } from "./testProcess"
 
 process.on("uncaughtException", async (error) => {
   console.log("A horrible error occurred:", error)
   try {
     await shutdown()
-  } catch (_) {}
+  } catch (_) { }
   process.exit(5)
 })
 
@@ -40,7 +41,7 @@ async function start() {
   await startServer()
 }
 
-async function shutdown() {
+async function shutdown(): Promise<void> {
   if (!isDebug()) {
     console.log("A")
     await stopServer()
@@ -49,5 +50,17 @@ async function shutdown() {
     console.log("C")
     await stopBrowser()
     console.log("D")
+    const check = new TestProcess("ps", ["-eaf"])
+    check.start({
+      logLevel: LogLevel.Normal
+    })
+    check.start()
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        check.stop()
+        console.log("Blah")
+        resolve()
+      }, 5000)
+    })
   }
 }
