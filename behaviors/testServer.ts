@@ -50,8 +50,8 @@ export async function stopServer(): Promise<void> {
   console.log("Stopping server")
   FUNCTION_SERVER.stop(StopSignal.Kill)
   console.log("Function server killed")
-  VITE_SERVER.stop()
+  VITE_SERVER.stop(StopSignal.Kill)
   console.log("Vite server killed")
-  SWA_SERVER.stop()
+  SWA_SERVER.stop(StopSignal.Kill)
   console.log("SWA Server killed")
 }
