@@ -6,7 +6,7 @@ import engageBehavior from "./engage.behavior"
 import authBehavior from "./auth.behavior"
 import { isDebug } from "./helpers"
 import { startCosmos, stopCosmos } from "./testStore"
-import { stopServer } from "./testServer"
+import { startServer, stopServer } from "./testServer"
 
 process.on("uncaughtException", async (error) => {
   console.log("A horrible error occurred:", error)
@@ -37,6 +37,7 @@ await shutdown()
 async function start() {
   await startBrowser()
   await startCosmos()
+  await startServer()
 }
 
 async function shutdown() {

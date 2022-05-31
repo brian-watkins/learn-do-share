@@ -2,15 +2,13 @@ import https from 'https'
 import { Context } from "esbehavior"
 import { TestDisplay } from "./testDisplay"
 import { ResetableEngagementPlanRepo } from "./testStore"
-import { TestServer } from "./testServer"
 import { LearningArea } from "@/src/overview/learningAreas"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
-import { LearningAreaReader } from "@/src/engage/learningAreaReader"
-import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea"
-import { LearningAreasReader } from "@/src/overview/backstage"
 import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
 import { User } from "@/api/common/user"
 import { userIdentifierFor } from './helpers'
+import { TestLearningAreasServer } from './testLearningAreasServer'
+import { serverHost } from './testServer'
 
 export function testContext(): Context<TestContext> {
   return {
@@ -25,21 +23,18 @@ export function testContext(): Context<TestContext> {
 
 export class TestContext {
   display = new TestDisplay()
-  server = new TestServer()
-  learningAreasReader = new FakeLearningAreasReader()
-  learningAreaReader = new FakeLearningAreaReader()
+  learningAreasServer = new TestLearningAreasServer()
   engagementPlanRepo = new ResetableEngagementPlanRepo({
     endpoint: "https://localhost:3021",
     key: "some-dumb-key",
     database: "lds-test",
-    container: "engagement-plans-test",
+    container: "engagement-plans",
     agent: new https.Agent({ rejectUnauthorized: false })
   })
   engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
-    this.learningAreasReader.resolveImmediatelyWith(learningAreas)
-    this.learningAreaReader.areas = learningAreas
+    this.learningAreasServer.areas = learningAreas
     return this
   }
 
@@ -68,50 +63,23 @@ export class TestContext {
 
   async start(path: string = ""): Promise<void> {
     await this.writeEngagementPlans()
-    await this.server.start({
-      learningAreaReader: this.learningAreaReader,
-      learningAreasReader: this.learningAreasReader,
-      engagementPlanWriter: this.engagementPlanRepo,
-      engagementPlanReader: this.engagementPlanRepo
-    })
-    await this.display.start(this.server.host() + path)
+    await this.learningAreasServer.start()
+    await this.display.start(serverHost() + path)
   }
 
   async stop(): Promise<void> {
     await this.engagementPlanRepo.reset()
+    await this.learningAreasServer.stop()
     await this.display.stop()
-    await this.server.stop()
   }
 
   async reload(): Promise<void> {
     await this.display.stop()
-    await this.display.start(this.server.host())
+    await this.display.start(serverHost())
   }
 
   async reloadPage(): Promise<void> {
-    await this.display.goto(this.server.host())
-  }
-}
-
-class FakeLearningAreasReader implements LearningAreasReader {
-  private areas: TestLearningArea[] | null = null
-
-  constructor() { }
-
-  async read(): Promise<Array<LearningArea>> {
-    return this.areas?.map(toLearningArea) ?? []
-  }
-
-  resolveImmediatelyWith(areas: Array<TestLearningArea>) {
-    this.areas = areas
-  }
-}
-
-class FakeLearningAreaReader implements LearningAreaReader {
-  public areas: TestLearningArea[] = []
-
-  async read(id: string): Promise<EngageLearningArea | null> {
-    return this.areas.filter(area => area.id === id).map(toAreaToEngage)[0] ?? null
+    await this.display.goto(serverHost())
   }
 }
 
@@ -143,23 +111,6 @@ export class TestLearningArea implements LearningArea {
   withCategory(category: LearningAreaCategory): TestLearningArea {
     this.category = category
     return this
-  }
-}
-
-function toAreaToEngage(area: TestLearningArea): EngageLearningArea {
-  return {
-    id: area.id,
-    content: area.content,
-    title: area.title,
-    category: area.category
-  }
-}
-
-function toLearningArea(area: TestLearningArea): LearningArea {
-  return {
-    id: area.id,
-    title: area.title,
-    category: area.category
   }
 }
 

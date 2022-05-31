@@ -8,6 +8,7 @@ export async function startCosmos(): Promise<void> {
   return new Promise((resolve) => {
     database = (cosmosServer as any).default().listen(3021, () => {
       console.log(`Cosmos DB server running at https://localhost:3021`);
+      console.log()
       resolve()
     })
   });
@@ -26,6 +27,9 @@ export class ResetableEngagementPlanRepo extends CosmosEngagementPlanRepository 
 
   async reset(): Promise<void> {
     await this.container?.delete()
-    this.container = null
+    // do this to recreate the container
+    // otherwise the REAL CosmosEngagementPlanRepo gets messed up because
+    // it still has a reference to the container but it was deleted out from under it
+    await this.connect()
   }
 }

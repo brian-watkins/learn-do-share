@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-echo ">>> BUILDING FUNCTIONS"
-
 node ./azure/local/build.mjs
-
-echo "<<< BUILT FUNCTIONS"
 
 export COSMOS_DB_ENDPOINT="https://localhost:${COSMOS_PORT}"
 export COSMOS_DB_READ_WRITE_KEY="some-fake-key"
