@@ -15,8 +15,8 @@ export enum LogLevel {
 }
 
 export enum StopSignal {
-  Term = 15,
-  Kill = 9
+  Term,
+  Kill
 }
 
 export class TestProcess {
@@ -47,7 +47,15 @@ export class TestProcess {
   }
 
   stop(signal: StopSignal = StopSignal.Term) {
-    this.process?.kill(signal)
+    switch (signal) {
+      case StopSignal.Term:
+        this.process?.kill()
+        break
+      case StopSignal.Kill:
+        this.process?.kill(9)
+        break
+    }
+
     this.process = null
   }
 }
