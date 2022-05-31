@@ -5,7 +5,7 @@ import { learningAreaSummaryDisplayed } from "./effects"
 
 export default
   behavior("viewing items", [
-    example(testContext())
+    pick.example(testContext())
       .description("when there are learning areas available")
       .script({
         prepare: [
