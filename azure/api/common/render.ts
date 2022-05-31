@@ -65,7 +65,7 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
 }
 
 function fetchTemplate(context: Context, templateName: string): string {
-  const basePath = process.env["BASE_PATH"] ?? context.executionContext.functionDirectory
+  const basePath = process.env["TEMPLATE_PATH"] ?? context.executionContext.functionDirectory
   return fs.readFileSync(path.join(basePath, templateName), 'utf-8')
 }
 
