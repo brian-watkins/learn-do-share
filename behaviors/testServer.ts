@@ -8,7 +8,7 @@ const serverPort = "4280"
 const SWA_SERVER = new TestProcess("node_modules/.bin/swa", [
   "start", `http://localhost:${vitePort}`,
   "--api-location", `http://localhost:${funcPort}`,
-  "--verbose", "log",
+  "--verbose", "silent",
   "--run", `npx vite --port ${vitePort}`
 ])
 
@@ -28,11 +28,11 @@ export async function startServer(): Promise<void> {
     env: {
       COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
     },
-    logLevel: LogLevel.Normal
+    logLevel: LogLevel.Silent
   })
 
   SWA_SERVER.start({
-    logLevel: LogLevel.Normal
+    logLevel: LogLevel.Silent
   })
 
   return waitForPort(serverPort)

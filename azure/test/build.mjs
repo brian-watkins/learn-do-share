@@ -11,7 +11,8 @@ await esbuild.build({
     outfile: "./azure/api/build/backstage/index.mjs",
     external: [
         "@azure/functions",
-        "@azure/cosmos"
+        "@azure/cosmos",
+        "node-fetch"
     ],
     logLevel: "info"
 })
@@ -27,7 +28,8 @@ await esbuild.build({
     outfile: "./azure/api/build/root/index.mjs",
     external: [
         "@azure/functions",
-        "@azure/cosmos"
+        "@azure/cosmos",
+        "node-fetch"
     ],
     logLevel: "info"
 })
@@ -48,7 +50,8 @@ await esbuild.build({
         "rehype-stringify",
         "remark-parse",
         "remark-rehype",
-        "hast-util-select"
+        "hast-util-select",
+        "node-fetch"
     ],
     logLevel: "info"
 })
