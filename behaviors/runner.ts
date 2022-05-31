@@ -42,8 +42,12 @@ async function start() {
 
 async function shutdown() {
   if (!isDebug()) {
+    console.log("A")
     await stopServer()
+    console.log("B")
     await stopCosmos()
+    console.log("C")
     await stopBrowser()
+    console.log("D")
   }
 }

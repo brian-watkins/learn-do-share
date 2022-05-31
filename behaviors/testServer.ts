@@ -39,6 +39,9 @@ export async function startServer(): Promise<void> {
 }
 
 export async function stopServer(): Promise<void> {
+  console.log("Stopping server")
   FUNCTION_SERVER.stop(StopSignal.Kill)
+  console.log("Function server killed")
   SWA_SERVER.stop()
+  console.log("SWA Server killed")
 }
