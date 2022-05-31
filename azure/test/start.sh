@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e -o pipefail
+
 node ./azure/test/build.mjs
 
 echo
