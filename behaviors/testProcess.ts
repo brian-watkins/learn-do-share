@@ -10,7 +10,6 @@ export interface RunOptions {
 
 export enum LogLevel {
   Normal = 0,
-  Error = 1,
   Silent = 2
 }
 
@@ -28,24 +27,9 @@ export class TestProcess {
     this.process = spawn(this.command, this.args, {
       cwd: options.workingDir,
       env: Object.assign(process.env, options.env),
-      stdio: 'inherit',
+      stdio: options.logLevel === LogLevel.Silent ? 'ignore' : 'inherit',
       detached: true
     })
-
-    if (options.logLevel === LogLevel.Silent) {
-      return
-    }
-
-    if (options.logLevel === LogLevel.Error) {
-      printLogs(this.process.stderr)
-      return
-    }
-
-    if (options.logLevel === LogLevel.Normal) {
-      printLogs(this.process.stdout)
-      printLogs(this.process.stderr)
-      return
-    }
   }
 
   stop(signal: StopSignal = StopSignal.Shutdown) {
@@ -59,18 +43,12 @@ export class TestProcess {
         this.process.kill("SIGTERM")
         break
       case StopSignal.Kill:
-        this.process.kill(9)
+        this.process.kill("SIGKILL")
         break
     }
 
     this.process = null
   }
-}
-
-function printLogs(readable: Readable | null) {
-  readable?.on("data", (data) => {
-    console.log(String(data))
-  })
 }
 
 export function waitForPort(port: string | number): Promise<void> {
