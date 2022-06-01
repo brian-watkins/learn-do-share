@@ -47,12 +47,17 @@ export class TestProcess {
   }
 
   stop(signal: StopSignal = StopSignal.Shutdown) {
+    if (!this.process) {
+      console.log("Test process is nil!?!?", this.command, this.args)
+      return
+    }
+
     switch (signal) {
       case StopSignal.Shutdown:
-        this.process?.kill("SIGTERM")
+        this.process.kill("SIGTERM")
         break
       case StopSignal.Kill:
-        this.process?.kill("SIGKILL")
+        this.process.kill("SIGKILL")
         break
     }
 
