@@ -45,11 +45,11 @@ export async function startServer(): Promise<void> {
   //   logLevel: LogLevel.Normal
   // })
 
-  // SWA_SERVER.start({
-  //   logLevel: LogLevel.Normal
-  // })
+  SWA_SERVER.start({
+    logLevel: LogLevel.Normal
+  })
 
-  return waitForPort(funcPort)
+  return waitForPort(serverPort)
 }
 
 export async function stopServer(): Promise<void> {
