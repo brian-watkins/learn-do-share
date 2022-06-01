@@ -33,23 +33,23 @@ export async function startServer(): Promise<void> {
   VITE_SERVER = await createViteServer()
   await VITE_SERVER.listen(vitePort)
 
-  FUNCTION_SERVER.start({
-    workingDir: "./azure/api",
-    env: {
-      COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
-    },
-    logLevel: LogLevel.Normal
-  })
+  // FUNCTION_SERVER.start({
+  //   workingDir: "./azure/api",
+  //   env: {
+  //     COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
+  //   },
+  //   logLevel: LogLevel.Normal
+  // })
 
   // VITE_SERVER.start({
   //   logLevel: LogLevel.Normal
   // })
 
-  SWA_SERVER.start({
-    logLevel: LogLevel.Normal
-  })
+  // SWA_SERVER.start({
+  //   logLevel: LogLevel.Normal
+  // })
 
-  return waitForPort(serverPort)
+  // return waitForPort(serverPort)
 }
 
 export async function stopServer(): Promise<void> {
