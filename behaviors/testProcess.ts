@@ -28,7 +28,8 @@ export class TestProcess {
     this.process = spawn(this.command, this.args, {
       cwd: options.workingDir,
       env: Object.assign(process.env, options.env),
-      shell: "/bin/bash"
+      // shell: "/bin/bash"
+      detached: true
     })
 
     if (options.logLevel === LogLevel.Silent) {
