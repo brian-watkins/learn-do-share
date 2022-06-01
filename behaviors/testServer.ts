@@ -22,7 +22,7 @@ const SWA_SERVER = new TestProcess("node_modules/.bin/swa", [
 const FUNCTION_SERVER = new TestProcess("func", [
   "start",
   "--port", funcPort,
-  "--verbose", "false"
+  // "--verbose", "false"
 ])
 
 export function serverHost(): string {
