@@ -1127,6 +1127,80 @@ So now we can run locally using the Azure functions emulator! The next step is
 to get this working with the tests ...
 
 
+### Getting the testing working with azure functions emulator
+
+There's actually a few parts to start up.
+
+- CosmosDB
+- The browser (ie playwright)
+- vite (this is new)
+- the `swa` emulator (which starts the function emulator and of course the app)
+- some way to communicate with the learning area repo
+- (And we no longer need to run an express server)
+
+Note that the last thing is the main question ... but maybe it doesn't need to
+be a separate process (hopefully). We could use CosmosDB and just store a
+document with the full list there. Then the test adapter would need to go in and
+fetch from cosmos each time I guess. ... unless Cosmos has a way to subscribe to
+changes. (It does but it looks kind of complicated)
+
+I've started things up and we get the web page now during the test. But it's
+failing since we're not yet able to control the learning areas. What's the best
+way to do this?
+
+We tried using IPC with the swa process ... but I bet that swa actually starts
+another process to run the function server or in any case it doesn't look like
+our function is receiving the ipc message.
+
+We could also write a message to a file and have our function read the file when
+it needs to get the learning areas? This works but doesn't seem that ideal.
+Feels like it's better to not mess with the filesystem during the test but
+starting an http server or something would be more work to set up.
+
+Note that what we are doing now is programmatically starting a server and
+providing the code for it to run at runtime. What I really want is just a shared
+memory cache basically. But our fake cosmos db can do that for us.
+
+We probably need to also start the functions emulator independently of the swa
+so that we can kill it ... it doesn't seem to be killed now at the end of the
+tests, only the swa is. And for that we could use the concurrently JS api ...
+
+Or ... with esmodules you can actually import from a url ... so we could import
+a module that our test server is serving. Problem is that this would be cached
+the first time it was loaded and we would need it to change for each example.
+But you could do a dynamic import. We would still need an express server in our
+tests that could serve the module. This is really the same though as just making
+an HTTP request ...
+
+We set this up with an HTTP server and it works just fine ... use node-fetch to
+make the request.
+
+But now we need to figure out how to start everything up ...
+
+Lots of stuff is related to azure, but some stuff seems to connect with the
+tests ... like the engagementPlanRepo ... it has a reset method. Maybe our tests
+need to somehow accept some dependencies. Note that the tests don't actually
+need an EngagementPlanRepo ... they just need a way to write to the db and they
+use the EngagementPlanWriter interface to do so. But they also need to reset
+things between examples.
+
+But they also need to start a server to provide learning areas, and that seems
+maybe to be peculiar to azure I guess. 
+
+This is starting to merge into the goal of making the test suite agnostic of the
+deployment environment/strategy. Maybe we should just get this working and then
+we can figure out how to abstract everything away.
+
+Ok -- finally got it working. There were lots of problems getting the tests to
+work in CI because they seemed to hang and never let the job finish. This is
+because the behavior with `child_process.spawn` is different in linux than
+MacOS. To be able to kill the process (which probably spins up child processes
+too) on linux, I had to set the process to be `detached` (which makes the
+process the leader of a group of processes) and then either inherit or ignore
+the io. When I piped the io to process.stdout etc this seemed to keep the
+process alive even after killing it, maybe. Anyways, now it works.
+
+
 ### Further distinguish the Azure specific stuff
 
 We should probably also move the `local` directory inside Azure since it's all
@@ -1135,4 +1209,29 @@ specific to running the azure stuff locally. And our tests depend on Azure-speci
 Note that once we finish getting the tests to use the azure functions emulator,
 we should be able to delete the `local` directory entirely, since we'll have
 moved it inside the `azure` directory ... which is what we want.
+
+What does the test suite need though? What adapters?
+
+1. Something that allows for setting the learning areas during an example -- and
+clearing them at the end?
+2. Something that allows for setting the engagement levels during an example and
+clearing them at the end of the example.
+
+It's like these are the aspects of the outside world we need to control.
+Eventually we could probably do other things, like simulating connection
+failures or other errors. But for now, these are the only things that need to be
+controlled. BUT, there's also authentication ... that is Azure specific as well
+(the way that we actually log in). So really we need three things:
+
+1. Something that allows for setting the learning areas during an example -- and
+clearing them at the end?
+2. Something that allows for setting the engagement levels during an example and
+clearing them at the end of the example.
+3. Something that allows for authenticating a user, ie logging the user in.
+
+For authentication, it's kind of weird because right now we actually need to
+interact with the browser to do this. So we can't be completely independent, we
+need to be able to interact with the page ... and yet other deployments probably
+wouldn't operate this way. So it's unclear what the interface should be for such
+an 'adapter'. 
 
