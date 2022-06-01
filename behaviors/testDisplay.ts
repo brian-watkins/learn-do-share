@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright"
-import { newBrowserPage, resetBrowser } from "./browser"
+import { newBrowserPage, resetBrowser } from "./services/browser"
 
 export class TestDisplay {
   private page: Page | null = null

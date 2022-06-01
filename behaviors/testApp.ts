@@ -1,14 +1,14 @@
 import https from 'https'
 import { Context } from "esbehavior"
 import { TestDisplay } from "./testDisplay"
-import { ResetableEngagementPlanRepo } from "./testStore"
+import { ResetableEngagementPlanRepo } from "./services/testStore"
 import { LearningArea } from "@/src/overview/learningAreas"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
 import { User } from "@/api/common/user"
 import { userIdentifierFor } from './helpers'
-import { TestLearningAreasServer } from './testLearningAreasServer'
-import { serverHost } from './testServer'
+import { TestLearningAreasServer } from './services/testLearningAreasServer'
+import { serverHost } from './services/testServer'
 
 export function testContext(): Context<TestContext> {
   return {

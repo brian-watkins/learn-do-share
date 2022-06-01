@@ -1,5 +1,4 @@
 import { ChildProcess, spawn } from "child_process"
-import { Readable } from "stream"
 import waitOn from "wait-on"
 
 export interface RunOptions {

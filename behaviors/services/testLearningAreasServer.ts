@@ -1,6 +1,6 @@
 import express from "express"
 import { Server } from "http"
-import { TestLearningArea } from "./testApp"
+import { TestLearningArea } from "../testApp"
 import { LearningArea } from "@/src/overview/learningAreas"
 import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea"
 
@@ -11,7 +11,7 @@ export class TestLearningAreasServer {
 
   async start(): Promise<void> {
     const app = express()
-    app.get("/learning-areas", (req, res) => {
+    app.get("/learning-areas", (_, res) => {
       res.json(this.areas?.map(toLearningArea) ?? [])
     })
 
