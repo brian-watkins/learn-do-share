@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process"
+import { ChildProcess, ChildProcessWithoutNullStreams, spawn } from "child_process"
 import { Readable } from "stream"
 import waitOn from "wait-on"
 
@@ -28,7 +28,8 @@ export class TestProcess {
     this.process = spawn(this.command, this.args, {
       cwd: options.workingDir,
       env: Object.assign(process.env, options.env),
-      // shell: "/bin/bash"
+      // shell: "/bin/bash",
+      stdio: 'inherit',
       detached: true
     })
 
