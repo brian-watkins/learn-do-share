@@ -49,7 +49,7 @@ export async function startServer(): Promise<void> {
   //   logLevel: LogLevel.Normal
   // })
 
-  // return waitForPort(serverPort)
+  return waitForPort(funcPort)
 }
 
 export async function stopServer(): Promise<void> {

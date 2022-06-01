@@ -57,7 +57,7 @@ export class TestProcess {
         this.process.kill("SIGTERM")
         break
       case StopSignal.Kill:
-        this.process.kill("SIGKILL")
+        this.process.kill(9)
         break
     }
 
