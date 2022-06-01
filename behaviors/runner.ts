@@ -50,17 +50,17 @@ async function shutdown(): Promise<void> {
     console.log("C")
     await stopBrowser()
     console.log("D")
-    const check = new TestProcess("ps", ["-eaf"])
-    check.start({
-      logLevel: LogLevel.Normal
-    })
-    check.start()
-    await new Promise<void>((resolve) => {
-      setTimeout(() => {
-        check.stop()
-        console.log("Blah")
-        resolve()
-      }, 5000)
-    })
+    // const check = new TestProcess("ps", ["-eaf"])
+    // check.start({
+    //   logLevel: LogLevel.Normal
+    // })
+    // check.start()
+    // await new Promise<void>((resolve) => {
+    //   setTimeout(() => {
+    //     check.stop()
+    //     console.log("Blah")
+    //     resolve()
+    //   }, 5000)
+    // })
   }
 }
