@@ -35,7 +35,7 @@ export interface LearningAreaDisplayOptions {
 export function learningAreaSummaryDisplayed(learningArea: TestLearningArea, options: LearningAreaDisplayOptions = { withCategory: null }): Effect<TestContext> {
   let title = `Learning area '${learningArea.title}' summary is displayed`
   if (options.withCategory) {
-    title += `in the ${options.withCategory} category`
+    title += ` in the ${options.withCategory} category`
   }
   
   return effect(title, async (testContext) => {
