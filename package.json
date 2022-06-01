@@ -11,9 +11,7 @@
     "build:display": "npm run validate:display && vite build",
     "start:server": "node --loader esbuild-node-loader --no-warnings ./local/backstage/index.ts",
     "start": "nf start",
-    "build:test": "node ./azure/test/build.mjs",
-    "test:run": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/runner.ts",
-    "test": "npm run build:test && npm run test:run",
+    "test": "./azure/test/start.sh",
     "test:debug": "DEBUG=true npm run test",
     "prepare": "husky install"
   },
