@@ -27,7 +27,8 @@ export class TestProcess {
   start(options: RunOptions = {}) {
     this.process = spawn(this.command, this.args, {
       cwd: options.workingDir,
-      env: Object.assign(process.env, options.env)
+      env: Object.assign(process.env, options.env),
+      shell: "/bin/bash"
     })
 
     if (options.logLevel === LogLevel.Silent) {
