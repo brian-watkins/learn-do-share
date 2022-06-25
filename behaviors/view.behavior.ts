@@ -1,16 +1,17 @@
-import { behavior, condition, example, pick } from "esbehavior"
+import { behavior, example, fact } from "esbehavior"
 import { FakeLearningArea, testContext } from "./testApp"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { learningAreaSummaryDisplayed } from "./effects"
+import { theAppShowsTheLearningAreas } from "./presuppositions"
 
 export default
   behavior("viewing items", [
     example(testContext())
       .description("when there are learning areas available")
       .script({
-        prepare: [
-          condition("the app loads learning areas", async (testContext) =>
-            await testContext
+        suppose: [
+          fact("there are learning areas in multiple categories", (testContext) => {
+            testContext
               .withLearningAreas([
                 FakeLearningArea(1).withCategory(LearningAreaCategory.Team),
                 FakeLearningArea(2).withCategory(LearningAreaCategory.Team),
@@ -18,8 +19,8 @@ export default
                 FakeLearningArea(4).withCategory(LearningAreaCategory.Theory),
                 FakeLearningArea(5).withCategory(LearningAreaCategory.Theory),
               ])
-              .start()
-          )
+          }),
+          theAppShowsTheLearningAreas()
         ],
         observe: [
           learningAreaSummaryDisplayed(FakeLearningArea(1), { withCategory: "Team" }),

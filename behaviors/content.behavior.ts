@@ -1,10 +1,11 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example } from "esbehavior";
+import { behavior, effect, example, fact, outcome } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
-import { gotoLearningAreas, loginUser, selectLearningArea } from "./steps";
+import { gotoLearningAreas, loginUser, selectLearningArea } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
+import { theAppShowsTheLearningAreas } from "./presuppositions";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -29,38 +30,42 @@ export default
     example(testContext())
       .description("when the url for an unknown learning area is visited")
       .script({
-        prepare: [
-          condition("the app loads the page for a learning area", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                coolLearningArea,
-                awesomeLearningArea,
-                superLearningArea
-              ])
-              .start(`/learning-areas/some-unknown-id`)
+        suppose: [
+          fact("there are learning areas", (testContext) => {
+            testContext.withLearningAreas([
+              coolLearningArea,
+              awesomeLearningArea,
+              superLearningArea
+            ]);
+          }),
+          fact(`the app is loaded on a page for an unknown learning area`, async (testContext) => {
+            await testContext.start("/learning-areas/some-unknown-id")
           })
         ],
         observe: [
           effect("it loads the main page instead", async (testContext) => {
             expect(testContext.display.path()).to.equal("/index.html")
           }),
-          learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
-          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
-          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
+          outcome("it shows the learning area summaries", [
+            learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+            learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
+            learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
+          ])
         ]
       }),
     example(testContext())
       .description("when the url for a learning area is visited")
       .script({
-        prepare: [
-          condition("the app loads the page for a learning area", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                coolLearningArea,
-                awesomeLearningArea,
-                superLearningArea
-              ])
-              .start(`/learning-areas/${superLearningArea.id}`)
+        suppose: [
+          fact("there are learning areas", (testContext) => {
+            testContext.withLearningAreas([
+              coolLearningArea,
+              awesomeLearningArea,
+              superLearningArea
+            ])
+          }),
+          fact(`the app is on the super learning area page`, async (testContext) => {
+            await testContext.start(`/learning-areas/${superLearningArea.id}`)
           })
         ],
         observe: [
@@ -73,22 +78,23 @@ export default
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
-          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
-          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
+          outcome("it shows the learning area summaries", [
+            learningAreaSummaryDisplayed(awesomeLearningArea, { withCategory: "Team" }),
+            learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" }),
+            learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" })
+          ])
         ]
       }),
     example(testContext())
       .description("when a learning area is selected")
       .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                awesomeLearningArea
-              ])
-              .start()
-          })
+        suppose: [
+          fact("there is a learning area", (testContext) => {
+            testContext.withLearningAreas([
+              awesomeLearningArea
+            ])
+          }),
+          theAppShowsTheLearningAreas()
         ],
         perform: [
           selectLearningArea(awesomeLearningArea)
@@ -102,17 +108,19 @@ export default
     example(testContext())
       .description("when a logged in user selects a learning area that they are learning and doing")
       .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                coolLearningArea,
-                superLearningArea
-              ])
+        suppose: [
+          fact("there are learning areas", (testContext) => {
+            testContext.withLearningAreas([
+              coolLearningArea,
+              superLearningArea
+            ])
+          }),
+          fact("the user is learning and doing the cool learning area", (testContext) => {
+            testContext
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Learning)
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Doing)
-              .start()
-          })
+          }),
+          theAppShowsTheLearningAreas()
         ],
         perform: [
           loginUser("fun-user@email.com"),
@@ -130,16 +138,18 @@ export default
           gotoLearningAreas()
         ],
         observe: [
-          learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" }),
-          learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" })
+          outcome("it shows the learning area summaries", [
+            learningAreaSummaryDisplayed(coolLearningArea, { withCategory: "Theory" }),
+            learningAreaSummaryDisplayed(superLearningArea, { withCategory: "Discipline" })
+          ])
         ]
       }),
     example(testContext())
       .description("when learning area content contains markdown synatx")
       .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
+        suppose: [
+          fact("there is a learning area with markdown content", (testContext) => {
+            testContext
               .withLearningAreas([
                 FakeLearningArea(1).withContent(`
 # This is my article
@@ -150,10 +160,10 @@ Here is an intro to what you will learn
 - One
 - Here is a link to [somewhere](http://somewhere.com/somewhere.html).
 - Here is [another link](http://anotherplace.com)
-                `)
+              `)
               ])
-              .start()
-          })
+          }),
+          theAppShowsTheLearningAreas()
         ],
         perform: [
           selectLearningArea(FakeLearningArea(1))

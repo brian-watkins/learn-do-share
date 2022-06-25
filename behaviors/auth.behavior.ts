@@ -1,23 +1,23 @@
 import { expect } from "chai";
-import { behavior, condition, effect, example, pick } from "esbehavior";
+import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { loginUser, selectLearningArea } from "./steps";
+import { loginUser, selectLearningArea } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
+import { theAppShowsTheLearningAreas } from "./presuppositions";
 
 export default
   behavior("authentication", [
     example(testContext())
       .description("when not authenticated")
       .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                FakeLearningArea(1),
-                FakeLearningArea(2)
-              ])
-              .start()
-          })
+        suppose: [
+          fact("there are some learning areas", (testContext) => {
+            testContext.withLearningAreas([
+              FakeLearningArea(1),
+              FakeLearningArea(2)
+            ])
+          }),
+          theAppShowsTheLearningAreas()
         ],
         observe: [
           effect("login button is visible", async (testContext) => {
@@ -45,7 +45,7 @@ export default
           })
         ]
       }).andThen({
-        perform:[
+        perform: [
           loginUser("cool-user@email.com")
         ],
         observe: [
@@ -70,15 +70,14 @@ export default
     example(testContext())
       .description("when authentication is successful from the overview page")
       .script({
-        prepare: [
-          condition("the app loads", async (testContext) => {
-            await testContext
-              .withLearningAreas([
-                FakeLearningArea(1),
-                FakeLearningArea(2)
-              ])
-              .start()
-          })
+        suppose: [
+          fact("there are learning areas", async (testContext) => {
+            testContext.withLearningAreas([
+              FakeLearningArea(1),
+              FakeLearningArea(2)
+            ])
+          }),
+          theAppShowsTheLearningAreas()
         ],
         perform: [
           loginUser("fake-user@email.com")
@@ -92,8 +91,10 @@ export default
             const loginIsHidden = await testContext.display.selectElementWithText("Login").isHidden()
             expect(loginIsHidden).to.be.true
           }),
-          learningAreaSummaryDisplayed(FakeLearningArea(1)),
-          learningAreaSummaryDisplayed(FakeLearningArea(2)),
+          outcome("the list of learning areas is displayed", [
+            learningAreaSummaryDisplayed(FakeLearningArea(1)),
+            learningAreaSummaryDisplayed(FakeLearningArea(2))  
+          ])
         ]
       })
   ])
