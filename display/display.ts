@@ -6,12 +6,9 @@ import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 
-export type SubscriptionHandler<T> = (model: T, dispatch: (message: any) => void) => void
-
 export interface DisplayConfig<T, M extends Action<any>> {
   update(state: T, message: M): void
   view(state: T): View
-  subscription?: SubscriptionHandler<T>
 }
 
 function getInitialState() {
@@ -54,25 +51,21 @@ export class AppDisplay<T, M extends Action<any>> {
 
     const appRoot = document.querySelector(selector)
 
-    if (appRoot) {
-      document.body.addEventListener("displayMessage", (evt) => {
-        const displayMessageEvent = evt as CustomEvent<any>
-        this.store.dispatch(displayMessageEvent.detail)
-      })
-
-      let oldNode: Element | VNode = appRoot
-      const handleUpdate = () => {
-        oldNode = patch(oldNode, this.config.view(this.store.getState()))
-      }
-      this.store.subscribe(handleUpdate)
-
-      if (this.config.subscription) {
-        this.store.subscribe(() => {
-          this.config.subscription?.(this.store.getState(), this.store.dispatch)
-        })
-      }
-
-      handleUpdate()
+    if (!appRoot) {
+      throw new Error(`Mount point element matching selector not found: ${selector}`)
     }
+
+    document.body.addEventListener("displayMessage", (evt) => {
+      const displayMessageEvent = evt as CustomEvent<any>
+      this.store.dispatch(displayMessageEvent.detail)
+    })
+
+    let oldNode: Element | VNode = appRoot
+    const handleUpdate = () => {
+      oldNode = patch(oldNode, this.config.view(this.store.getState()))
+    }
+    this.store.subscribe(handleUpdate)
+
+    handleUpdate()
   }
 }

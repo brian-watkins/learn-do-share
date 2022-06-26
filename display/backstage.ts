@@ -14,13 +14,6 @@ export function backstageMessage<T>(wrapped: T): BackstageMessage<T> {
   }
 }
 
-export function reloadInitialSTate(): BackstageMessage<any> {
-  return {
-    type: BACKSTAGE_MESSAGE_TYPE,
-    wrapped: { type: "_backstage-reload-initial-state" }
-  }
-}
-
 export function handleBackstageMessage(dispatch: MessageDispatcher, message: BackstageMessage<any>) {
   fetch("/api/backstage", {
     method: "POST",
