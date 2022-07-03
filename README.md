@@ -5,10 +5,16 @@ An app to keep track of what you're learning.
 
 ### Get Started
 
+This project uses Node 16+, so you should install that.
+
+Install the [Azure functions core tools](https://github.com/Azure/azure-functions-core-tools)
+globally, then install the dependencies with:
+
 ```
 $ npm install
 ```
 
+You may also need to install terraform globally.
 
 ### Run Locally
 
