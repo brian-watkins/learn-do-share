@@ -1,14 +1,18 @@
 import cosmosServer from "@zeit/cosmosdb-server"
 import { Server } from "https";
-import { CosmosConfig, CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
+import { CosmosConnection } from "@/adapters/cosmosConnection";
+import { createTestDatabase } from "../../azure/local/databaseSetup"
 
 let database: Server
 
 export async function startCosmos(): Promise<void> {
   return new Promise((resolve) => {
-    database = (cosmosServer as any).default().listen(3021, () => {
+    database = (cosmosServer as any).default().listen(3021, async () => {
       console.log(`Cosmos DB server running at https://localhost:3021`);
       console.log()
+
+      await setupDatabase()
+
       resolve()
     })
   });
@@ -20,16 +24,14 @@ export async function stopCosmos(): Promise<void> {
   })
 }
 
-export class ResetableEngagementPlanRepo extends CosmosEngagementPlanRepository {
-  constructor(config: CosmosConfig) {
-    super(config)
-  }
+export async function resetCosmos(connection: CosmosConnection): Promise<void> {
+  await connection.database?.delete()
+  await setupDatabase()
+}
 
-  async reset(): Promise<void> {
-    await this.container?.delete()
-    // do this to recreate the container
-    // otherwise the REAL CosmosEngagementPlanRepo gets messed up because
-    // it still has a reference to the container but it was deleted out from under it
-    await this.connect()
-  }
+async function setupDatabase(): Promise<void> {
+  await createTestDatabase({
+    endpoint: "https://localhost:3021",
+    databaseName: "lds-test"
+  })
 }

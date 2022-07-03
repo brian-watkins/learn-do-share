@@ -7,6 +7,7 @@ import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngageme
 import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
+import { engagementNotesView } from "./engagementNotes"
 
 export interface Informative {
   type: "informative"
@@ -67,6 +68,7 @@ function view(model: Model): Html.View {
         learningAreaTitleView(model.learningArea),
         engagementPlansView(model.learningArea),
         learningAreaContentView(model.learningArea),
+        engagementNotesView(model.learningArea.engagementNotes)
       ])
   }
 }

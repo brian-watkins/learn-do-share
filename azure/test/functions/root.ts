@@ -3,18 +3,20 @@ import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanR
 import { generateRootFunction } from "@/api/root/function";
 import https from 'https'
 import { HttpLearningAreasReader } from "./HTTPLearningAreasReader";
+import { CosmosConnection } from "@/adapters/cosmosConnection";
 
-const cosmosDB = new CosmosEngagementPlanRepository({
+const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
   key: "some-fake-key",
   database: "lds-test",
-  container: "engagement-plans",
   agent: new https.Agent({ rejectUnauthorized: false })
 })
 
+const engagementPlanRepository = new CosmosEngagementPlanRepository(cosmosConnection)
+
 const adapters: Adapters = {
   learningAreasReader: new HttpLearningAreasReader(),
-  engagementPlanReader: cosmosDB,
+  engagementPlanReader: engagementPlanRepository,
 }
 
 export default generateRootFunction(adapters)

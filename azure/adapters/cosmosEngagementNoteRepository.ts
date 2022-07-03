@@ -1,0 +1,41 @@
+import { User } from "@/api/common/user";
+import { EngagementNoteReader } from "@/src/engage/backstage";
+import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
+import { LearningArea } from "@/src/engage/learningArea";
+import { CosmosConnection } from "./cosmosConnection";
+
+const NOTES_CONTAINER = "engagement-notes"
+
+export class CosmosEngagementNoteRepository implements EngagementNoteReader {
+
+  constructor(private connection: CosmosConnection) { }
+
+  async read(user: User, learningArea: LearningArea): Promise<EngagementNote[]> {
+    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+      const { resources } = await notes.items.query({
+        query: "SELECT n.id, n.content FROM notes n WHERE n.userId = @userId AND n.learningAreaId = @learningAreaId",
+        parameters: [
+          { name: "@userId", value: user.identifier },
+          { name: "@learningAreaId", value: learningArea.id }
+        ]
+      }, { partitionKey: user.identifier })
+        .fetchAll()
+  
+      return resources
+    })
+  }
+
+  async write(user: User, learningArea: LearningArea, noteContents: EngagementNoteContents): Promise<EngagementNote> {
+    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+      const storeableNote = Object.assign(noteContents, { userId: user.identifier, learningAreaId: learningArea.id })
+
+      const { resource } = await notes.items.create(storeableNote)
+
+      if (!resource) {
+        return Promise.reject("Unable to create note!")
+      }
+
+      return resource
+    })
+  }
+}

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { behavior, effect, example, fact, outcome } from "esbehavior";
+import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
 import { gotoLearningAreas, loginUser, selectLearningArea } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
@@ -39,7 +39,7 @@ export default
             ]);
           }),
           fact(`the app is loaded on a page for an unknown learning area`, async (testContext) => {
-            await testContext.start("/learning-areas/some-unknown-id")
+            await testContext.startAtLearningArea(FakeLearningArea(27))
           })
         ],
         observe: [
@@ -65,7 +65,7 @@ export default
             ])
           }),
           fact(`the app is on the super learning area page`, async (testContext) => {
-            await testContext.start(`/learning-areas/${superLearningArea.id}`)
+            await testContext.startAtLearningArea(superLearningArea)
           })
         ],
         observe: [

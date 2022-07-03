@@ -3,19 +3,24 @@ import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanR
 import { generateBackstageFunction } from "@/api/backstage/function"
 import https from 'https'
 import { HttpLearningAreaReader } from "./HTTPLearningAreasReader"
+import { CosmosConnection } from "@/adapters/cosmosConnection"
+import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository"
 
-const cosmosDB = new CosmosEngagementPlanRepository({
+const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
   key: "some-fake-key",
   database: "lds-test",
-  container: "engagement-plans",
   agent: new https.Agent({ rejectUnauthorized: false })
 })
 
+const engagementPlanRepository = new CosmosEngagementPlanRepository(cosmosConnection)
+const engagementNotesRepository = new CosmosEngagementNoteRepository(cosmosConnection)
+
 const adapters: Adapters = {
   learningAreaReader: new HttpLearningAreaReader(),
-  engagementPlanReader: cosmosDB,
-  engagementPlanWriter: cosmosDB
+  engagementPlanReader: engagementPlanRepository,
+  engagementPlanWriter: engagementPlanRepository,
+  engagementNoteReader: engagementNotesRepository
 }
 
 export default generateBackstageFunction(adapters)

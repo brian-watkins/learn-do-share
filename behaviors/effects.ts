@@ -86,3 +86,7 @@ export function contentAreaView(selector: string = "") {
 export function categoryView() {
   return "#learning-area-category"
 }
+
+export function notesView() {
+  return "[data-engagement-note]"
+}

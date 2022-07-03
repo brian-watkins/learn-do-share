@@ -65,7 +65,7 @@ resource "azurerm_cosmosdb_sql_database" "db" {
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
 }
 
-resource "azurerm_cosmosdb_sql_container" "dbContainer" {
+resource "azurerm_cosmosdb_sql_container" "engagement_plans_container" {
   name                = "engagement-plans"
   resource_group_name = azurerm_cosmosdb_account.cosmosdb.resource_group_name
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
@@ -73,6 +73,13 @@ resource "azurerm_cosmosdb_sql_container" "dbContainer" {
   partition_key_path  = "/userId"
 }
 
+resource "azurerm_cosmosdb_sql_container" "engagement_notes_container" {
+  name                = "engagement-notes"
+  resource_group_name = azurerm_cosmosdb_account.cosmosdb.resource_group_name
+  account_name        = azurerm_cosmosdb_account.cosmosdb.name
+  database_name       = azurerm_cosmosdb_sql_database.db.name
+  partition_key_path  = "/userId"
+}
 
 # Application Insights
 

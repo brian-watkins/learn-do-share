@@ -7,15 +7,22 @@ import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, 
 import { EngagementPlan } from "./engagementPlans.js";
 import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
+import { EngagementNote } from "./engagementNotes.js";
+import { LearningArea } from "./learningArea.js";
 
 export interface EngagementPlanReader {
   read(user: User): Promise<Array<EngagementPlan>>
+}
+
+export interface EngagementNoteReader {
+  read(user: User, learningArea: LearningArea): Promise<Array<EngagementNote>>
 }
 
 export interface Adapters {
   learningAreaReader: LearningAreaReader
   engagementPlanWriter: EngagementPlanWriter
   engagementPlanReader: EngagementPlanReader
+  engagementNoteReader: EngagementNoteReader
 }
 
 export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans
@@ -61,9 +68,11 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
         return plan.level
       })
 
+    const engagementNotes = await adapters.engagementNoteReader.read(context.user, learningArea)
+
     return templateResult("engage.html", {
       type: "personalized",
-      learningArea: { ...learningArea, engagementLevels: levels },
+      learningArea: { ...learningArea, engagementLevels: levels, engagementNotes },
       user: context.user
     })
   }

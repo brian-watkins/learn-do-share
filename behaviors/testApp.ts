@@ -1,7 +1,7 @@
 import https from 'https'
 import { Context } from "esbehavior"
 import { TestDisplay } from "./testDisplay"
-import { ResetableEngagementPlanRepo } from "./services/testStore"
+import { resetCosmos } from "./services/testStore"
 import { LearningArea } from "@/src/overview/learningAreas"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
@@ -9,6 +9,9 @@ import { User } from "@/api/common/user"
 import { userIdentifierFor } from './helpers'
 import { TestLearningAreasServer } from './services/testLearningAreasServer'
 import { serverHost } from './services/testServer'
+import { CosmosConnection } from '@/adapters/cosmosConnection'
+import { CosmosEngagementPlanRepository } from '@/adapters/cosmosEngagementPlanRepository'
+import { CosmosEngagementNoteRepository } from '@/adapters/cosmosEngagementNoteRepository'
 
 export function testContext(): Context<TestContext> {
   return {
@@ -24,14 +27,14 @@ export function testContext(): Context<TestContext> {
 export class TestContext {
   display = new TestDisplay()
   learningAreasServer = new TestLearningAreasServer()
-  engagementPlanRepo = new ResetableEngagementPlanRepo({
+  cosmosConnection = new CosmosConnection({
     endpoint: "https://localhost:3021",
     key: "some-dumb-key",
     database: "lds-test",
-    container: "engagement-plans",
     agent: new https.Agent({ rejectUnauthorized: false })
   })
   engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
+  engagementNotes: Array<TestEngagementNote> = []
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
     this.learningAreasServer.areas = learningAreas
@@ -49,26 +52,50 @@ export class TestContext {
     return this
   }
 
+  withEngagementNotes(notes: Array<TestEngagementNote>): TestContext {
+    this.engagementNotes = notes
+    return this
+  }
+
   async writeEngagementPlans(): Promise<void> {
+    const engagementPlanRepo = new CosmosEngagementPlanRepository(this.cosmosConnection)
+
     for (const [userName, plans] of this.engagementPlans) {
       const user: User = {
         identifier: userIdentifierFor(userName),
         name: userName
       }
       for (const plan of plans) {
-        await this.engagementPlanRepo.write(user, plan)
+        await engagementPlanRepo.write(user, plan)
       }
     }
   }
 
+  async writeEngagementNotes(): Promise<void> {
+    const engagementNoteRepo = new CosmosEngagementNoteRepository(this.cosmosConnection)
+
+    for (const note of this.engagementNotes) {
+      const user: User = {
+        identifier: userIdentifierFor(note.user),
+        name: note.user
+      }
+      await engagementNoteRepo.write(user, note.learningArea, { content: note.content })
+    }
+  }
+
+  async startAtLearningArea(learningArea: TestLearningArea): Promise<void> {
+    await this.start(`/learning-areas/${learningArea.id}`)
+  }
+
   async start(path: string = ""): Promise<void> {
     await this.writeEngagementPlans()
+    await this.writeEngagementNotes()
     await this.learningAreasServer.start()
     await this.display.start(serverHost() + path)
   }
 
   async stop(): Promise<void> {
-    await this.engagementPlanRepo.reset()
+    await resetCosmos(this.cosmosConnection)
     await this.learningAreasServer.stop()
     await this.display.stop()
   }
@@ -116,4 +143,21 @@ export class TestLearningArea implements LearningArea {
 
 export function FakeLearningArea(testId: number): TestLearningArea {
   return new TestLearningArea(testId)
+}
+
+class TestEngagementNote {
+  content: string
+
+  constructor(public user: string, public learningArea: TestLearningArea, public testId: number) {
+    this.content = `Some funny note ${testId}`
+  }
+
+  withContent(content: string): TestEngagementNote {
+    this.content = content
+    return this
+  }
+}
+
+export function FakeEngagementNote(user: string, learningArea: TestLearningArea, testId: number): TestEngagementNote {
+  return new TestEngagementNote(user, learningArea, testId)
 }

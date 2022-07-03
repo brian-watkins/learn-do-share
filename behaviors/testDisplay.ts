@@ -22,6 +22,10 @@ export class TestDisplay {
     await this.page?.goBack()
   }
 
+  async waitForPageLoad(): Promise<void> {
+    await this.page?.waitForLoadState()
+  }
+
   selectElementWithText(text: string): DisplayElement {
     return this.select(`text="${text}"`)
   }

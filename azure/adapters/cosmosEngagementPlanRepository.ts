@@ -1,109 +1,65 @@
-import { BulkOperationType, Container, CosmosClient, CosmosClientOptions, Database } from "@azure/cosmos";
+import { BulkOperationType } from "@azure/cosmos";
 import { User } from "../api/common/user";
 import { EngagementPlan } from "@/src/engage/engagementPlans";
 import { EngagementPlanReader } from "@/src/overview/backstage";
 import { EngagementPlanWriter } from "@/src/engage/writeEngagementPlans";
+import { CosmosConnection } from "./cosmosConnection";
 
-export interface CosmosConfig extends CosmosClientOptions {
-  endpoint: string
-  key: string,
-  database: string,
-  container: string,
-}
+const PLANS_CONTAINER = "engagement-plans"
 
 export class CosmosEngagementPlanRepository implements EngagementPlanReader, EngagementPlanWriter {
-  protected client: CosmosClient
-  protected database: Database | null = null
-  protected container: Container | null = null
-  protected config: CosmosConfig;
 
-  constructor(config: CosmosConfig) {
-    this.client = new CosmosClient(config)
-    this.config = config
-  }
-
-  async connect(): Promise<void> {
-    const databaseResponse = await this.client.databases.createIfNotExists({ id: this.config.database });
-    this.database = databaseResponse.database
-    const containerResponse = await this.database?.containers.createIfNotExists({
-      id: this.config.container,
-      partitionKey: {
-        paths: ["/userId"],
-        version: 2
-      }
-    });
-    this.container = containerResponse.container
-  }
+  constructor(private connection: CosmosConnection) { }
 
   async read(user: User): Promise<EngagementPlan[]> {
-    if (this.container == null) {
-      await this.connect()
-    }
-
-    if (this.container == null) {
-      return Promise.reject("Could not connect!")
-    }
-
-    const { resources } = await this.container.items
-      .query({
+    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+      const { resources } = await plans.items.query({
         query: "SELECT * FROM plans p WHERE p.userId = @userId",
         parameters: [
           { name: "@userId", value: user.identifier }
         ]
       }, { partitionKey: user.identifier })
-      .fetchAll()
+        .fetchAll()
 
-    return resources
+      return resources
+    })
   }
 
   async write(user: User, plan: EngagementPlan): Promise<EngagementPlan> {
-    if (this.container == null) {
-      await this.connect()
-    }
+    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+      const storeablePlan = Object.assign(plan, { userId: user.identifier })
 
-    if (this.container == null) {
-      return Promise.reject("No container has been connected!")
-    }
+      const { resource } = await plans.items.create(storeablePlan)
 
-    const storeablePlan = Object.assign(plan, { userId: user.identifier })
+      if (!resource) {
+        return Promise.reject("Unable to create plan!")
+      }
 
-    const { resource } = await this.container.items.create(storeablePlan)
-
-    if (!resource) {
-      return Promise.reject("Unable to create plan!")
-    }
-
-    return resource
+      return resource
+    })
   }
 
   async deleteAll(user: User, learningArea: string): Promise<void> {
-    if (this.container == null) {
-      console.log("Connecting to container!")
-      await this.connect()
-    }
+    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+      // Note: Seems like we should try to remove this query
+      // But the frontend request doesn't seem to be all that much slower,
+      // maybe a few ms. So doesn't matter a whole lot
+      const { resources } = await plans.items
+        .query({
+          query: "SELECT * FROM plans WHERE plans.learningArea = @learningArea",
+          parameters: [
+            { name: "@learningArea", value: learningArea }
+          ],
+        }, { partitionKey: user.identifier })
+        .fetchAll()
 
-    if (this.container == null) {
-      return Promise.reject("No container has been connected!")
-    }
-
-    // Note: Seems like we should try to remove this query
-    // But the frontend request doesn't seem to be all that much slower,
-    // maybe a few ms. So doesn't matter a whole lot
-    const { resources } = await this.container.items
-      .query({
-        query: "SELECT * FROM plans WHERE plans.learningArea = @learningArea",
-        parameters: [
-          { name: "@learningArea", value: learningArea }
-        ],
-      }, { partitionKey: user.identifier })
-      .fetchAll()
-
-    await this.container.items.batch(resources.map((resource) => {
-      return {
-        operationType: BulkOperationType.Delete,
-        partitionKey: `["${user.identifier}"]`,
-        id: resource.id
-      }
-    }), user.identifier)
+      await plans.items.batch(resources.map((resource) => {
+        return {
+          operationType: BulkOperationType.Delete,
+          partitionKey: `["${user.identifier}"]`,
+          id: resource.id
+        }
+      }), user.identifier)
+    })
   }
 }

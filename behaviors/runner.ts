@@ -1,12 +1,13 @@
 import { validate } from "esbehavior"
 import { startBrowser, stopBrowser } from "./services/browser"
+import { isDebug } from "./helpers"
+import { startCosmos, stopCosmos } from "./services/testStore"
+import { startServer, stopServer } from "./services/testServer"
 import viewBehavior from "./view.behavior"
 import contentBehavior from "./content.behavior"
 import engageBehavior from "./engage.behavior"
 import authBehavior from "./auth.behavior"
-import { isDebug } from "./helpers"
-import { startCosmos, stopCosmos } from "./services/testStore"
-import { startServer, stopServer } from "./services/testServer"
+import notesBehavior from "./notes.behavior"
 
 process.on("uncaughtException", async (error) => {
   console.log("A horrible error occurred:", error)
@@ -22,7 +23,8 @@ const summary = await validate([
   viewBehavior,
   contentBehavior,
   engageBehavior,
-  authBehavior
+  authBehavior,
+  notesBehavior
 ])
 
 if (summary.invalid > 0 || summary.skipped > 0) {

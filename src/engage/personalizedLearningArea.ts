@@ -3,9 +3,11 @@ import * as Style from "../style"
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
+import { EngagementNote } from "./engagementNotes"
 
 export interface PersonalizedLearningArea extends LearningArea {
   engagementLevels: Array<EngagementLevel>
+  engagementNotes: Array<EngagementNote>
 }
 
 export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewChild {

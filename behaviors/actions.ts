@@ -29,6 +29,7 @@ export function gotoLearningAreas(): Action<TestContext> {
 export function selectLearningArea(learningArea: TestLearningArea): Action<TestContext> {
   return step(`Selected '${learningArea.title}'`, async (testContext) => {
     await testContext.display.selectElementWithText(learningArea.title).click()
+    await testContext.display.waitForPageLoad()
   })
 }
 
