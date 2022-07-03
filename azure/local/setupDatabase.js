@@ -1,4 +1,5 @@
 import waitOn from "wait-on"
+import { seedNotes } from "./databaseSetup.js";
 import { createTestDatabase } from './databaseSetup.js';
 
 console.log("Waiting for fake cosmos db ...")
@@ -20,6 +21,11 @@ await new Promise((resolve) => {
 console.log("Creating database and containers ...")
 
 await createTestDatabase({
+  endpoint: "https://localhost:3021",
+  databaseName: "lds-local"
+})
+
+await seedNotes({
   endpoint: "https://localhost:3021",
   databaseName: "lds-local"
 })
