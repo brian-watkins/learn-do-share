@@ -10,11 +10,10 @@ export interface PersonalizedLearningArea extends LearningArea {
   engagementNotes: Array<EngagementNote>
 }
 
-export function engagementPlansView(area: PersonalizedLearningArea): Html.ViewChild {
+export function engagementPlansView(area: PersonalizedLearningArea): Html.View {
   return Html.div([
     Html.cssClasses([
-      "ml-16",
-      "mt-16",
+      "mt-12",
       "mb-8",
       "flex",
       "gap-4"

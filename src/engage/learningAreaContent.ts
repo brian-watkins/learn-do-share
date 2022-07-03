@@ -2,17 +2,14 @@ import * as Html from "@/display/markup"
 import { decorate, TagDecorator } from "../util/markdownParser";
 import { LearningArea } from "./learningArea";
 
-export function learningAreaContentView(area: LearningArea): Html.ViewChild {
+export function learningAreaContentView(area: LearningArea): Html.View {
   return Html.p([
     Html.id("learning-area-content"),
     Html.cssClasses([
+      "w-136",
       "mx-16",
       "mt-12",
-      "max-w-xl",
-      "border-l-8",
-      "border-solid",
-      "border-cyan-500",
-      "pl-6",
+      "pl-16",
       "text-xl"
     ]),
     Html.withHTMLContent(area.content)

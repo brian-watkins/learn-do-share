@@ -3,7 +3,12 @@ module.exports = {
     "./src/**/*.ts"
   ],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        '128': '32rem',
+        '136': '40rem'
+      }
+    },
   },
   plugins: [],
 }

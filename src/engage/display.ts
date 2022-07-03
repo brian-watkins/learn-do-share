@@ -66,15 +66,32 @@ function view(model: Model): Html.View {
         ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
-        engagementPlansView(model.learningArea),
-        learningAreaContentView(model.learningArea),
-        engagementNotesView(model.learningArea.engagementNotes)
+        contentArea([
+          learningAreaContentView(model.learningArea),
+          sideColumn([
+            engagementPlansView(model.learningArea),
+            engagementNotesView(model.learningArea.engagementNotes)
+          ])
+        ])
       ])
   }
 }
 
 function pageHeader(views: Array<Html.View>): Html.View {
   return header([], views)
+}
+
+function contentArea(views: Array<Html.View>): Html.View {
+  return Html.div([
+    Html.cssClasses([
+      "flex",
+      "gap-16"
+    ])
+  ], views)
+}
+
+function sideColumn(views: Array<Html.View>): Html.View {
+  return Html.div([], views)
 }
 
 export function loginView(area: LearningArea): Html.View {

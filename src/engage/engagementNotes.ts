@@ -11,13 +11,24 @@ export interface EngagementNoteContents {
 
 export function engagementNotesView(notes: Array<EngagementNote>): Html.View {
   return Html.div([
-    Html.id("engagement-notes")
+    Html.id("engagement-notes"),
+    Html.cssClasses([
+      "w-128",
+    ])
   ], notes.map(engagementNoteView))
 }
 
 function engagementNoteView(note: EngagementNote): Html.View {
   return Html.div([
-    Html.data("engagement-note")
+    Html.data("engagement-note"),
+    Html.cssClasses([
+      "text-lg",
+      "pb-4",
+      "mb-8",
+      "border-b-2",
+      "border-solid",
+      "border-cyan-500",
+    ])
   ], [
     Html.text(note.content)
   ])
