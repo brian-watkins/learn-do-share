@@ -58,7 +58,7 @@ infrastructure. The terraform files are in `terraform`. To run Terraform locally
 first install the Azure CLI and Terraform. Then, one time only I think, init Terraform:
 
 ```
-$ cd terraform
+$ cd ./azure/terraform
 $ terraform init
 $ az login
 $ GITHUB_TOKEN=<some github token> terraform plan
