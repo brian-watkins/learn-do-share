@@ -26,6 +26,10 @@ export class TestDisplay {
     await this.page?.waitForLoadState()
   }
 
+  async waitForRequestsToComplete(): Promise<void> {
+    await this.page?.waitForLoadState("networkidle", { timeout: 1000 })
+  }
+
   selectElementWithText(text: string): DisplayElement {
     return this.select(`text="${text}"`)
   }
@@ -60,12 +64,12 @@ export class DisplayElement {
   }
 
   async click(): Promise<void> {
-    await this.locator.first().click({ timeout: 1000 })
+    await this.locator.first().click({ timeout: 2000 })
   }
 
   async type(value: string, options: TypingOptions = { clear: false }): Promise<void> {
-    await this.locator.first().click({ clickCount: options.clear ? 3 : 1 })
-    await this.locator.first().type(value)
+    await this.locator.first().click({ clickCount: options.clear ? 3 : 1, timeout: 250 })
+    await this.locator.first().type(value, { timeout: 500 })
   }
 
   async isVisible(): Promise<boolean> {
@@ -84,6 +88,10 @@ export class DisplayElement {
 
   async getAttribute(name: string): Promise<string | null> {
     return this.locator.first().getAttribute(name)
+  }
+
+  async getInputValue(): Promise<string> {
+    return this.locator.first().inputValue()
   }
 
   selectDescendant(selector: string, options: SelectorOptions = {}): DisplayElement {

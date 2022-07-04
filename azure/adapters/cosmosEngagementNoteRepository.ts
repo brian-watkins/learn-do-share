@@ -1,7 +1,8 @@
 import { User } from "@/api/common/user";
 import { EngagementNoteReader } from "@/src/engage/backstage";
-import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
+import { EngagementNoteContents } from "@/src/engage/engagementNotes";
 import { LearningArea } from "@/src/engage/learningArea";
+import { EngagementNote } from "@/src/engage/personalizedLearningArea";
 import { CosmosConnection } from "./cosmosConnection";
 
 const NOTES_CONTAINER = "engagement-notes"
@@ -25,9 +26,9 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader {
     })
   }
 
-  async write(user: User, learningArea: LearningArea, noteContents: EngagementNoteContents): Promise<EngagementNote> {
+  async write(user: User, learningAreaId: string, noteContents: EngagementNoteContents): Promise<EngagementNote> {
     return this.connection.execute(NOTES_CONTAINER, async (notes) => {
-      const storeableNote = Object.assign(noteContents, { userId: user.identifier, learningAreaId: learningArea.id })
+      const storeableNote = Object.assign(noteContents, { userId: user.identifier, learningAreaId })
 
       const { resource } = await notes.items.create(storeableNote)
 

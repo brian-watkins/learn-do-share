@@ -7,7 +7,7 @@ import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngageme
 import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
-import { engagementNotesView } from "./engagementNotes"
+import { EngagementNotePersisted, engagementNotesView } from "./engagementNotes"
 
 export interface Informative {
   type: "informative"
@@ -18,6 +18,7 @@ export interface Personalized {
   type: "personalized"
   learningArea: PersonalizedLearningArea
   user: User
+  noteContent?: string
 }
 
 export type Model
@@ -27,6 +28,7 @@ export type Model
 type EngageMessage
   = EngagementPlanPersisted
   | EngagementPlansDeleted
+  | EngagementNotePersisted
 
 function update(model: Model, action: EngageMessage): void {
   switch (model.type) {
@@ -38,6 +40,10 @@ function update(model: Model, action: EngageMessage): void {
         }
         case "engagementPlansDeleted": {
           model.learningArea.engagementLevels = []
+          break
+        }
+        case "engagementNotePersisted": {
+          model.learningArea.engagementNotes.push(action.note)
           break
         }
       }
@@ -70,7 +76,7 @@ function view(model: Model): Html.View {
           learningAreaContentView(model.learningArea),
           sideColumn([
             engagementPlansView(model.learningArea),
-            engagementNotesView(model.learningArea.engagementNotes)
+            engagementNotesView(model.learningArea)
           ])
         ])
       ])

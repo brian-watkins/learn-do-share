@@ -7,8 +7,9 @@ import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, 
 import { EngagementPlan } from "./engagementPlans.js";
 import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
-import { EngagementNote } from "./engagementNotes.js";
+import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNotePersisted } from "./engagementNotes.js";
 import { LearningArea } from "./learningArea.js";
+import { EngagementNote } from "./personalizedLearningArea.js";
 
 export interface EngagementPlanReader {
   read(user: User): Promise<Array<EngagementPlan>>
@@ -18,14 +19,19 @@ export interface EngagementNoteReader {
   read(user: User, learningArea: LearningArea): Promise<Array<EngagementNote>>
 }
 
+export interface EngagementNoteWriter {
+  write(user: User, learningAreaId: string, content: EngagementNoteContents): Promise<EngagementNote>
+}
+
 export interface Adapters {
   learningAreaReader: LearningAreaReader
   engagementPlanWriter: EngagementPlanWriter
   engagementPlanReader: EngagementPlanReader
   engagementNoteReader: EngagementNoteReader
+  engagementNoteWriter: EngagementNoteWriter
 }
 
-export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans
+export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans | EngagementNoteCreationRequested
 
 const update = (adapters: Adapters) => async (user: User | null, message: DataMessage) => {
   if (user == null) {
@@ -39,6 +45,11 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
     case "deleteEngagementPlans":
       await adapters.engagementPlanWriter.deleteAll(user, message.learningArea)
       return engagementPlansDeleted(message.learningArea)
+    case "engagementNoteCreationRequested":
+      const note = await adapters.engagementNoteWriter.write(user, message.learningAreaId, {
+        content: message.content
+      })
+      return engagementNotePersisted(note)
   }
 }
 

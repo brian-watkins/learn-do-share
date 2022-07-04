@@ -79,7 +79,7 @@ export class TestContext {
         identifier: userIdentifierFor(note.user),
         name: note.user
       }
-      await engagementNoteRepo.write(user, note.learningArea, { content: note.content })
+      await engagementNoteRepo.write(user, note.learningArea.id, { content: note.content })
     }
   }
 

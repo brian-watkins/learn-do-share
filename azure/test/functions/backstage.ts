@@ -20,7 +20,8 @@ const adapters: Adapters = {
   learningAreaReader: new HttpLearningAreaReader(),
   engagementPlanReader: engagementPlanRepository,
   engagementPlanWriter: engagementPlanRepository,
-  engagementNoteReader: engagementNotesRepository
+  engagementNoteReader: engagementNotesRepository,
+  engagementNoteWriter: engagementNotesRepository
 }
 
 export default generateBackstageFunction(adapters)
