@@ -66,7 +66,7 @@ export function learningAreasTitleView(): Html.ViewChild {
 }
 
 export function learningAreasPracticeView(): Html.ViewChild {
-  return Html.div([Html.id("learning-area-practice"), Style.tag(Style.Colors.Standard), 
+  return Html.div([Html.id("learning-area-practice"), Style.tag(Style.Colors.Dark),
   Html.cssClasses([
     "mt-8",
     "mb-4",

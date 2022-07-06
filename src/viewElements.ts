@@ -1,5 +1,6 @@
 import * as Html from "@/display/markup"
 import * as Style from "./style"
+import { Colors, tag } from "./style"
 
 export function header(attributes: Array<Html.ViewAttribute>, views: Array<Html.View>): Html.View {
   return Html.div([Html.cssClasses([
@@ -33,4 +34,12 @@ export function cardBox(attributes: Array<Html.ViewAttribute>, children: Array<H
     "items-center",
     "gap-8",
   ])], children)
+}
+
+export function headingBox(text: string): Html.View {
+  return Html.div([
+    tag(Colors.Dark),
+  ], [
+    Html.text(text)
+  ])
 }

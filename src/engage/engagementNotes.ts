@@ -1,6 +1,8 @@
 import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
+import { borderColor, Colors, link } from "../style"
+import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 
 
@@ -12,6 +14,7 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
   return Html.div([
     Html.id("engagement-notes"),
     Html.cssClasses([
+      "mt-8",
       "w-128",
     ])
   ], [
@@ -24,13 +27,31 @@ const inputViewContext = Html.context("")
 
 function noteInputView(area: PersonalizedLearningArea): Html.View {
   return inputViewContext((state, setState) => {
-    return Html.div([], [
-      Html.input([
+    return Html.div([
+      Html.cssClasses([
+        "flex",
+        "flex-col",
+        "mb-8",
+        "gap-4"
+      ])
+    ], [
+      headingBox("Notes"),
+      Html.textarea([
         Html.data("note-input"),
         Html.value(state),
-        Html.onInput(setState)
+        Html.onInput(setState),
+        noteBox(),
+        Html.cssClasses([
+          "focus:outline-none",
+          "resize-none"
+        ])
       ], []),
       Html.button([
+        link(),
+        Html.cssClasses([
+          "w-fit",
+          "self-end"
+        ]),
         Html.onClick(batch([
           createNoteMessage(area, state),
           setState(""),
@@ -45,16 +66,24 @@ function noteInputView(area: PersonalizedLearningArea): Html.View {
 function engagementNoteView(note: EngagementNote): Html.View {
   return Html.div([
     Html.data("engagement-note"),
+    noteBox(),
     Html.cssClasses([
-      "text-lg",
-      "pb-4",
       "mb-8",
-      "border-b-2",
-      "border-solid",
-      "border-cyan-500",
     ])
   ], [
     Html.text(note.content)
+  ])
+}
+
+function noteBox(): Html.ViewAttribute {
+  return Html.cssClasses([
+    "text-lg",
+    "py-4",
+    "px-6",
+    "rounded",
+    "border-2",
+    "border-solid",
+    borderColor(Colors.Dark),
   ])
 }
 

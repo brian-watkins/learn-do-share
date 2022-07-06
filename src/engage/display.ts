@@ -74,7 +74,7 @@ function view(model: Model): Html.View {
         learningAreaTitleView(model.learningArea),
         contentArea([
           learningAreaContentView(model.learningArea),
-          sideColumn([
+          contentColumn([
             engagementPlansView(model.learningArea),
             engagementNotesView(model.learningArea)
           ])
@@ -91,13 +91,20 @@ function contentArea(views: Array<Html.View>): Html.View {
   return Html.div([
     Html.cssClasses([
       "flex",
-      "gap-16"
+      "gap-32"
     ])
   ], views)
 }
 
-function sideColumn(views: Array<Html.View>): Html.View {
-  return Html.div([], views)
+function contentColumn(views: Array<Html.View>): Html.View {
+  return Html.div([
+    Html.cssClasses([
+      "mt-12",
+      "flex",
+      "flex-col",
+      "gap-4"
+    ])
+  ], views)
 }
 
 export function loginView(area: LearningArea): Html.View {

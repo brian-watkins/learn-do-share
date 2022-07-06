@@ -3,6 +3,7 @@ import * as Style from "../style"
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
+import { headingBox } from "../viewElements"
 
 export interface PersonalizedLearningArea extends LearningArea {
   engagementLevels: Array<EngagementLevel>
@@ -15,14 +16,19 @@ export interface EngagementNote {
 }
 
 export function engagementPlansView(area: PersonalizedLearningArea): Html.View {
-  return Html.div([
-    Html.cssClasses([
-      "mt-12",
-      "mb-8",
-      "flex",
-      "gap-4"
-    ])
-  ], [...area.engagementLevels.map(engagementPlanView), increaseEngagementButton(area)])
+  return Html.div([ Html.cssClasses([
+    "flex",
+    "flex-col",
+    "gap-4"
+  ]) ], [
+    headingBox("Engagement"),
+    Html.div([
+      Html.cssClasses([
+        "flex",
+        "gap-4"
+      ])
+    ], [...area.engagementLevels.map(engagementPlanView), increaseEngagementButton(area)])  
+  ])
 }
 
 function engagementPlanView(level: string): Html.ViewChild {

@@ -126,6 +126,10 @@ export function input(attributes: Array<ViewAttribute>, children: Array<ViewChil
   return h("input", makeAttributes(attributes), children)
 }
 
+export function textarea(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
+  return h("textarea", makeAttributes(attributes), children)
+}
+
 export function label(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("label", makeAttributes(attributes), children)
 }

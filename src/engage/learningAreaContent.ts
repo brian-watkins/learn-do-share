@@ -7,7 +7,7 @@ export function learningAreaContentView(area: LearningArea): Html.View {
     Html.id("learning-area-content"),
     Html.cssClasses([
       "w-136",
-      "mx-16",
+      "ml-16",
       "mt-12",
       "pl-16",
       "text-xl"

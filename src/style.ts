@@ -29,7 +29,7 @@ export function box(): Html.ViewAttribute {
     "p-8",
     "rounded",
     "border-2",
-    borderColor(Colors.Standard),
+    borderColor(Colors.Dark),
     "border-dotted",
   ])
 }
@@ -39,7 +39,7 @@ export function link(): Html.ViewAttribute {
     "px-4",
     "py-2",
     "rounded",
-    borderColor(Colors.Standard),
+    borderColor(Colors.Dark),
     "border-2",
     "border-dotted",
     darkTextColor,
@@ -49,7 +49,7 @@ export function link(): Html.ViewAttribute {
 }
 
 export enum Colors {
-  Standard = "standard",
+  Dark = "standard",
   Discipline = "discipline",
   Team = "team",
   Theory = "theory",
@@ -61,8 +61,8 @@ export const lightTextColor = "text-neutral-50"
 
 function backgroundColor(color: Colors): string {
   switch (color) {
-    case Colors.Standard:
-      return "bg-gray-700"
+    case Colors.Dark:
+      return "bg-slate-700"
     case Colors.Discipline:
       return "bg-fuchsia-500"
     case Colors.Team:
@@ -70,14 +70,14 @@ function backgroundColor(color: Colors): string {
     case Colors.Theory:
       return "bg-indigo-600"
     case Colors.Engagement:
-      return "bg-cyan-700"
+      return "bg-sky-600"
   }
 }
 
-function borderColor(color: Colors): string {
+export function borderColor(color: Colors): string {
   switch (color) {
-    case Colors.Standard:
-      return "border-gray-700"
+    case Colors.Dark:
+      return "border-slate-700"
     case Colors.Discipline:
       return "border-fuchsia-500"
     case Colors.Team:
@@ -85,7 +85,7 @@ function borderColor(color: Colors): string {
     case Colors.Theory:
       return "border-indigo-600"
     case Colors.Engagement:
-      return "border-cyan-700"
+      return "border-sky-600"
   }
 }
 
@@ -98,6 +98,6 @@ export function colorForCategory(category: string): Colors {
     case LearningAreaCategory.Theory:
       return Colors.Theory
     default:
-      return Colors.Standard
+      return Colors.Dark
   }
 }
