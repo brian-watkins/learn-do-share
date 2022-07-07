@@ -3,7 +3,6 @@ import * as Style from "../style"
 import { EngagementLevel, engagementPlan } from "./engagementPlans"
 import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPlans"
 import { LearningArea } from "./learningArea"
-import { headingBox } from "../viewElements"
 
 export interface PersonalizedLearningArea extends LearningArea {
   engagementLevels: Array<EngagementLevel>
@@ -21,7 +20,6 @@ export function engagementPlansView(area: PersonalizedLearningArea): Html.View {
     "flex-col",
     "gap-4"
   ]) ], [
-    headingBox("Engagement"),
     Html.div([
       Html.cssClasses([
         "flex",

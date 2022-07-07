@@ -1,7 +1,7 @@
 import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
-import { borderColor, Colors, link } from "../style"
+import { borderColor, Colors, focusBorderColor, link, mediumTextColor } from "../style"
 import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 
@@ -43,14 +43,18 @@ function noteInputView(area: PersonalizedLearningArea): Html.View {
         noteBox(),
         Html.cssClasses([
           "focus:outline-none",
-          "resize-none"
+          focusBorderColor(Colors.Dark),
+          "resize-none",
+          "mt-4"
         ])
       ], []),
       Html.button([
         link(),
         Html.cssClasses([
           "w-fit",
-          "self-end"
+          "self-end",
+          borderColor(Colors.Light),
+          mediumTextColor
         ]),
         Html.onClick(batch([
           createNoteMessage(area, state),
@@ -83,7 +87,7 @@ function noteBox(): Html.ViewAttribute {
     "rounded",
     "border-2",
     "border-solid",
-    borderColor(Colors.Dark),
+    borderColor(Colors.Light),
   ])
 }
 

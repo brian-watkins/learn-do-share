@@ -9,13 +9,13 @@ export function bannerText(): Html.ViewAttribute {
   ])
 }
 
-export function tag(color: Colors): Html.ViewAttribute {
+export function tag(color: Colors, textColor: string = lightTextColor): Html.ViewAttribute {
   return Html.cssClasses([
     backgroundColor(color),
     "rounded",
     "capitalize",
     "font-bold",
-    lightTextColor,
+    textColor,
     "py-2",
     "px-4",
     "border-2",
@@ -30,7 +30,7 @@ export function box(): Html.ViewAttribute {
     "rounded",
     "border-2",
     borderColor(Colors.Dark),
-    "border-dotted",
+    "border-dotted"
   ])
 }
 
@@ -44,25 +44,30 @@ export function link(): Html.ViewAttribute {
     "border-dotted",
     darkTextColor,
     "font-bold",
-    "inline-block"
+    "inline-block",
+    "hover:underline"
   ])
 }
 
 export enum Colors {
   Dark = "standard",
+  Light = "light",
   Discipline = "discipline",
   Team = "team",
   Theory = "theory",
   Engagement = "engagement"
 }
 
-export const darkTextColor = "text-gray-900"
+export const darkTextColor = "text-slate-700"
 export const lightTextColor = "text-neutral-50"
+export const mediumTextColor = "text-slate-200"
 
 function backgroundColor(color: Colors): string {
   switch (color) {
     case Colors.Dark:
       return "bg-slate-700"
+    case Colors.Light:
+      return "bg-slate-100"
     case Colors.Discipline:
       return "bg-fuchsia-500"
     case Colors.Team:
@@ -78,6 +83,8 @@ export function borderColor(color: Colors): string {
   switch (color) {
     case Colors.Dark:
       return "border-slate-700"
+    case Colors.Light:
+      return "border-slate-100"
     case Colors.Discipline:
       return "border-fuchsia-500"
     case Colors.Team:
@@ -86,6 +93,23 @@ export function borderColor(color: Colors): string {
       return "border-indigo-600"
     case Colors.Engagement:
       return "border-sky-600"
+  }
+}
+
+export function focusBorderColor(color: Colors): string {
+  switch (color) {
+    case Colors.Dark:
+      return "focus:border-slate-700"
+    case Colors.Light:
+      return "focus:border-slate-100"
+    case Colors.Discipline:
+      return "focus:border-fuchsia-500"
+    case Colors.Team:
+      return "focus:border-purple-700"
+    case Colors.Theory:
+      return "focus:border-indigo-600"
+    case Colors.Engagement:
+      return "focus:border-sky-600"
   }
 }
 

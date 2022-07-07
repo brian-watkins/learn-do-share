@@ -8,7 +8,9 @@ export enum LearningAreaCategory {
 }
 
 export function learningAreaCategoryTitle(category: LearningAreaCategory): Html.ViewChild {
-  return Html.div([Style.tag(Style.colorForCategory(category))], [
+  return Html.div([
+    Style.tag(Style.colorForCategory(category))
+  ], [
     Html.text(category)
   ])
 }

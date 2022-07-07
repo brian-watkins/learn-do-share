@@ -38,7 +38,7 @@ export function cardBox(attributes: Array<Html.ViewAttribute>, children: Array<H
 
 export function headingBox(text: string): Html.View {
   return Html.div([
-    tag(Colors.Dark),
+    tag(Colors.Light, Style.darkTextColor),
   ], [
     Html.text(text)
   ])

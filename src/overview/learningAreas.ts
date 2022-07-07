@@ -34,6 +34,7 @@ export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
     "font-bold",
     Style.darkTextColor,
     "text-5xl",
+    "hover:underline"
   ])], [
     Html.text(area.title),
   ])
