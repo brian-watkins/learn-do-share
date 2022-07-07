@@ -1,7 +1,7 @@
 import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
-import { borderColor, Colors, focusBorderColor, link, mediumTextColor } from "../style"
+import { Colors, focusWithinBorderColor, textColor } from "../style"
 import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 
@@ -16,8 +16,12 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
     Html.cssClasses([
       "mt-8",
       "w-128",
+      "flex",
+      "flex-col",
+      "gap-8"
     ])
   ], [
+    headingBox("Notes"),
     noteInputView(area),
     ...area.engagementNotes.map(engagementNoteView)
   ])
@@ -26,45 +30,49 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
 const inputViewContext = Html.context("")
 
 function noteInputView(area: PersonalizedLearningArea): Html.View {
-  return inputViewContext((state, setState) => {
-    return Html.div([
+  return inputViewContext((state, setState) =>
+    Html.div([
+      noteBox(),
       Html.cssClasses([
         "flex",
         "flex-col",
-        "mb-8",
-        "gap-4"
+        focusWithinBorderColor(Colors.Engagement),
       ])
     ], [
-      headingBox("Notes"),
       Html.textarea([
         Html.data("note-input"),
         Html.value(state),
         Html.onInput(setState),
-        noteBox(),
         Html.cssClasses([
           "focus:outline-none",
-          focusBorderColor(Colors.Dark),
+          "rounded",
           "resize-none",
-          "mt-4"
+          "py-4",
+          "px-6",
         ])
       ], []),
       Html.button([
-        link(),
         Html.cssClasses([
           "w-fit",
           "self-end",
-          borderColor(Colors.Light),
-          mediumTextColor
+          textColor(Colors.Engagement),
+          "disabled:text-slate-300",
+          "font-bold",
+          "px-4",
+          "py-2",
+          "disabled:no-underline",
+          "hover:underline",
         ]),
         Html.onClick(batch([
           createNoteMessage(area, state),
           setState(""),
-        ]))
+        ])),
+        Html.disabled(state.length === 0)
       ], [
         Html.text("Save Note")
       ])
     ])
-  })
+  )
 }
 
 function engagementNoteView(note: EngagementNote): Html.View {
@@ -72,7 +80,8 @@ function engagementNoteView(note: EngagementNote): Html.View {
     Html.data("engagement-note"),
     noteBox(),
     Html.cssClasses([
-      "mb-8",
+      "px-6",
+      "py-4"
     ])
   ], [
     Html.text(note.content)
@@ -82,12 +91,10 @@ function engagementNoteView(note: EngagementNote): Html.View {
 function noteBox(): Html.ViewAttribute {
   return Html.cssClasses([
     "text-lg",
-    "py-4",
-    "px-6",
     "rounded",
     "border-2",
     "border-solid",
-    borderColor(Colors.Light),
+    "border-slate-200"
   ])
 }
 

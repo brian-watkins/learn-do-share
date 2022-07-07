@@ -60,7 +60,7 @@ export enum Colors {
 
 export const darkTextColor = "text-slate-700"
 export const lightTextColor = "text-neutral-50"
-export const mediumTextColor = "text-slate-200"
+export const mediumTextColor = "text-slate-300"
 
 function backgroundColor(color: Colors): string {
   switch (color) {
@@ -96,20 +96,37 @@ export function borderColor(color: Colors): string {
   }
 }
 
-export function focusBorderColor(color: Colors): string {
+export function focusWithinBorderColor(color: Colors): string {
   switch (color) {
     case Colors.Dark:
-      return "focus:border-slate-700"
+      return "focus-within:border-slate-700"
     case Colors.Light:
-      return "focus:border-slate-100"
+      return "focus-within:border-slate-100"
     case Colors.Discipline:
-      return "focus:border-fuchsia-500"
+      return "focus-within:border-fuchsia-500"
     case Colors.Team:
-      return "focus:border-purple-700"
+      return "focus-within:border-purple-700"
     case Colors.Theory:
-      return "focus:border-indigo-600"
+      return "focus-within:border-indigo-600"
     case Colors.Engagement:
-      return "focus:border-sky-600"
+      return "focus-within:border-sky-600"
+  }
+}
+
+export function textColor(color: Colors): string {
+  switch (color) {
+    case Colors.Dark:
+      return "text-slate-700"
+    case Colors.Light:
+      return "text-slate-100"
+    case Colors.Discipline:
+      return "text-fuchsia-500"
+    case Colors.Team:
+      return "text-purple-700"
+    case Colors.Theory:
+      return "text-indigo-600"
+    case Colors.Engagement:
+      return "text-sky-600"
   }
 }
 

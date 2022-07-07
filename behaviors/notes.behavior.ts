@@ -129,5 +129,32 @@ export default
             expect(noteContents).to.deep.equal(["This is the best note ever!"])
           })
         ]
+      }),
+    example(testContext())
+      .description("creating a note with no text")
+      .script({
+        suppose: [
+          fact("there is a learning area", (testContext) => {
+            testContext
+              .withLearningAreas([
+                FakeLearningArea(1)
+              ])
+          }),
+          fact("the app shows the learning area", async (testContext) => {
+            await testContext.startAtLearningArea(FakeLearningArea(1))
+          })
+        ],
+        perform: [
+          loginUser("someone-cool@person.com"),
+        ],
+        observe: [
+          effect("the save note button is disabled", async (testContext) => {
+            const saveNoteButtonDisabledStatus = await testContext.display
+              .selectElementWithText("Save Note")
+              .getAttribute("disabled")
+
+            expect(saveNoteButtonDisabledStatus).to.equal("true")
+          })
+        ]
       })
   ])

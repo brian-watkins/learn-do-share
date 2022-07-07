@@ -4,7 +4,7 @@ import { BATCH_MESSAGE_TYPE } from "./batch";
 export type View = VNode
 export type ViewChild = VNodeChildElement
 
-export type ViewAttribute = Property | Attribute | CssClasses | EventHandler
+export type ViewAttribute = Property | Attribute | CssClasses | EventHandler | NullViewAttribute
 
 class Property {
   type: "property" = "property"
@@ -16,6 +16,10 @@ class Attribute {
   type: "attribute" = "attribute"
 
   constructor(public key: string, public value: string) { }
+}
+
+class NullViewAttribute {
+  type: "null-view-attribute" = "null-view-attribute"
 }
 
 export function id(value: string): ViewAttribute {
@@ -84,6 +88,14 @@ export function onInput(generator: (value: string) => any): ViewAttribute {
 
 export function withHTMLContent(content: string): ViewAttribute {
   return new Property("innerHTML", content)
+}
+
+export function disabled(isDisabled: boolean): ViewAttribute {
+  if (isDisabled) {
+    return new Attribute("disabled", "true")
+  } else {
+    return new NullViewAttribute()
+  }
 }
 
 export function div(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
@@ -203,6 +215,9 @@ function makeAttributes(attributes: Array<ViewAttribute>): any {
             detail: attr.generator(evt)
           }))
         }
+        break
+      case "null-view-attribute":
+        // do nothing
         break
       default:
         exhaustiveMatchGuard(attr)
