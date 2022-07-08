@@ -39,6 +39,13 @@ export default
             expect(learningAreaText).to.not.contain("I am doing it!")
             expect(learningAreaText).to.not.contain("I am sharing it!")
           }),
+          effect("the notes area is not shown", async (testContext) => {
+            const notesAreHidden = await testContext.display
+              .select("#engagement-notes")
+              .isHidden()
+
+            expect(notesAreHidden).to.be.true
+          }),
           effect("login button is visible", async (testContext) => {
             const loginIsVisible = await testContext.display.selectElementWithText("Login").isVisible()
             expect(loginIsVisible).to.be.true
@@ -64,6 +71,13 @@ export default
               .text()
 
             expect(learningAreaText).to.contain("I'm ready to learn!")
+          }),
+          effect("the notes area is shown", async (testContext) => {
+            const notesAreVisible = await testContext.display
+              .select("#engagement-notes")
+              .isVisible()
+
+            expect(notesAreVisible).to.be.true
           })
         ]
       }),
