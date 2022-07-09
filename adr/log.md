@@ -1366,3 +1366,30 @@ This seems to work ok -- we add another `fact` that sets the date on our test
 context, and if that date is set when we create the browser page, then we add
 the proper init script. We tried a few different approaches to this, but this
 seems to work the best.
+
+We completed the story and pushed it but then this broke production ... there
+were already notes but they didn't have a date field and this caused a runtime
+error. We deleted the data and it's fine ... but that suggests we need to be
+much more thoughtful about data migrations. Unfortunately with CosmosDB there's
+no real schema and so there's no need for explicit migrations. We would probably
+need to run some kind of automated task to update the data as necessary.
+
+
+### Checking on the test speed again
+
+One of the things that slows down the test is surely the login procedure. We
+have to click a link, redirect to another page, fill in a form, submit the form,
+and wait for our site to load. We looked into seeing if we could simulate
+authentication somehow and it turns out that we can!
+
+We set a cookie as part of the playwright browser context and this gets applied
+to each page. The cookie just has a specific name and a base64 encoded principal
+object. All of this is Azure specific but it seems to work fine.
+
+So, we changed the examples so that only the auth examples actually log in via
+the static web app login page. All the other examples now just use this
+technique to suppose that a particular user has already been authenticated.
+
+This reduces the test speed by at least 3-5 seconds on my laptop, which is close
+to 30%. And in CI the time seems to have gone down by about 12 seconds which,
+again, is close to 30%!
