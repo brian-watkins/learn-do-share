@@ -12,6 +12,7 @@ import { serverHost } from './services/testServer'
 import { CosmosConnection } from '@/adapters/cosmosConnection'
 import { CosmosEngagementPlanRepository } from '@/adapters/cosmosEngagementPlanRepository'
 import { CosmosEngagementNoteRepository } from '@/adapters/cosmosEngagementNoteRepository'
+import { PageOptions } from './services/browser'
 
 export function testContext(): Context<TestContext> {
   return {
@@ -26,6 +27,7 @@ export function testContext(): Context<TestContext> {
 
 export class TestContext {
   date: Date | null = null
+  user: string | null = null
   display = new TestDisplay()
   learningAreasServer = new TestLearningAreasServer()
   cosmosConnection = new CosmosConnection({
@@ -39,6 +41,11 @@ export class TestContext {
 
   setDate(date: Date) {
     this.date = date
+  }
+
+  withAuthenticatedUser(user: string): TestContext {
+    this.user = user
+    return this
   }
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
@@ -95,11 +102,18 @@ export class TestContext {
     await this.start(`/learning-areas/${learningArea.id}`)
   }
 
+  get pageOptions(): PageOptions {
+    return {
+      date: this.date,
+      user: this.user
+    }
+  }
+
   async start(path: string = ""): Promise<void> {
     await this.writeEngagementPlans()
     await this.writeEngagementNotes()
     await this.learningAreasServer.start()
-    await this.display.start(serverHost() + path, { date: this.date })
+    await this.display.start(serverHost() + path, this.pageOptions)
   }
 
   async stop(): Promise<void> {
@@ -110,7 +124,7 @@ export class TestContext {
 
   async reload(): Promise<void> {
     await this.display.stop()
-    await this.display.start(serverHost(), { date: this.date })
+    await this.display.start(serverHost(), this.pageOptions)
   }
 
   async reloadPage(): Promise<void> {

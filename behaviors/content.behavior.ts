@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
-import { gotoLearningAreas, loginUser, selectLearningArea } from "./actions";
+import { gotoLearningAreas, selectLearningArea } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -120,10 +120,10 @@ export default
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Learning)
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Doing)
           }),
+          someoneIsAuthenticated("fun-user@email.com"),
           theAppShowsTheLearningAreas()
         ],
         perform: [
-          loginUser("fun-user@email.com"),
           selectLearningArea(coolLearningArea)
         ],
         observe: [

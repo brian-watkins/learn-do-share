@@ -6,3 +6,9 @@ export function theAppShowsTheLearningAreas(): Presupposition<TestContext> {
     await testContext.start()
   })
 }
+
+export function someoneIsAuthenticated(user: string): Presupposition<TestContext> {
+  return fact(`${user} is logged in`, (testContext) => {
+    testContext.withAuthenticatedUser(user)
+  })
+}

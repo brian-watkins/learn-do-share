@@ -1,9 +1,9 @@
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { Action, behavior, example, fact, outcome, pick, procedure, step } from "esbehavior";
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
-import { loginUser, reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage } from "./actions";
+import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage } from "./actions";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
-import { theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
 
 export default
   behavior("indicate engagement with a learning area", [
@@ -19,10 +19,10 @@ export default
               FakeLearningArea(4),
             ])
           }),
+          someoneIsAuthenticated("funny-person@email.com"),
           theAppShowsTheLearningAreas()
         ],
         perform: [
-          loginUser("funny-person@email.com"),
           procedure("Commit to learn Learning Area 1", [
             selectLearningArea(FakeLearningArea(1)),
             increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
@@ -68,9 +68,11 @@ export default
           ])
         ]
       }).andThen({
+        suppose: [
+          someoneIsAuthenticated("some-other-user@email.com")
+        ],
         perform: [
           reloadTheApp(),
-          loginUser("some-other-user@email.com")
         ],
         observe: [
           outcome("other users do not share the same commitments to engage", [
@@ -95,10 +97,8 @@ export default
               .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Doing)
               .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Sharing)
           }),
+          someoneIsAuthenticated("funny-person@email.com"),
           theAppShowsTheLearningAreas()
-        ],
-        perform: [
-          loginUser("funny-person@email.com")
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),

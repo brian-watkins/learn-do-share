@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { behavior, example, fact, effect, step, pick, outcome, Observation } from "esbehavior";
-import { goBackToLearningAreas, loginUser, reloadTheApp, reloadThePage, selectLearningArea } from "./actions";
+import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea } from "./actions";
 import { noteInputView, notesView } from "./effects";
-import { theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
 import { FakeEngagementNote, FakeLearningArea, TestContext, testContext } from "./testApp";
 
 export default
@@ -29,12 +29,10 @@ export default
                   .withDate(new Date(2022, 6, 12, 23, 11, 22)),
               ])
           }),
+          someoneIsAuthenticated("person@email.com"),
           fact(`the app is on the page for the learning area with notes`, async (testContext) => {
             await testContext.startAtLearningArea(FakeLearningArea(1))
           })
-        ],
-        perform: [
-          loginUser("person@email.com"),
         ],
         observe: [
           outcome("it shows the person's notes", [
@@ -50,9 +48,11 @@ export default
           ])
         ]
       }).andThen({
+        suppose: [
+          someoneIsAuthenticated("another-person@email.com")
+        ],
         perform: [
           reloadTheApp(),
-          loginUser("another-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
         ],
         observe: [
@@ -92,10 +92,10 @@ export default
           fact("the date is July 17, 2022", (testContext) => {
             testContext.setDate(new Date(2022, 6, 17, 13, 34, 22))
           }),
+          someoneIsAuthenticated("fun-person@email.com"),
           theAppShowsTheLearningAreas()
         ],
         perform: [
-          loginUser("fun-person@email.com"),
           selectLearningArea(FakeLearningArea(1)),
           step("a note is created", async (testContext) => {
             await testContext.display
@@ -141,12 +141,10 @@ export default
                 FakeLearningArea(1)
               ])
           }),
+          someoneIsAuthenticated("someone-cool@person.com"),
           fact("the app shows the learning area", async (testContext) => {
             await testContext.startAtLearningArea(FakeLearningArea(1))
           })
-        ],
-        perform: [
-          loginUser("someone-cool@person.com"),
         ],
         observe: [
           effect("the save note button is disabled", async (testContext) => {

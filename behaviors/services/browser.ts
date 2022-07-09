@@ -1,5 +1,5 @@
 import { Browser, chromium, Page } from "playwright"
-import { isDebug } from "../helpers"
+import { isDebug, userIdentifierFor } from "../helpers"
 
 let browser: Browser
 
@@ -11,6 +11,7 @@ export async function startBrowser(): Promise<void> {
 
 export interface PageOptions {
   date: Date | null
+  user: string | null
 }
 
 export async function newBrowserPage(options: PageOptions): Promise<Page> {
@@ -24,6 +25,12 @@ export async function newBrowserPage(options: PageOptions): Promise<Page> {
       window.__test_clock = sinon.useFakeTimers({toFake: ['Date']})
       window.__test_clock.setSystemTime(${options.date?.getTime()})
     `)
+  }
+
+  if (options.user) {
+    context.addCookies([
+      azureAuthCookie(options.user)
+    ])
   }
 
   const page = await context.newPage()
@@ -45,4 +52,28 @@ export async function resetBrowser(page: Page | null): Promise<void> {
 
 export async function stopBrowser(): Promise<void> {
   await browser.close()
+}
+
+function azureAuthCookie(user: string) {
+  return {
+    name: "StaticWebAppsAuthCookie",
+    value: makeAzurePrincipal(user),
+    domain: "localhost",
+    path: "/",
+  }
+}
+
+function makeAzurePrincipal(user: string): string {
+  const principal = {
+    userId: userIdentifierFor(user),
+    userRoles: [
+      "anonymous",
+      "authenticated"
+    ],
+    claims: [],
+    identityProvider: "aad",
+    userDetails: user
+  }
+
+  return Buffer.from(JSON.stringify(principal)).toString('base64')
 }
