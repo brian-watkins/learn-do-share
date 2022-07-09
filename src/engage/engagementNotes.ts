@@ -1,7 +1,7 @@
 import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
-import { Colors, focusWithinBorderColor, textColor } from "../style"
+import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../style"
 import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { format, parseISO } from "date-fns"
@@ -82,11 +82,25 @@ function engagementNoteView(note: EngagementNote): Html.View {
     noteBox(),
     Html.cssClasses([
       "px-6",
-      "py-4"
     ])
   ], [
-    Html.text(formattedNoteDate(note.date)),
-    Html.text(note.content)
+    Html.div([
+      Html.cssClasses([
+        "pt-4",
+        "pb-2",
+        "text-sm",
+        mediumTextColor
+      ])
+    ], [
+      Html.text(formattedNoteDate(note.date))
+    ]),
+    Html.div([
+      Html.cssClasses([
+        "pb-4"
+      ])
+    ], [
+      Html.text(note.content)
+    ])
   ])
 }
 
