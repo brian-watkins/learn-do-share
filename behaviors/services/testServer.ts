@@ -49,3 +49,7 @@ export async function stopServer(): Promise<void> {
   await VITE_SERVER?.close()
   SWA_SERVER.stop()
 }
+
+process.on("SIGINT", async () => {
+  await stopServer()
+})
