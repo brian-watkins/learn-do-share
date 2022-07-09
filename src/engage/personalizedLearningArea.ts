@@ -11,7 +11,8 @@ export interface PersonalizedLearningArea extends LearningArea {
 
 export interface EngagementNote {
   id: string
-  content: string
+  content: string,
+  date: string
 }
 
 export function engagementPlansView(area: PersonalizedLearningArea): Html.View {

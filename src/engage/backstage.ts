@@ -46,9 +46,7 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
       await adapters.engagementPlanWriter.deleteAll(user, message.learningArea)
       return engagementPlansDeleted(message.learningArea)
     case "engagementNoteCreationRequested":
-      const note = await adapters.engagementNoteWriter.write(user, message.learningAreaId, {
-        content: message.content
-      })
+      const note = await adapters.engagementNoteWriter.write(user, message.learningAreaId, message.contents)
       return engagementNotePersisted(note)
   }
 }

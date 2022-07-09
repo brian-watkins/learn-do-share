@@ -90,3 +90,7 @@ export function categoryView() {
 export function notesView() {
   return "[data-engagement-note]"
 }
+
+export function noteInputView() {
+  return "[data-note-input]"
+}

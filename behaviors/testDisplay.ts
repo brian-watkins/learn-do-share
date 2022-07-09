@@ -1,11 +1,11 @@
 import { Locator, Page } from "playwright"
-import { newBrowserPage, resetBrowser } from "./services/browser"
+import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser"
 
 export class TestDisplay {
   private page: Page | null = null
 
-  async start(url: string): Promise<void> {
-    this.page = await newBrowserPage()
+  async start(url: string, pageOptions: PageOptions): Promise<void> {
+    this.page = await newBrowserPage(pageOptions)
     await this.goto(url)
   }
 
@@ -68,8 +68,8 @@ export class DisplayElement {
   }
 
   async type(value: string, options: TypingOptions = { clear: false }): Promise<void> {
-    await this.locator.first().click({ clickCount: options.clear ? 3 : 1, timeout: 250 })
-    await this.locator.first().type(value, { timeout: 500 })
+    await this.locator.first().click({ clickCount: options.clear ? 3 : 1, timeout: 1000 })
+    await this.locator.first().type(value, { timeout: 1000 })
   }
 
   async isVisible(): Promise<boolean> {
@@ -114,10 +114,17 @@ export class DisplayElementList {
     let promises = new Array<Promise<T>>()
     const count = await this.locator.count()
     for (let i = 0; i < count; i++) {
-      const element = new DisplayElement(this.locator.nth(i))
-      promises.push(handler(element))
+      promises.push(handler(this.getElement(i)))
     }
     return Promise.all(promises)
+  }
+
+  getElement(index: number): DisplayElement {
+    return new DisplayElement(this.locator.nth(index))
+  }
+
+  count(): Promise<number> {
+    return this.locator.count()
   }
 }
 

@@ -4,10 +4,11 @@ import * as Html from "@/display/markup"
 import { Colors, focusWithinBorderColor, textColor } from "../style"
 import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
-
+import { format, parseISO } from "date-fns"
 
 export interface EngagementNoteContents {
   content: string
+  date: string
 }
 
 export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
@@ -84,8 +85,13 @@ function engagementNoteView(note: EngagementNote): Html.View {
       "py-4"
     ])
   ], [
+    Html.text(formattedNoteDate(note.date)),
     Html.text(note.content)
   ])
+}
+
+function formattedNoteDate(isoDate: string): string {
+  return format(parseISO(isoDate), "MMMM d, yyyy")
 }
 
 function noteBox(): Html.ViewAttribute {
@@ -101,14 +107,17 @@ function noteBox(): Html.ViewAttribute {
 export interface EngagementNoteCreationRequested {
   type: "engagementNoteCreationRequested"
   learningAreaId: string
-  content: string
+  contents: EngagementNoteContents
 }
 
 function createNoteMessage(area: PersonalizedLearningArea, content: string): BackstageMessage<EngagementNoteCreationRequested> {
   return backstageMessage({
     type: "engagementNoteCreationRequested",
     learningAreaId: area.id,
-    content
+    contents: {
+      content,
+      date: new Date().toISOString()
+    }
   })
 }
 

@@ -25,6 +25,7 @@ export function testContext(): Context<TestContext> {
 }
 
 export class TestContext {
+  date: Date | null = null
   display = new TestDisplay()
   learningAreasServer = new TestLearningAreasServer()
   cosmosConnection = new CosmosConnection({
@@ -35,6 +36,10 @@ export class TestContext {
   })
   engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
   engagementNotes: Array<TestEngagementNote> = []
+
+  setDate(date: Date) {
+    this.date = date
+  }
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
     this.learningAreasServer.areas = learningAreas
@@ -79,7 +84,10 @@ export class TestContext {
         identifier: userIdentifierFor(note.user),
         name: note.user
       }
-      await engagementNoteRepo.write(user, note.learningArea.id, { content: note.content })
+      await engagementNoteRepo.write(user, note.learningArea.id, {
+        content: note.content,
+        date: note.date.toISOString()
+      })
     }
   }
 
@@ -91,7 +99,7 @@ export class TestContext {
     await this.writeEngagementPlans()
     await this.writeEngagementNotes()
     await this.learningAreasServer.start()
-    await this.display.start(serverHost() + path)
+    await this.display.start(serverHost() + path, { date: this.date })
   }
 
   async stop(): Promise<void> {
@@ -102,7 +110,7 @@ export class TestContext {
 
   async reload(): Promise<void> {
     await this.display.stop()
-    await this.display.start(serverHost())
+    await this.display.start(serverHost(), { date: this.date })
   }
 
   async reloadPage(): Promise<void> {
@@ -147,13 +155,20 @@ export function FakeLearningArea(testId: number): TestLearningArea {
 
 class TestEngagementNote {
   content: string
+  date: Date
 
   constructor(public user: string, public learningArea: TestLearningArea, public testId: number) {
     this.content = `Some funny note ${testId}`
+    this.date = new Date()
   }
 
   withContent(content: string): TestEngagementNote {
     this.content = content
+    return this
+  }
+
+  withDate(date: Date): TestEngagementNote {
+    this.date = date
     return this
   }
 }

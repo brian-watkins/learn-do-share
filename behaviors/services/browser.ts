@@ -9,8 +9,23 @@ export async function startBrowser(): Promise<void> {
   })
 }
 
-export async function newBrowserPage(): Promise<Page> {
+export interface PageOptions {
+  date: Date | null
+}
+
+export async function newBrowserPage(options: PageOptions): Promise<Page> {
   const context = await browser.newContext()
+
+  if (options.date) {
+    await context.addInitScript({
+      path: "./node_modules/sinon/pkg/sinon.js"
+    })
+    await context.addInitScript(`
+      window.__test_clock = sinon.useFakeTimers({toFake: ['Date']})
+      window.__test_clock.setSystemTime(${options.date?.getTime()})
+    `)
+  }
+
   const page = await context.newPage()
   page.on("console", (message) => {
     if (message.text().startsWith("[vite]")) {
