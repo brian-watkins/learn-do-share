@@ -1235,3 +1235,134 @@ need to be able to interact with the page ... and yet other deployments probably
 wouldn't operate this way. So it's unclear what the interface should be for such
 an 'adapter'. 
 
+Note: We did move everything, including the `terraform` directory (which is also
+Azure specific) under the `azure` directory. Eventually, if we have another
+deployment option, we'll also need to move some aspects of the test suite into
+the deployment-specific directory as well.
+
+
+### Another feature: Reading Notes
+
+Adding notes involves a series of features that will follow a basic CRUD
+pattern. We begin by writing a story that says, basically, "When there are notes
+in the database, then I see those displayed on the screen". This allows someone
+to add notes via the Azure portal in production. Certainly not the best way to
+add notes, but it's a way to get started without having to do both note creation
+and note display at once, from the UI to the database.
+
+In order to accomplish this, though, we need to have our *tests* be able to add
+notes to the (test) database. We don't want to do this 'by hand', ie by talking
+to Cosmos DB directly. Instead, we will actually write *part* of the code that
+will be needed to create notes, namely, a `EngagementNoteWriter` interface and
+an implementation for writing notes to Cosmos DB. Right now, this production
+code will only be called by the tests. But when we do the feature to create
+notes we can use it there to write notes to the database.
+
+This strategy allows us to get something deployed a little faster, and protects
+our test suite from change, since it just uses an abstraction to talk to the
+database, the same abstraction the code will use to do so as well (eventually). 
+
+We ended up writing a test that shows two logged in users, each seeing their own
+notes for a learning area, and for another learning area seeing no notes.
+
+We also need a test that shows that if you are not logged in at all you see
+no notes as well.
+
+
+### Creating Notes
+
+Now that we're able to read notes, we want users to be able to create them
+through the UI. With the current 'framework' we are building up to manage the
+display, we are following the Elm architecture, where we have state stored in
+one model and the view is a function of that model. But now we're getting to a
+situation where we really want to have a notion of 'local state'.
+
+In Elm, when you start to deal with an input field, you need to create an
+attribute on your model to store the current value of that input field (there
+are alternatives but this is the standard way to do it). This has always felt
+kind of annoying to me. The model feels like it should hold 'important' state.
+But the value of the text field is really just 'intermediate' state -- it only
+becomes important once you save it, usually.
+
+React, of course, has had different options for handling state local to a
+component: class components that could store state, and now `useState` hooks.
+React kind of encourages you to handle all state as local (component) state, and
+it's only redux that asks you to follow something more like the Elm
+architecture. In any case, the problem with React, I think, is that it goes too
+far in allowing you to create local state in ways that eventually muddy the
+separation of concerns in the app. A `useEffect` hook might make an HTTP
+request and store the result with another `useState` hook. But now you've got
+http requests in your view components, which feels gross.
+
+React also has the notion of a `context` which is basically like a wrapper of
+components that can make state available to that collection of components that
+it wraps (via another hook). But again, the problem here is that you can set
+values on the context in too many ways.
+
+We introduced the notion of a `context` that's kind of like hooks in react but
+only allows you to set state when it's the result of an even on some HTML
+element. In other words, there's no API to arbitrarily set state or arbitrarily
+'dispatch' a message. This allows us to do *just enough* to accomplish the task
+we want, namely, keeping track of 'intermediate' state and then sending it up to
+the main model when it becomes important.
+
+So for our textarea that allows us to input the text of a new note. We wrap this
+in a context, which provides the current state and a function to *generate a
+message with the new state* which can then be dispatched via an HTML element
+event handler, like `onInput` or `onClick` etc. When such a message is
+dispatched, we re-render the view with the updated state, but don't send the
+message through the main update function. When the `save note` button is
+clicked, now the value of the text field is important, and we can use the
+current state value to get that and send it in a message that does go to the
+main update function. Using this pattern, we're still able to do cool things
+like disable the save button when the value of the local state (the value of the
+textarea) is the empty string.
+
+A context in our framework can cover as many elements as one might want,
+allowing those elements to share intermediate (local) state without needing to
+add lots of fields to the model. This should make dealing with form inputs more
+straightforward. And in general it seems like kind of a nice pattern.
+
+
+### Dates
+
+Now we have a feature to store the date that a note was created and display that
+on the UI. How do we want to represent dates? What library if any should we use?
+
+For deploying to Azure, we are using Cosmos DB and Cosmos recommends storing
+dates in ISO8601 string format in the UTC timezone, and then storing an offset
+separately if you need timezone information.
+
+I think it's ok if we simply store the date in UTC format in the database and
+display it in whatever the local timezone is. We really want to display dates
+only in any case, but we'll store the time stamp as well. We'll use just the
+standard `.toISOString()` function on the Date class to accomplish this. It
+always outputs the date in UTC. 
+
+As far as formatting goes, I believe we do need to use a library for that. We
+will use the `date-fns` library as it seems more modular than others. Luxon is
+another alternative; moment.js seems to basically be deprecated.
+
+The other thing we have to think about is how to control time during our tests.
+
+The first test we write adds to the test that assumed there were notes in the
+database and then showed them displayed on the screen -- a 'read' test. We can
+do this easily since we can just specify that the date we want when we put the
+note in the database and see that it appears on the screen in the right format.
+
+It's trickier once we write the test that shows: when a new note is created, it
+is saved with the proper creation date (the current date) and that date is then
+displayed when the note is displayed. For that, we need to actually control the
+time during the test to make sure we know what the current date actually is.
+
+We are using Playwright as the browser context in which our app runs during the
+tests. The recommended way right now to mock the date is to add an 'init script'
+that runs on every page (before other scripts on the page). It will load sinon,
+initialize the fake timers, and then set the date to what we want it to be.
+
+See [this issue](https://github.com/microsoft/playwright/issues/6347) for a discussion.
+
+This seems to work ok -- we add another `fact` that sets the date on our test
+context, and if that date is set when we create the browser page, then we add
+the proper init script. We tried a few different approaches to this, but this
+seems to work the best.
