@@ -18,7 +18,6 @@ export interface Personalized {
   type: "personalized"
   learningArea: PersonalizedLearningArea
   user: User
-  noteContent?: string
 }
 
 export type Model
