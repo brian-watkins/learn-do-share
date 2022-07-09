@@ -1,5 +1,6 @@
 import { LogLevel, StopSignal, TestProcess, waitForPort } from "./testProcess"
 import { createServer as createViteServer, ViteDevServer } from "vite"
+import { isDebug } from "../helpers"
 
 const vitePort = 7778
 const funcPort = "7072"
@@ -17,7 +18,7 @@ const SWA_SERVER = new TestProcess("node_modules/.bin/swa", [
 const FUNCTION_SERVER = new TestProcess("func", [
   "start",
   "--port", funcPort,
-  "--verbose", "false"
+  "--verbose", isDebug() ? "true" : "false"
 ])
 
 export function serverHost(): string {
@@ -33,7 +34,7 @@ export async function startServer(): Promise<void> {
     env: {
       COSMOS_DB_ENDPOINT: `https://localhost:${cosmosPort}`
     },
-    logLevel: LogLevel.Silent
+    logLevel: isDebug() ? LogLevel.Normal : LogLevel.Silent
   })
 
   SWA_SERVER.start({
