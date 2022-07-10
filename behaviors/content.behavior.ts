@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
-import { gotoLearningAreas, selectLearningArea } from "./actions";
+import { gotoLearningAreas, selectLearningArea, visitTheLearningAreas, visitTheLearningArea } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated } from "./presuppositions";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -37,10 +37,10 @@ export default
               awesomeLearningArea,
               superLearningArea
             ]);
-          }),
-          fact(`the app is loaded on a page for an unknown learning area`, async (testContext) => {
-            await testContext.startAtLearningArea(FakeLearningArea(27))
           })
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(27).withTitle("Unknown Learning Area"))
         ],
         observe: [
           effect("it loads the main page instead", async (testContext) => {
@@ -64,9 +64,9 @@ export default
               superLearningArea
             ])
           }),
-          fact(`the app is on the super learning area page`, async (testContext) => {
-            await testContext.startAtLearningArea(superLearningArea)
-          })
+        ],
+        perform: [
+          visitTheLearningArea(superLearningArea)
         ],
         observe: [
           selectedLearningAreaTitleDisplayed("Super Learning Area"),
@@ -93,10 +93,10 @@ export default
             testContext.withLearningAreas([
               awesomeLearningArea
             ])
-          }),
-          theAppShowsTheLearningAreas()
+          })
         ],
         perform: [
+          visitTheLearningAreas(),
           selectLearningArea(awesomeLearningArea)
         ],
         observe: [
@@ -120,10 +120,10 @@ export default
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Learning)
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Doing)
           }),
-          someoneIsAuthenticated("fun-user@email.com"),
-          theAppShowsTheLearningAreas()
+          someoneIsAuthenticated("fun-user@email.com")
         ],
         perform: [
+          visitTheLearningAreas(),
           selectLearningArea(coolLearningArea)
         ],
         observe: [
@@ -162,11 +162,10 @@ Here is an intro to what you will learn
 - Here is [another link](http://anotherplace.com)
               `)
               ])
-          }),
-          theAppShowsTheLearningAreas()
+          })
         ],
         perform: [
-          selectLearningArea(FakeLearningArea(1))
+          visitTheLearningArea(FakeLearningArea(1))
         ],
         observe: [
           effect("header content is displayed as header", async (testContext) => {

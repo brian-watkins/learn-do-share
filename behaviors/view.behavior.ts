@@ -2,7 +2,7 @@ import { behavior, example, fact } from "esbehavior"
 import { FakeLearningArea, testContext } from "./testApp"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { learningAreaSummaryDisplayed } from "./effects"
-import { theAppShowsTheLearningAreas } from "./presuppositions"
+import { visitTheLearningAreas } from "./actions"
 
 export default
   behavior("viewing items", [
@@ -19,8 +19,10 @@ export default
                 FakeLearningArea(4).withCategory(LearningAreaCategory.Theory),
                 FakeLearningArea(5).withCategory(LearningAreaCategory.Theory),
               ])
-          }),
-          theAppShowsTheLearningAreas()
+          })
+        ],
+        perform: [
+          visitTheLearningAreas()
         ],
         observe: [
           learningAreaSummaryDisplayed(FakeLearningArea(1), { withCategory: "Team" }),

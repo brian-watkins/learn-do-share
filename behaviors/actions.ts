@@ -2,6 +2,18 @@ import { Action, step } from "esbehavior"
 import { userIdentifierFor } from "./helpers"
 import { TestContext, TestLearningArea } from "./testApp"
 
+export function visitTheLearningAreas(): Action<TestContext> {
+  return step("visit the list of learning areas", async (testContext) => {
+    await testContext.start()
+  })
+}
+
+export function visitTheLearningArea(learningArea: TestLearningArea): Action<TestContext> {
+  return step(`visit ${learningArea.title}`, async (testContext) => {
+    await testContext.startAtLearningArea(learningArea)
+  })
+}
+
 export function reloadTheApp(): Action<TestContext> {
   return step("Reload the app", async (testContext) => {
     await testContext.reload()

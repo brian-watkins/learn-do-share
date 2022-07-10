@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { behavior, example, fact, effect, step, pick, outcome, Observation } from "esbehavior";
-import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea } from "./actions";
+import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea } from "./actions";
 import { noteInputView, notesView } from "./effects";
-import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated } from "./presuppositions";
 import { FakeEngagementNote, FakeLearningArea, TestContext, testContext } from "./testApp";
 
 export default
@@ -30,9 +30,9 @@ export default
               ])
           }),
           someoneIsAuthenticated("person@email.com"),
-          fact(`the app is on the page for the learning area with notes`, async (testContext) => {
-            await testContext.startAtLearningArea(FakeLearningArea(1))
-          })
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(1))
         ],
         observe: [
           outcome("it shows the person's notes", [
@@ -93,10 +93,9 @@ export default
             testContext.setDate(new Date(2022, 6, 17, 13, 34, 22))
           }),
           someoneIsAuthenticated("fun-person@email.com"),
-          theAppShowsTheLearningAreas()
         ],
         perform: [
-          selectLearningArea(FakeLearningArea(1)),
+          visitTheLearningArea(FakeLearningArea(1)),
           step("a note is created", async (testContext) => {
             await testContext.display
               .select(noteInputView())
@@ -142,9 +141,9 @@ export default
               ])
           }),
           someoneIsAuthenticated("someone-cool@person.com"),
-          fact("the app shows the learning area", async (testContext) => {
-            await testContext.startAtLearningArea(FakeLearningArea(1))
-          })
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(1))
         ],
         observe: [
           effect("the save note button is disabled", async (testContext) => {

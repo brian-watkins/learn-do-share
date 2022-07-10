@@ -1,9 +1,8 @@
 import { expect } from "chai";
 import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { loginUser, selectLearningArea } from "./actions";
+import { loginUser, selectLearningArea, visitTheLearningAreas } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
-import { theAppShowsTheLearningAreas } from "./presuppositions";
 
 export default
   behavior("authentication", [
@@ -16,8 +15,10 @@ export default
               FakeLearningArea(1),
               FakeLearningArea(2)
             ])
-          }),
-          theAppShowsTheLearningAreas()
+          })
+        ],
+        perform: [
+          visitTheLearningAreas()
         ],
         observe: [
           effect("login button is visible", async (testContext) => {
@@ -90,10 +91,10 @@ export default
               FakeLearningArea(1),
               FakeLearningArea(2)
             ])
-          }),
-          theAppShowsTheLearningAreas()
+          })
         ],
         perform: [
+          visitTheLearningAreas(),
           loginUser("fake-user@email.com")
         ],
         observe: [

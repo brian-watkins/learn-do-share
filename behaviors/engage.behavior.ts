@@ -1,9 +1,9 @@
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { Action, behavior, example, fact, outcome, pick, procedure, step } from "esbehavior";
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
-import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage } from "./actions";
+import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage, visitTheLearningAreas } from "./actions";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
-import { someoneIsAuthenticated, theAppShowsTheLearningAreas } from "./presuppositions";
+import { someoneIsAuthenticated } from "./presuppositions";
 
 export default
   behavior("indicate engagement with a learning area", [
@@ -20,9 +20,9 @@ export default
             ])
           }),
           someoneIsAuthenticated("funny-person@email.com"),
-          theAppShowsTheLearningAreas()
         ],
         perform: [
+          visitTheLearningAreas(),
           procedure("Commit to learn Learning Area 1", [
             selectLearningArea(FakeLearningArea(1)),
             increaseEngagementLevel(FakeLearningArea(1), "I'm ready to learn!"),
@@ -98,7 +98,9 @@ export default
               .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Sharing)
           }),
           someoneIsAuthenticated("funny-person@email.com"),
-          theAppShowsTheLearningAreas()
+        ],
+        perform: [
+          visitTheLearningAreas()
         ],
         observe: [
           engagementLevelSelected(FakeLearningArea(1), "Learning"),
