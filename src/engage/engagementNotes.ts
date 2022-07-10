@@ -5,6 +5,7 @@ import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../s
 import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { format, parseISO } from "date-fns"
+import * as Display from "@/display/context"
 
 export interface EngagementNoteContents {
   content: string
@@ -28,10 +29,8 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
   ])
 }
 
-const inputViewContext = Html.context("")
-
 function noteInputView(area: PersonalizedLearningArea): Html.View {
-  return inputViewContext((state, setState) =>
+  return Display.context("", (state, setState) =>
     Html.div([
       noteBox(),
       Html.cssClasses([

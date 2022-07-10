@@ -1,5 +1,4 @@
 import { h, VNode, VNodeChildElement } from "snabbdom";
-import { BATCH_MESSAGE_TYPE } from "./batch";
 
 export type View = VNode
 export type ViewChild = VNodeChildElement
@@ -152,41 +151,6 @@ export function a(attributes: Array<ViewAttribute>, children: Array<ViewChild>):
 
 export function button(attributes: Array<ViewAttribute>, children: Array<ViewChild>): View {
   return h("button", makeAttributes(attributes), children)
-}
-
-export function context(initialState: any): (generator: ((state: any, setState: (value: any) => any) => View)) => View {
-  let theState: any = initialState
-  return (generator: (state: any, setState: (value: any) => any) => View) => {
-    return h("display-context", {
-      on: {
-        displayMessage: function (evt: CustomEvent) {
-          const localState = getLocalState(evt.detail)
-          if (localState !== undefined) {
-            theState = localState
-          }
-        }
-      }
-    }, generator(theState, (updatedState: any) => {
-      return {
-        type: "__display_localStateMessage",
-        data: updatedState
-      }
-    }))
-  }
-}
-
-function getLocalState(message: any): any | undefined {
-  if (message.type === "__display_localStateMessage") {
-    return message.data
-  } else if (message.type === BATCH_MESSAGE_TYPE) {
-    for (const child of message.children) {
-      const localState = getLocalState(child)
-      if (localState !== undefined) {
-        return localState
-      }
-    }
-  }
-  return undefined
 }
 
 function makeAttributes(attributes: Array<ViewAttribute>): any {
