@@ -21,10 +21,13 @@ export default
                 FakeEngagementNote("person@email.com", FakeLearningArea(1), 1)
                   .withContent("This is my first cool note!")
                   .withDate(new Date(2022, 6, 7, 12, 34, 22)),
+                FakeEngagementNote("person@email.com", FakeLearningArea(1), 3)
+                  .withContent("This is my third cool note!")
+                  .withDate(new Date(2022, 6, 9, 8, 11, 7)),
                 FakeEngagementNote("person@email.com", FakeLearningArea(1), 2)
                   .withContent("This is my second cool note!")
                   .withDate(new Date(2022, 6, 7, 14, 33, 22)),
-                FakeEngagementNote("another-person@email.com", FakeLearningArea(1), 3)
+                FakeEngagementNote("another-person@email.com", FakeLearningArea(1), 4)
                   .withContent("This is another cool note!")
                   .withDate(new Date(2022, 6, 12, 23, 11, 22)),
               ])
@@ -35,15 +38,19 @@ export default
           visitTheLearningArea(FakeLearningArea(1))
         ],
         observe: [
-          outcome("it shows the person's notes", [
-            observeNoteCount(2),
-            effect("the first note is shown", observeTextsInNote(0, [
-              "July 7, 2022",
-              "This is my first cool note!"
+          outcome("it shows the person's notes in reverse chronological order", [
+            observeNoteCount(3),
+            effect("the third note is shown", observeTextsInNote(0, [
+              "July 9, 2022",
+              "This is my third cool note!"
             ])),
             effect("the second note is shown", observeTextsInNote(1, [
               "July 7, 2022",
               "This is my second cool note!"
+            ])),
+            effect("the first note is shown", observeTextsInNote(2, [
+              "July 7, 2022",
+              "This is my first cool note!"
             ]))
           ])
         ]

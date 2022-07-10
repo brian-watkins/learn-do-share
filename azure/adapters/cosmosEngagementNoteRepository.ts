@@ -14,7 +14,7 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader {
   async read(user: User, learningArea: LearningArea): Promise<EngagementNote[]> {
     return this.connection.execute(NOTES_CONTAINER, async (notes) => {
       const { resources } = await notes.items.query({
-        query: "SELECT n.id, n.content, n.date FROM notes n WHERE n.userId = @userId AND n.learningAreaId = @learningAreaId",
+        query: "SELECT n.id, n.content, n.date FROM notes n WHERE n.userId = @userId AND n.learningAreaId = @learningAreaId ORDER BY n.date DESC",
         parameters: [
           { name: "@userId", value: user.identifier },
           { name: "@learningAreaId", value: learningArea.id }
