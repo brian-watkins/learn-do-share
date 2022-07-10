@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { behavior, example, fact, effect, step, pick, outcome, Observation } from "esbehavior";
+import { behavior, example, fact, effect, step, pick, outcome, Observation, Action } from "esbehavior";
 import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea } from "./actions";
 import { noteInputView, notesView } from "./effects";
 import { someoneIsAuthenticated } from "./presuppositions";
@@ -103,21 +103,21 @@ export default
         ],
         perform: [
           visitTheLearningArea(FakeLearningArea(1)),
-          step("a note is created", async (testContext) => {
-            await testContext.display
-              .select(noteInputView())
-              .type("This is the best note ever!")
-            await testContext.display
-              .selectElementWithText("Save Note")
-              .click()
-            await testContext.display.waitForRequestsToComplete()
-          })
+          createNote("This is the best note ever!"),
+          step("time passes until it is the next day", async (testContext) => {
+            await testContext.display.tickClock(27 * 60 * 60 * 1000)
+          }),
+          createNote("This is an even better note!")
         ],
         observe: [
-          outcome("the created note is displayed", [
-            observeNoteCount(1),
-            effect("the content is shown", observeTextsInNote(0, ["This is the best note ever!"])),
-            effect("the note is shown to have been created on July 17, 2022", observeTextsInNote(0, ["July 17, 2022"]))
+          observeNoteCount(2),
+          outcome("the second created note is displayed first", [
+            effect("the content is shown", observeTextsInNote(0, ["This is an even better note!"])),
+            effect("the note is shown to have been created on July 18, 2022", observeTextsInNote(0, ["July 18, 2022"]))
+          ]),
+          outcome("the first created note is displayed second", [
+            effect("the content is shown", observeTextsInNote(1, ["This is the best note ever!"])),
+            effect("the note is shown to have been created on July 17, 2022", observeTextsInNote(1, ["July 17, 2022"]))
           ]),
           effect("the note input is cleared", async (testContext) => {
             const inputValue = await testContext.display.select(noteInputView()).getInputValue()
@@ -130,8 +130,12 @@ export default
           selectLearningArea(FakeLearningArea(1))
         ],
         observe: [
-          observeNoteCount(1),
-          effect("the persisted note is shown", observeTextsInNote(0, [
+          observeNoteCount(2),
+          effect("the second persisted note is shown first", observeTextsInNote(0, [
+            "July 18, 2022",
+            "This is an even better note!"
+          ])),
+          effect("the first peristed note is shown second", observeTextsInNote(1, [
             "July 17, 2022",
             "This is the best note ever!"
           ]))
@@ -184,5 +188,17 @@ function observeNoteCount(expectedCount: number): Observation<TestContext> {
       .count()
 
     expect(noteCount).to.equal(expectedCount)
+  })
+}
+
+function createNote(content: string): Action<TestContext> {
+  return step("a note is created", async (testContext) => {
+    await testContext.display
+      .select(noteInputView())
+      .type(content)
+    await testContext.display
+      .selectElementWithText("Save Note")
+      .click()
+    await testContext.display.waitForRequestsToComplete()
   })
 }

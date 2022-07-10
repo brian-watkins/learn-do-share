@@ -42,7 +42,7 @@ function update(model: Model, action: EngageMessage): void {
           break
         }
         case "engagementNotePersisted": {
-          model.learningArea.engagementNotes.push(action.note)
+          model.learningArea.engagementNotes.unshift(action.note)
           break
         }
       }

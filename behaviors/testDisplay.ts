@@ -4,6 +4,10 @@ import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser"
 export class TestDisplay {
   private page: Page | null = null
 
+  async tickClock(milliseconds: number): Promise<void> {
+    await this.page?.evaluate(`window.__test_clock.tick(${milliseconds})`)
+  }
+
   async start(url: string, pageOptions: PageOptions): Promise<void> {
     this.page = await newBrowserPage(pageOptions)
     await this.goto(url)
@@ -27,7 +31,7 @@ export class TestDisplay {
   }
 
   async waitForRequestsToComplete(): Promise<void> {
-    await this.page?.waitForLoadState("networkidle", { timeout: 1000 })
+    await this.page?.waitForResponse(() => true)
   }
 
   selectElementWithText(text: string): DisplayElement {
