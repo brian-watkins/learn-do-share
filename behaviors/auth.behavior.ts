@@ -3,6 +3,7 @@ import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
 import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
 import { loginUser, selectLearningArea, visitTheLearningAreas } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";
+import { thereAreLearningAreas } from "./presuppositions";
 
 export default
   behavior("authentication", [
@@ -10,12 +11,7 @@ export default
       .description("when not authenticated")
       .script({
         suppose: [
-          fact("there are some learning areas", (testContext) => {
-            testContext.withLearningAreas([
-              FakeLearningArea(1),
-              FakeLearningArea(2)
-            ])
-          })
+          thereAreLearningAreas([ FakeLearningArea(1), FakeLearningArea(2) ])
         ],
         perform: [
           visitTheLearningAreas()
@@ -86,12 +82,7 @@ export default
       .description("when authentication is successful from the overview page")
       .script({
         suppose: [
-          fact("there are learning areas", async (testContext) => {
-            testContext.withLearningAreas([
-              FakeLearningArea(1),
-              FakeLearningArea(2)
-            ])
-          })
+          thereAreLearningAreas([ FakeLearningArea(1), FakeLearningArea(2) ])
         ],
         perform: [
           visitTheLearningAreas(),
@@ -108,7 +99,7 @@ export default
           }),
           outcome("the list of learning areas is displayed", [
             learningAreaSummaryDisplayed(FakeLearningArea(1)),
-            learningAreaSummaryDisplayed(FakeLearningArea(2))  
+            learningAreaSummaryDisplayed(FakeLearningArea(2))
           ])
         ]
       })

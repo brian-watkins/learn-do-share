@@ -5,7 +5,7 @@ import { gotoLearningAreas, selectLearningArea, visitTheLearningAreas, visitTheL
 import { FakeLearningArea, testContext } from "./testApp";
 import { EngagementLevel } from "@/src/engage/engagementPlans";
 import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { someoneIsAuthenticated } from "./presuppositions";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
 
 const coolLearningArea =
   FakeLearningArea(1)
@@ -31,13 +31,11 @@ export default
       .description("when the url for an unknown learning area is visited")
       .script({
         suppose: [
-          fact("there are learning areas", (testContext) => {
-            testContext.withLearningAreas([
-              coolLearningArea,
-              awesomeLearningArea,
-              superLearningArea
-            ]);
-          })
+          thereAreLearningAreas([
+            coolLearningArea,
+            awesomeLearningArea,
+            superLearningArea
+          ])
         ],
         perform: [
           visitTheLearningArea(FakeLearningArea(27).withTitle("Unknown Learning Area"))
@@ -57,13 +55,11 @@ export default
       .description("when the url for a learning area is visited")
       .script({
         suppose: [
-          fact("there are learning areas", (testContext) => {
-            testContext.withLearningAreas([
-              coolLearningArea,
-              awesomeLearningArea,
-              superLearningArea
-            ])
-          }),
+          thereAreLearningAreas([
+            coolLearningArea,
+            awesomeLearningArea,
+            superLearningArea
+          ])
         ],
         perform: [
           visitTheLearningArea(superLearningArea)
@@ -89,11 +85,7 @@ export default
       .description("when a learning area is selected")
       .script({
         suppose: [
-          fact("there is a learning area", (testContext) => {
-            testContext.withLearningAreas([
-              awesomeLearningArea
-            ])
-          })
+          thereAreLearningAreas([awesomeLearningArea])
         ],
         perform: [
           visitTheLearningAreas(),
@@ -109,12 +101,10 @@ export default
       .description("when a logged in user selects a learning area that they are learning and doing")
       .script({
         suppose: [
-          fact("there are learning areas", (testContext) => {
-            testContext.withLearningAreas([
-              coolLearningArea,
-              superLearningArea
-            ])
-          }),
+          thereAreLearningAreas([
+            coolLearningArea,
+            superLearningArea
+          ]),
           fact("the user is learning and doing the cool learning area", (testContext) => {
             testContext
               .withEngagementPlan("fun-user@email.com", coolLearningArea, EngagementLevel.Learning)

@@ -3,7 +3,7 @@ import { Action, behavior, example, fact, outcome, pick, procedure, step } from 
 import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
 import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage, visitTheLearningAreas } from "./actions";
 import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
-import { someoneIsAuthenticated } from "./presuppositions";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
 
 export default
   behavior("indicate engagement with a learning area", [
@@ -11,14 +11,12 @@ export default
       .description("engagement levels are persisted for a particular user")
       .script({
         suppose: [
-          fact("there are learning areas", (testContext) => {
-            testContext.withLearningAreas([
-              FakeLearningArea(1),
-              FakeLearningArea(2),
-              FakeLearningArea(3),
-              FakeLearningArea(4),
-            ])
-          }),
+          thereAreLearningAreas([
+            FakeLearningArea(1),
+            FakeLearningArea(2),
+            FakeLearningArea(3),
+            FakeLearningArea(4),
+          ]),
           someoneIsAuthenticated("funny-person@email.com"),
         ],
         perform: [
@@ -86,11 +84,7 @@ export default
       .description("clear engagement levels")
       .script({
         suppose: [
-          fact("there is a learning area", (testContext) => {
-            testContext.withLearningAreas([
-              FakeLearningArea(1)
-            ])
-          }),
+          thereAreLearningAreas([ FakeLearningArea(1) ]),
           fact("the user is committed to learn, do, and share Learning Area 1", (testContext) => {
             testContext
               .withEngagementPlan("funny-person@email.com", FakeLearningArea(1), EngagementLevel.Learning)

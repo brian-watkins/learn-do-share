@@ -3,6 +3,7 @@ import { FakeLearningArea, testContext } from "./testApp"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { learningAreaSummaryDisplayed } from "./effects"
 import { visitTheLearningAreas } from "./actions"
+import { thereAreLearningAreas } from "./presuppositions"
 
 export default
   behavior("viewing items", [
@@ -10,16 +11,13 @@ export default
       .description("when there are learning areas available")
       .script({
         suppose: [
-          fact("there are learning areas in multiple categories", (testContext) => {
-            testContext
-              .withLearningAreas([
-                FakeLearningArea(1).withCategory(LearningAreaCategory.Team),
-                FakeLearningArea(2).withCategory(LearningAreaCategory.Team),
-                FakeLearningArea(3).withCategory(LearningAreaCategory.Discipline),
-                FakeLearningArea(4).withCategory(LearningAreaCategory.Theory),
-                FakeLearningArea(5).withCategory(LearningAreaCategory.Theory),
-              ])
-          })
+          thereAreLearningAreas([
+            FakeLearningArea(1).withCategory(LearningAreaCategory.Team),
+            FakeLearningArea(2).withCategory(LearningAreaCategory.Team),
+            FakeLearningArea(3).withCategory(LearningAreaCategory.Discipline),
+            FakeLearningArea(4).withCategory(LearningAreaCategory.Theory),
+            FakeLearningArea(5).withCategory(LearningAreaCategory.Theory),
+          ])
         ],
         perform: [
           visitTheLearningAreas()
