@@ -94,6 +94,12 @@ export class DisplayElement {
     return this.locator.first().getAttribute(name)
   }
 
+  async getProperty(name: string): Promise<any> {
+    const element = await this.locator.first().elementHandle()
+    const propertyValue = await element?.getProperty(name)
+    return propertyValue?.jsonValue()
+  }
+
   async getInputValue(): Promise<string> {
     return this.locator.first().inputValue()
   }

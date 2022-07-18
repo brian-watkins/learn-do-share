@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { behavior, example, fact, effect, step, pick, outcome, Observation, Action } from "esbehavior";
 import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea } from "./actions";
 import { noteInputView, notesView } from "./effects";
-import { someoneIsAuthenticated } from "./presuppositions";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
 import { FakeEngagementNote, FakeLearningArea, TestContext, testContext } from "./testApp";
 
 export default
@@ -11,12 +11,9 @@ export default
       .description("viewing existing notes")
       .script({
         suppose: [
-          fact("there is a learning area with notes for users", (testContext) => {
+          thereAreLearningAreas([FakeLearningArea(1), FakeLearningArea(2)]),
+          fact("one learning area has notes for two users", (testContext) => {
             testContext
-              .withLearningAreas([
-                FakeLearningArea(1),
-                FakeLearningArea(2)
-              ])
               .withEngagementNotes([
                 FakeEngagementNote("person@email.com", FakeLearningArea(1), 1)
                   .withContent("This is my first cool note!")
@@ -90,12 +87,7 @@ export default
       .description("creating a new note")
       .script({
         suppose: [
-          fact("there is a learning area", (testContext) => {
-            testContext
-              .withLearningAreas([
-                FakeLearningArea(1)
-              ])
-          }),
+          thereAreLearningAreas([FakeLearningArea(1)]),
           fact("the date is July 17, 2022", (testContext) => {
             testContext.setDate(new Date(2022, 6, 17, 13, 34, 22))
           }),
@@ -103,11 +95,13 @@ export default
         ],
         perform: [
           visitTheLearningArea(FakeLearningArea(1)),
-          createNote("This is the best note ever!"),
+          typeNote("This is the best note ever!"),
+          clickToSaveNote(),
           step("time passes until it is the next day", async (testContext) => {
             await testContext.display.tickClock(27 * 60 * 60 * 1000)
           }),
-          createNote("This is an even better note!")
+          typeNote("This is an even better note!"),
+          clickToSaveNote()
         ],
         observe: [
           observeNoteCount(2),
@@ -142,15 +136,42 @@ export default
         ]
       }),
     example(testContext())
+      .description("When typing into the note input")
+      .script({
+        suppose: [
+          thereAreLearningAreas([FakeLearningArea(1)]),
+          someoneIsAuthenticated("someone-cool@person.com"),
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(1)),
+          step("record the note input height", async (testContext) => {
+            const clientHeight = await getNoteInputHeight(testContext)
+            testContext.attributes["default-note-input-height"] = Number(clientHeight)
+          }),
+          typeNote("This is such a super long note that you will take forever to actually read it and then what will happen? You will just have to read it again because it is so long and really cool at the same time.")
+        ],
+        observe: [
+          effect("the note input height increased to accomodate lots of text", async (testContext) => {
+            const currentNoteInputHeight = await getNoteInputHeight(testContext)
+            expect(currentNoteInputHeight).to.be.greaterThan(testContext.attributes["default-note-input-height"])
+          })
+        ]
+      }).andThen({
+        perform: [
+          typeNote("This is now a short note!", "a shorter text is typed into the note input field")
+        ],
+        observe: [
+          effect("the note input height decreased", async (testContext) => {
+            const currentNoteInputHeight = await getNoteInputHeight(testContext)
+            expect(currentNoteInputHeight).to.equal(testContext.attributes["default-note-input-height"])
+          })
+        ]
+      }),
+    example(testContext())
       .description("When no text has been entered into the note input")
       .script({
         suppose: [
-          fact("there is a learning area", (testContext) => {
-            testContext
-              .withLearningAreas([
-                FakeLearningArea(1)
-              ])
-          }),
+          thereAreLearningAreas([FakeLearningArea(1)]),
           someoneIsAuthenticated("someone-cool@person.com"),
         ],
         perform: [
@@ -175,7 +196,7 @@ function observeTextsInNote(index: number, texts: Array<string>): (context: Test
       .getElement(index)
       .text()
 
-      for (let i = 0; i < texts.length; i++) {
+    for (let i = 0; i < texts.length; i++) {
       expect(noteContents).to.contain(texts[i])
     }
   }
@@ -191,11 +212,22 @@ function observeNoteCount(expectedCount: number): Observation<TestContext> {
   })
 }
 
-function createNote(content: string): Action<TestContext> {
-  return step("a note is created", async (testContext) => {
+function getNoteInputHeight(testContext: TestContext): Promise<number> {
+  return testContext.display
+    .select(noteInputView())
+    .getProperty("clientHeight")
+}
+
+function typeNote(content: string, description: string = "text is typed into the note input field"): Action<TestContext> {
+  return step(description, async (testContext) => {
     await testContext.display
       .select(noteInputView())
-      .type(content)
+      .type(content, { clear: true })
+  })
+}
+
+function clickToSaveNote(): Action<TestContext> {
+  return step("the save note button is clicked", async (testContext) => {
     await testContext.display
       .selectElementWithText("Save Note")
       .click()

@@ -30,7 +30,7 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
 }
 
 function noteInputView(area: PersonalizedLearningArea): Html.View {
-  return Display.context("", (state, setState) =>
+  return Display.context("", (noteContent, setNoteContent) =>
     Html.div([
       noteBox(),
       Html.cssClasses([
@@ -39,18 +39,40 @@ function noteInputView(area: PersonalizedLearningArea): Html.View {
         focusWithinBorderColor(Colors.Engagement),
       ])
     ], [
-      Html.textarea([
-        Html.data("note-input"),
-        Html.value(state),
-        Html.onInput(setState),
+      Html.div([
         Html.cssClasses([
-          "focus:outline-none",
-          "rounded",
-          "resize-none",
-          "py-4",
-          "px-6",
-        ])
-      ], []),
+          "grid",
+          "after:whitespace-pre-wrap",
+          "after:content-[attr(data-replicated-value)]",
+          "after:invisible",
+          "after:rounded",
+          "after:py-4",
+          "after:px-6",
+          "after:row-start-1",
+          "after:col-start-1",
+          "after:row-end-2",
+          "after:col-end-2",
+        ]),
+        Html.data("replicated-value", `${noteContent} `)
+      ], [
+        Html.textarea([
+          Html.data("note-input"),
+          Html.value(noteContent),
+          Html.onInput(setNoteContent),
+          Html.cssClasses([
+            "focus:outline-none",
+            "rounded",
+            "resize-none",
+            "py-4",
+            "px-6",
+            "overflow-hidden",
+            "row-start-1",
+            "col-start-1",
+            "row-end-2",
+            "col-end-2"
+          ])
+        ], [])
+      ]),
       Html.button([
         Html.cssClasses([
           "w-fit",
@@ -64,10 +86,10 @@ function noteInputView(area: PersonalizedLearningArea): Html.View {
           "hover:underline",
         ]),
         Html.onClick(batch([
-          createNoteMessage(area, state),
-          setState(""),
+          createNoteMessage(area, noteContent),
+          setNoteContent(""),
         ])),
-        Html.disabled(state.length === 0)
+        Html.disabled(noteContent.length === 0)
       ], [
         Html.text("Save Note")
       ])

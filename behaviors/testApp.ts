@@ -38,6 +38,7 @@ export class TestContext {
   })
   engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
   engagementNotes: Array<TestEngagementNote> = []
+  attributes: { [key:string]: any } = {}
 
   setDate(date: Date) {
     this.date = date
