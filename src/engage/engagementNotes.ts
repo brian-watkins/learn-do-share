@@ -6,6 +6,7 @@ import { headingBox } from "../viewElements"
 import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
 import { format, parseISO } from "date-fns"
 import * as Display from "@/display/context"
+import { decorate, TagDecorator } from "../util/markdownParser"
 
 export interface EngagementNoteContents {
   content: string
@@ -118,11 +119,20 @@ function engagementNoteView(note: EngagementNote): Html.View {
     Html.div([
       Html.cssClasses([
         "pb-4"
-      ])
-    ], [
-      Html.text(note.content)
-    ])
+      ]),
+      Html.withHTMLContent(note.content)
+    ], [])
   ])
+}
+
+export function noteContentTagStyles(): Array<TagDecorator> {
+  return [
+    decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
+    decorate("h1", { classname: "font-bold text-2xl" }),
+    decorate("h3", { classname: "font-bold" }),
+    decorate("ul", { classname: "list-disc list-inside" }),
+    decorate("p", { classname: "pb-4" })
+  ]
 }
 
 function formattedNoteDate(isoDate: string): string {

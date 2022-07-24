@@ -136,6 +136,41 @@ export default
         ]
       }),
     example(testContext())
+      .description("When markdown is used in the note")
+      .script({
+        suppose: [
+          thereAreLearningAreas([FakeLearningArea(1)]),
+          someoneIsAuthenticated("someone-cool@person.com")
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(1)),
+          typeNote(`
+Here is a *note* with some
+
+- cool markup
+- and other fun stuff
+          `),
+          clickToSaveNote()
+        ],
+        observe: [
+          outcome("the markdown is converted to HTML when the note is displayed", [
+            noteContainsHtmlTagWithText("EM", "note"),
+            noteContainsHtmlTagWithText("LI", "cool markup")
+          ])
+        ]
+      }).andThen({
+        perform: [
+          reloadThePage(),
+          selectLearningArea(FakeLearningArea(1))
+        ],
+        observe: [
+          outcome("the markdown is converted to HTML when the saved note is displayed", [
+            noteContainsHtmlTagWithText("EM", "note"),
+            noteContainsHtmlTagWithText("LI", "cool markup")
+          ])
+        ]
+      }),
+    example(testContext())
       .description("When typing into the note input")
       .script({
         suppose: [
@@ -232,5 +267,16 @@ function clickToSaveNote(): Action<TestContext> {
       .selectElementWithText("Save Note")
       .click()
     await testContext.display.waitForRequestsToComplete()
+  })
+}
+
+function noteContainsHtmlTagWithText(tag: string, text: string): Observation<TestContext> {
+  return effect(`The note contains a ${tag} with the expected text`, async (testContext) => {
+    const emphasizedTextTag = await testContext.display
+      .select(notesView())
+      .selectDescendantWithText(text)
+      .tagName()
+
+    expect(emphasizedTextTag).to.equal(tag)
   })
 }

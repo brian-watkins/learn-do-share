@@ -7,7 +7,7 @@ import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, 
 import { EngagementPlan } from "./engagementPlans.js";
 import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
-import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNotePersisted } from "./engagementNotes.js";
+import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNotePersisted, noteContentTagStyles } from "./engagementNotes.js";
 import { LearningArea } from "./learningArea.js";
 import { EngagementNote } from "./personalizedLearningArea.js";
 
@@ -47,7 +47,7 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
       return engagementPlansDeleted(message.learningArea)
     case "engagementNoteCreationRequested":
       const note = await adapters.engagementNoteWriter.write(user, message.learningAreaId, message.contents)
-      return engagementNotePersisted(note)
+      return engagementNotePersisted(displayableNote(note))
   }
 }
 
@@ -77,7 +77,10 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
         return plan.level
       })
 
-    const engagementNotes = await adapters.engagementNoteReader.read(context.user, learningArea)
+    const engagementNoteData = await adapters.engagementNoteReader.read(context.user, learningArea)
+
+    const engagementNotes = engagementNoteData
+      .map(displayableNote)
 
     return templateResult("engage.html", {
       type: "personalized",
@@ -96,5 +99,12 @@ export function initRenderer(adapters: Adapters): BackstageRenderer<EngageContex
 export function initBackstage(adapters: Adapters): Backstage<any> {
   return {
     messageHandler: update(adapters)
+  }
+}
+
+function displayableNote(noteData: EngagementNote): EngagementNote {
+  return {
+    ...noteData,
+    content: markdownToHTML(noteData.content, noteContentTagStyles())
   }
 }
