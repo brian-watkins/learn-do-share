@@ -11,7 +11,12 @@ await esbuild.build({
     outfile: "./build/backstage/index.mjs",
     external: [
         "@azure/functions",
-        "@azure/cosmos"
+        "@azure/cosmos",
+        "unified",
+        "rehype-stringify",
+        "remark-parse",
+        "remark-rehype",
+        "hast-util-select"
     ],
     logLevel: "info"
 })
