@@ -2,8 +2,8 @@ import * as Html from "@/display/markup"
 import { DisplayConfig } from "@/display/display"
 import { LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
-import { engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
-import { EngagementPlanPersisted, EngagementPlansDeleted } from "./writeEngagementPlans"
+import { engagementLevelsRetrieved, engagementLevelsSaving, engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
+import { EngagementPlanPersisted, EngagementPlansDeleted, WriteEngagementPlan } from "./writeEngagementPlans"
 import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
@@ -25,7 +25,8 @@ export type Model
   | Personalized
 
 type EngageMessage
-  = EngagementPlanPersisted
+  = WriteEngagementPlan
+  | EngagementPlanPersisted
   | EngagementPlansDeleted
   | EngagementNotePersisted
 
@@ -33,12 +34,18 @@ function update(model: Model, action: EngageMessage): void {
   switch (model.type) {
     case "personalized":
       switch (action.type) {
+        case "writeEngagementPlan": {
+          model.learningArea.engagementLevels = engagementLevelsSaving(model.learningArea.engagementLevels.levels)
+          break
+        }
         case "engagementPlanPersisted": {
-          model.learningArea.engagementLevels.push(action.plan.level)
+          const levels = model.learningArea.engagementLevels.levels
+          levels.push(action.plan.level)
+          model.learningArea.engagementLevels = engagementLevelsRetrieved(levels)
           break
         }
         case "engagementPlansDeleted": {
-          model.learningArea.engagementLevels = []
+          model.learningArea.engagementLevels = engagementLevelsRetrieved([])
           break
         }
         case "engagementNotePersisted": {

@@ -26,4 +26,5 @@ export function handleBackstageMessage(dispatch: MessageDispatcher, message: Bac
   }).then((responseMessage) => {
     dispatch(responseMessage)
   })
+  dispatch(message.wrapped)
 }

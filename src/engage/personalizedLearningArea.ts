@@ -5,9 +5,35 @@ import { deleteEngagementPlans, writeEngagementPlan } from "./writeEngagementPla
 import { LearningArea } from "./learningArea"
 
 export interface PersonalizedLearningArea extends LearningArea {
-  engagementLevels: Array<EngagementLevel>
+  engagementLevels: EngagementLevels
   engagementNotes: Array<EngagementNote>
 }
+
+export interface EngagementLevelsRetrived {
+  type: "engagement-levels-retrieved"
+  levels: Array<EngagementLevel>
+}
+
+export function engagementLevelsRetrieved(levels: Array<EngagementLevel>): EngagementLevels {
+  return {
+    type: "engagement-levels-retrieved",
+    levels
+  }
+}
+
+export interface EngagementLevelsSaving {
+  type: "engagement-levels-saving"
+  levels: Array<EngagementLevel>
+}
+
+export function engagementLevelsSaving(levels: Array<EngagementLevel>): EngagementLevels {
+  return {
+    type: "engagement-levels-saving",
+    levels
+  }
+}
+
+export type EngagementLevels = EngagementLevelsRetrived | EngagementLevelsSaving
 
 export interface EngagementNote {
   id: string
@@ -26,7 +52,7 @@ export function engagementPlansView(area: PersonalizedLearningArea): Html.View {
         "flex",
         "gap-4"
       ])
-    ], [...area.engagementLevels.map(engagementPlanView), increaseEngagementButton(area)])  
+    ], [...area.engagementLevels.levels.map(engagementPlanView), increaseEngagementButton(area)])  
   ])
 }
 
@@ -43,10 +69,15 @@ export function increaseEngagementButton(learningArea: PersonalizedLearningArea)
   return Html.button([
     Style.link(),
     Html.data("increase-engagement"),
-    Html.onClick(nextEngagementLevelMessage(learningArea))
+    Html.onClick(nextEngagementLevelMessage(learningArea)),
+    Html.disabled(isSavingEngagementLevels(learningArea.engagementLevels))
   ], [
     Html.text(increaseEngagementText(learningArea))
   ])
+}
+
+function isSavingEngagementLevels(engagementLevels: EngagementLevels) {
+  return engagementLevels.type === "engagement-levels-saving"
 }
 
 function increaseEngagementText(learningArea: PersonalizedLearningArea): string {
@@ -72,13 +103,13 @@ function nextEngagementLevelMessage(learningArea: PersonalizedLearningArea) {
 }
 
 function nextEngagementLevel(learningArea: PersonalizedLearningArea): EngagementLevel {
-  if (learningArea.engagementLevels.includes(EngagementLevel.Sharing)) {
+  if (learningArea.engagementLevels.levels.includes(EngagementLevel.Sharing)) {
     return EngagementLevel.None
   }
-  if (learningArea.engagementLevels.includes(EngagementLevel.Doing)) {
+  if (learningArea.engagementLevels.levels.includes(EngagementLevel.Doing)) {
     return EngagementLevel.Sharing
   }
-  if (learningArea.engagementLevels.includes(EngagementLevel.Learning)) {
+  if (learningArea.engagementLevels.levels.includes(EngagementLevel.Learning)) {
     return EngagementLevel.Doing
   }
   return EngagementLevel.Learning

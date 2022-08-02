@@ -9,7 +9,7 @@ import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
 import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNotePersisted, noteContentTagStyles } from "./engagementNotes.js";
 import { LearningArea } from "./learningArea.js";
-import { EngagementNote } from "./personalizedLearningArea.js";
+import { engagementLevelsRetrieved, EngagementNote } from "./personalizedLearningArea.js";
 
 export interface EngagementPlanReader {
   read(user: User): Promise<Array<EngagementPlan>>
@@ -84,7 +84,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
 
     return templateResult("engage.html", {
       type: "personalized",
-      learningArea: { ...learningArea, engagementLevels: levels, engagementNotes },
+      learningArea: { ...learningArea, engagementLevels: engagementLevelsRetrieved(levels), engagementNotes },
       user: context.user
     })
   }

@@ -13,8 +13,9 @@ process.on("uncaughtException", async (error) => {
   console.log("A horrible error occurred:", error)
   try {
     await shutdown()
-  } catch (_) { }
-  process.exit(5)
+  } finally {
+    process.exit(5)
+  }
 })
 
 await start()

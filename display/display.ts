@@ -15,8 +15,8 @@ function getInitialState() {
   return (window as any)._display_initial_state
 }
 
-export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>): Reducer<T, M> {
-  return function (state: T = getInitialState(), message: M): T {
+export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>, initialState: T): Reducer<T, M> {
+  return function (state: T = initialState, message: M): T {
     return produce(state, (draft) => {
       display.update(draft as T, message)
     })
@@ -33,8 +33,8 @@ function effectHandlers(): Map<string, EffectHandler> {
 export class AppDisplay<T, M extends Action<any>> {
   private store: Store<T, M>
 
-  constructor(private config: DisplayConfig<T, M>) {
-    this.store = createStore(createReducer(this.config), applyMiddleware(effectMiddleware(effectHandlers())))
+  constructor(private config: DisplayConfig<T, M>, initialState: T = getInitialState()) {
+    this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(effectHandlers())))
   }
 
   dispatch(message: M) {
