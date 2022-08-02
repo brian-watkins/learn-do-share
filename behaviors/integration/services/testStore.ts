@@ -1,7 +1,7 @@
 import cosmosServer from "@zeit/cosmosdb-server"
 import { Server } from "https";
 import { CosmosConnection } from "@/adapters/cosmosConnection";
-import { createTestDatabase } from "../../azure/local/databaseSetup"
+import { createTestDatabase } from "../../../azure/local/databaseSetup"
 
 let database: Server
 

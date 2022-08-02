@@ -7,4 +7,4 @@ echo
 node --enable-source-maps \
   --loader esbuild-node-loader \
   --no-warnings \
-  ./behaviors/runner.ts
+  ./behaviors/integration/runner.ts
