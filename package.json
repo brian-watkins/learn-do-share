@@ -15,6 +15,7 @@
     "test:integration": "./azure/test/start.sh",
     "test:integration:debug": "DEBUG=true npm run test:integration",
     "test:unit": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/unit/runner.ts",
+    "test:unit:debug": "DEBUG=true npm run test:unit",
     "prepare": "husky install"
   },
   "author": "Brian Watkins",

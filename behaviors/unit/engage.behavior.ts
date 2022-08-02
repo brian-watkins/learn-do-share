@@ -76,7 +76,7 @@ class EngageTestContext {
         }  
       },
       onUnhandledRequest: "bypass",
-      quiet: true
+      quiet: !__IS_DEBUG__
     })
 
     this.actor = userEvent.setup()

@@ -2,6 +2,10 @@ import { chromium } from "playwright";
 import { createServer } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths"
 
+export function isDebug(): boolean {
+  return process.env["DEBUG"] !== undefined
+}
+
 // start vite
 const vite = await createServer({
   root: ".",
@@ -10,15 +14,20 @@ const vite = await createServer({
       "Service-Worker-Allowed": "/"
     }
   },
+  define: {
+    "__IS_DEBUG__": isDebug()
+  },
   plugins: [
     tsConfigPaths()
   ],
-  logLevel: "silent"
+  logLevel: isDebug() ? "info" : "silent"
 })
 await vite.listen(7170)
 
 // start playwright
-const browser = await chromium.launch()
+const browser = await chromium.launch({
+  headless: !isDebug()
+})
 const page = await browser.newPage()
 
 // print out the logs
@@ -35,5 +44,7 @@ if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1
 }
 
-await browser.close()
-await vite.close()
+if (!isDebug()) {
+  await browser.close()
+  await vite.close()
+}

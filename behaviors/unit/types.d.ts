@@ -8,4 +8,6 @@ export declare global {
   interface Window {
     esbehavior_run(): Promise<Summary>
   }
+
+  const __IS_DEBUG__: boolean
 }
