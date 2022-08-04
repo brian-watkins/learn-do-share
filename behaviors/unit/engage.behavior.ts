@@ -1,8 +1,6 @@
 import { behavior, Context, example, step, effect, fact } from "esbehavior"
 import display, { Model } from "@/src/engage/display"
 import { AppDisplay } from "@/display/display"
-import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
-import { LearningArea } from "@/src/engage/learningArea"
 import { User } from "@/api/common/user"
 import userEvent from "@testing-library/user-event"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup"
@@ -10,50 +8,9 @@ import { screen } from "@testing-library/dom"
 import { rest, setupWorker, SetupWorkerApi } from "msw"
 import { expect } from "chai"
 import { engagementLevelsRetrieved } from "@/src/engage/personalizedLearningArea"
+import { FakeLearningArea, TestLearningArea } from "./fakes/learningArea"
+import { FakeUser, TestUser } from "./fakes/user"
 
-
-class TestLearningArea implements LearningArea {
-  title: string
-  content: string
-  id: string
-  selected: boolean
-  category: LearningAreaCategory
-
-  constructor(public testId: number) {
-    this.id = `learning-area-${testId}`
-    this.title = `Learning Area ${testId}`
-    this.content = `Here is some content for learning Area ${testId}!`
-    this.selected = false
-    this.category = LearningAreaCategory.Discipline
-  }
-
-  withTitle(title: string): TestLearningArea {
-    this.title = title
-    return this
-  }
-
-  withContent(content: string): TestLearningArea {
-    this.content = content
-    return this
-  }
-
-  withCategory(category: LearningAreaCategory): TestLearningArea {
-    this.category = category
-    return this
-  }
-}
-
-function FakeLearningArea(testId: number): TestLearningArea {
-  return new TestLearningArea(testId)
-}
-
-class TestUser implements User {
-  constructor(public identifier: string, public name: string) { }
-}
-
-function FakeUser(email: string): TestUser {
-  return new TestUser("test-id", email)
-}
 
 class EngageTestContext {
   private user: TestUser | null = null
