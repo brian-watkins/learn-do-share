@@ -12,7 +12,12 @@ await esbuild.build({
     external: [
         "@azure/functions",
         "@azure/cosmos",
-        "node-fetch"
+        "node-fetch",
+        "unified",
+        "rehype-stringify",
+        "remark-parse",
+        "remark-rehype",
+        "hast-util-select"
     ],
     logLevel: "info"
 })
