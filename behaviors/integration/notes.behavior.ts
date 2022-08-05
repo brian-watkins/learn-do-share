@@ -136,6 +136,40 @@ export default
         ]
       }),
     example(testContext())
+      .description("Deleting a note")
+      .script({
+        suppose: [
+          thereAreLearningAreas([FakeLearningArea(1)]),
+          fact("there is a note for a user", (testContext) => {
+            testContext
+              .withEngagementNotes([
+                FakeEngagementNote("person@email.com", FakeLearningArea(1), 1)
+              ])
+          }),
+          someoneIsAuthenticated("person@email.com"),
+        ],
+        perform: [
+          visitTheLearningArea(FakeLearningArea(1)),
+          step("delete the note", async (testContext) => {
+            await testContext.display
+              .selectElementWithText("Delete Note")
+              .click()
+            await testContext.display.waitForRequestsToComplete()
+          })
+        ],
+        observe: [
+          observeNoteCount(0)
+        ]
+      }).andThen({
+        perform: [
+          reloadThePage(),
+          selectLearningArea(FakeLearningArea(1))
+        ],
+        observe: [
+          observeNoteCount(0)
+        ]
+      }),
+    example(testContext())
       .description("When markdown is used in the note")
       .script({
         suppose: [

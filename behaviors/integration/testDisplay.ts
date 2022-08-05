@@ -31,7 +31,7 @@ export class TestDisplay {
   }
 
   async waitForRequestsToComplete(): Promise<void> {
-    await this.page?.waitForResponse(() => true)
+    await this.page?.waitForResponse(() => true, { timeout: 1000 })
   }
 
   selectElementWithText(text: string): DisplayElement {

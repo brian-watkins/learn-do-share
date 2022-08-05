@@ -7,7 +7,7 @@ import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, 
 import { EngagementPlan } from "./engagementPlans.js";
 import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
-import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNotePersisted, noteContentTagStyles } from "./engagementNotes.js";
+import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNoteDeleted, EngagementNoteDeleteRequested, engagementNotePersisted, noteContentTagStyles } from "./engagementNotes.js";
 import { LearningArea } from "./learningArea.js";
 import { engagementLevelsRetrieved, EngagementNote } from "./personalizedLearningArea.js";
 
@@ -21,6 +21,7 @@ export interface EngagementNoteReader {
 
 export interface EngagementNoteWriter {
   write(user: User, learningAreaId: string, content: EngagementNoteContents): Promise<EngagementNote>
+  delete(user: User, note: EngagementNote): Promise<void>
 }
 
 export interface Adapters {
@@ -31,7 +32,11 @@ export interface Adapters {
   engagementNoteWriter: EngagementNoteWriter
 }
 
-export type DataMessage = WriteEngagementPlan | DeleteEngagementPlans | EngagementNoteCreationRequested
+export type DataMessage
+  = WriteEngagementPlan
+  | DeleteEngagementPlans
+  | EngagementNoteCreationRequested
+  | EngagementNoteDeleteRequested
 
 const update = (adapters: Adapters) => async (user: User | null, message: DataMessage) => {
   if (user == null) {
@@ -48,6 +53,9 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
     case "engagementNoteCreationRequested":
       const note = await adapters.engagementNoteWriter.write(user, message.learningAreaId, message.contents)
       return engagementNotePersisted(displayableNote(note))
+    case "engagementNoteDeleteRequested":
+      await adapters.engagementNoteWriter.delete(user, message.note)
+      return engagementNoteDeleted(message.note)
   }
 }
 

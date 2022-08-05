@@ -7,7 +7,7 @@ import { EngagementPlanPersisted, EngagementPlansDeleted, WriteEngagementPlan } 
 import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
-import { EngagementNotePersisted, engagementNotesView } from "./engagementNotes"
+import { EngagementNoteDeleted, EngagementNotePersisted, engagementNotesView } from "./engagementNotes"
 
 export interface Informative {
   type: "informative"
@@ -29,6 +29,7 @@ type EngageMessage
   | EngagementPlanPersisted
   | EngagementPlansDeleted
   | EngagementNotePersisted
+  | EngagementNoteDeleted
 
 function update(model: Model, action: EngageMessage): void {
   switch (model.type) {
@@ -50,6 +51,10 @@ function update(model: Model, action: EngageMessage): void {
         }
         case "engagementNotePersisted": {
           model.learningArea.engagementNotes.unshift(action.note)
+          break
+        }
+        case "engagementNoteDeleted": {
+          model.learningArea.engagementNotes = model.learningArea.engagementNotes.filter(note => note.id !== action.note.id)
           break
         }
       }

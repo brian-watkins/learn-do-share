@@ -111,10 +111,24 @@ function engagementNoteView(note: EngagementNote): Html.View {
         "pt-4",
         "pb-2",
         "text-sm",
+        "flex",
+        "justify-between",
         mediumTextColor
       ])
     ], [
-      Html.text(formattedNoteDate(note.date))
+      Html.text(formattedNoteDate(note.date)),
+      Html.button([
+        Html.cssClasses([
+          "w-fit",
+          "text-slate-300",
+          "font-bold",
+          "hover:text-sky-600",
+          "hover:underline",
+        ]),
+        Html.onClick(deleteNoteMessage(note))
+      ], [
+        Html.text("Delete Note")
+      ])
     ]),
     Html.div([
       Html.cssClasses([
@@ -174,6 +188,30 @@ export interface EngagementNotePersisted {
 export function engagementNotePersisted(note: EngagementNote): EngagementNotePersisted {
   return {
     type: "engagementNotePersisted",
+    note
+  }
+}
+
+export interface EngagementNoteDeleteRequested {
+  type: "engagementNoteDeleteRequested"
+  note: EngagementNote
+}
+
+function deleteNoteMessage(note: EngagementNote): BackstageMessage<EngagementNoteDeleteRequested> {
+  return backstageMessage({
+    type: "engagementNoteDeleteRequested",
+    note
+  })
+}
+
+export interface EngagementNoteDeleted {
+  type: "engagementNoteDeleted",
+  note: EngagementNote
+}
+
+export function engagementNoteDeleted(note: EngagementNote): EngagementNoteDeleted {
+  return {
+    type: "engagementNoteDeleted",
     note
   }
 }

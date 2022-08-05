@@ -1,5 +1,5 @@
 import { User } from "@/api/common/user";
-import { EngagementNoteReader } from "@/src/engage/backstage";
+import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
 import { EngagementNoteContents } from "@/src/engage/engagementNotes";
 import { LearningArea } from "@/src/engage/learningArea";
 import { EngagementNote } from "@/src/engage/personalizedLearningArea";
@@ -7,7 +7,7 @@ import { CosmosConnection } from "./cosmosConnection";
 
 const NOTES_CONTAINER = "engagement-notes"
 
-export class CosmosEngagementNoteRepository implements EngagementNoteReader {
+export class CosmosEngagementNoteRepository implements EngagementNoteReader, EngagementNoteWriter {
 
   constructor(private connection: CosmosConnection) { }
 
@@ -46,6 +46,12 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader {
         content: resource.content,
         date: resource.date
       }
+    })
+  }
+
+  async delete(user: User, note: EngagementNote): Promise<void> {
+    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+      await notes.item(note.id, user.identifier).delete()
     })
   }
 }
