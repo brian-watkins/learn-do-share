@@ -2,12 +2,16 @@ import * as Html from "@/display/markup"
 import { DisplayConfig } from "@/display/display"
 import { LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
-import { engagementLevelsRetrieved, engagementLevelsSaving, engagementPlansView, PersonalizedLearningArea } from "./personalizedLearningArea"
-import { EngagementPlanPersisted, EngagementPlansDeleted, WriteEngagementPlan } from "./writeEngagementPlans"
 import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
-import { EngagementNoteDeleted, EngagementNotePersisted, engagementNotesView } from "./engagementNotes"
+import { view as engagementNotesView } from "./engagementNotes/view"
+import { subscriptions as engagementNotesSubscriptions } from "./engagementNotes/writeEngagementNote"
+import { view as engagementPlansView } from "./engagementPlans/view"
+import { subscriptions as engagementPlansSubscriptions } from "./engagementPlans/writeEngagementPlans"
+import { EngagementNote } from "./engagementNotes"
+import { EngagementLevels } from "./engagementPlans"
+import { Subscription } from "@/display/message"
 
 export interface Informative {
   type: "informative"
@@ -16,7 +20,9 @@ export interface Informative {
 
 export interface Personalized {
   type: "personalized"
-  learningArea: PersonalizedLearningArea
+  learningArea: LearningArea
+  engagementLevels: EngagementLevels
+  engagementNotes: Array<EngagementNote>
   user: User
 }
 
@@ -24,42 +30,6 @@ export type Model
   = Informative
   | Personalized
 
-type EngageMessage
-  = WriteEngagementPlan
-  | EngagementPlanPersisted
-  | EngagementPlansDeleted
-  | EngagementNotePersisted
-  | EngagementNoteDeleted
-
-function update(model: Model, action: EngageMessage): void {
-  switch (model.type) {
-    case "personalized":
-      switch (action.type) {
-        case "writeEngagementPlan": {
-          model.learningArea.engagementLevels = engagementLevelsSaving(model.learningArea.engagementLevels.levels)
-          break
-        }
-        case "engagementPlanPersisted": {
-          const levels = model.learningArea.engagementLevels.levels
-          levels.push(action.plan.level)
-          model.learningArea.engagementLevels = engagementLevelsRetrieved(levels)
-          break
-        }
-        case "engagementPlansDeleted": {
-          model.learningArea.engagementLevels = engagementLevelsRetrieved([])
-          break
-        }
-        case "engagementNotePersisted": {
-          model.learningArea.engagementNotes.unshift(action.note)
-          break
-        }
-        case "engagementNoteDeleted": {
-          model.learningArea.engagementNotes = model.learningArea.engagementNotes.filter(note => note.id !== action.note.id)
-          break
-        }
-      }
-  }
-}
 
 // View
 
@@ -86,8 +56,8 @@ function view(model: Model): Html.View {
         contentArea([
           learningAreaContentView(model.learningArea),
           contentColumn([
-            engagementPlansView(model.learningArea),
-            engagementNotesView(model.learningArea)
+            engagementPlansView(model.learningArea, model.engagementLevels),
+            engagementNotesView(model.learningArea, model.engagementNotes)
           ])
         ])
       ])
@@ -127,8 +97,27 @@ function learningAreasLink(): Html.View {
 }
 
 const display: DisplayConfig<Model, any> = {
-  update,
-  view
+  view,
+  subscriptions: [
+    ...engagementPlansSubscriptions.map(withPersonalizedModel),
+    ...engagementNotesSubscriptions.map(withPersonalizedModel)
+  ]
+}
+
+function withPersonalizedModel(subscription: Subscription<Personalized, any>): Subscription<Model, any> {
+  return {
+    messageType: subscription.messageType,
+    update: (state, message) => {
+      if (state.type === "personalized") {
+        subscription.update?.(state, message)
+      }
+    },
+    dispatch: (dispatch, state, message) => {
+      if (state.type === "personalized") {
+        subscription.dispatch?.(dispatch, state, message)
+      }
+    }
+  }
 }
 
 export default display

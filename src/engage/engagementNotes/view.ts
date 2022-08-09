@@ -1,19 +1,16 @@
-import { BackstageMessage, backstageMessage } from "@/display/backstage"
 import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
-import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../style"
-import { headingBox } from "../viewElements"
-import { EngagementNote, PersonalizedLearningArea } from "./personalizedLearningArea"
+import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../../style"
+import { headingBox } from "../../viewElements"
 import { format, parseISO } from "date-fns"
 import * as Display from "@/display/context"
-import { decorate, TagDecorator } from "../util/markdownParser"
+import { decorate, TagDecorator } from "../../util/markdownParser"
+import { LearningArea } from "../learningArea"
+import { EngagementNote } from "."
+import { createNoteMessage, deleteNoteMessage } from "./writeEngagementNote"
 
-export interface EngagementNoteContents {
-  content: string
-  date: string
-}
 
-export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
+export function view(area: LearningArea, notes: Array<EngagementNote>): Html.View {
   return Html.div([
     Html.id("engagement-notes"),
     Html.cssClasses([
@@ -26,11 +23,11 @@ export function engagementNotesView(area: PersonalizedLearningArea): Html.View {
   ], [
     headingBox("Notes"),
     noteInputView(area),
-    ...area.engagementNotes.map(engagementNoteView)
+    ...notes.map(engagementNoteView)
   ])
 }
 
-function noteInputView(area: PersonalizedLearningArea): Html.View {
+function noteInputView(area: LearningArea): Html.View {
   return Display.context("", (noteContent, setNoteContent) =>
     Html.div([
       noteBox(),
@@ -163,55 +160,3 @@ function noteBox(): Html.ViewAttribute {
   ])
 }
 
-export interface EngagementNoteCreationRequested {
-  type: "engagementNoteCreationRequested"
-  learningAreaId: string
-  contents: EngagementNoteContents
-}
-
-function createNoteMessage(area: PersonalizedLearningArea, content: string): BackstageMessage<EngagementNoteCreationRequested> {
-  return backstageMessage({
-    type: "engagementNoteCreationRequested",
-    learningAreaId: area.id,
-    contents: {
-      content,
-      date: new Date().toISOString()
-    }
-  })
-}
-
-export interface EngagementNotePersisted {
-  type: "engagementNotePersisted",
-  note: EngagementNote
-}
-
-export function engagementNotePersisted(note: EngagementNote): EngagementNotePersisted {
-  return {
-    type: "engagementNotePersisted",
-    note
-  }
-}
-
-export interface EngagementNoteDeleteRequested {
-  type: "engagementNoteDeleteRequested"
-  note: EngagementNote
-}
-
-function deleteNoteMessage(note: EngagementNote): BackstageMessage<EngagementNoteDeleteRequested> {
-  return backstageMessage({
-    type: "engagementNoteDeleteRequested",
-    note
-  })
-}
-
-export interface EngagementNoteDeleted {
-  type: "engagementNoteDeleted",
-  note: EngagementNote
-}
-
-export function engagementNoteDeleted(note: EngagementNote): EngagementNoteDeleted {
-  return {
-    type: "engagementNoteDeleted",
-    note
-  }
-}

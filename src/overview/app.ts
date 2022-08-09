@@ -1,13 +1,12 @@
 import { learningAreasView, LearningArea, learningAreaView } from "./learningAreas"
 import * as Html from "@/display/markup"
 import * as Style from "../style"
-import { BackstageMessage } from "@/display/backstage"
 import { DisplayConfig } from "@/display/display"
 import { userAccountView } from "../user"
 import { personalizedLearningAreaView } from "./personalizedLearningAreas"
 import { User } from "@/api/common/user"
-import { EngagementLevel } from "../engage/engagementPlans"
 import { header, linkBox, pageTitle } from "../viewElements"
+import { EngagementLevel } from "../engage/engagementPlans"
 
 export interface Informative {
   type: "informative"
@@ -77,9 +76,9 @@ export function learningAreasPracticeView(): Html.ViewChild {
 }
 
 
-const display: DisplayConfig<AppModel, never | BackstageMessage<never>> = {
-  update: () => {},
-  view
+const display: DisplayConfig<AppModel, never> = {
+  view,
+  subscriptions: []
 }
 
 export default display

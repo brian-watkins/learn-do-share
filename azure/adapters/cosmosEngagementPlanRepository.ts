@@ -1,9 +1,9 @@
 import { BulkOperationType } from "@azure/cosmos";
 import { User } from "../api/common/user";
-import { EngagementPlan } from "@/src/engage/engagementPlans";
 import { EngagementPlanReader } from "@/src/overview/backstage";
-import { EngagementPlanWriter } from "@/src/engage/writeEngagementPlans";
+import { EngagementPlanWriter } from "@/src/engage/engagementPlans/writeEngagementPlans";
 import { CosmosConnection } from "./cosmosConnection";
+import { EngagementPlan } from "@/src/engage/engagementPlans";
 
 const PLANS_CONTAINER = "engagement-plans"
 

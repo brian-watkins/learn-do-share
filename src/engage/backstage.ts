@@ -1,15 +1,16 @@
 import { Backstage } from "@/api/backstage/backstage.js";
 import { User } from "@/api/common/user.js";
-import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./writeEngagementPlans.js";
+import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
-import { EngagementPlan } from "./engagementPlans.js";
 import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
-import { EngagementNoteContents, EngagementNoteCreationRequested, engagementNoteDeleted, EngagementNoteDeleteRequested, engagementNotePersisted, noteContentTagStyles } from "./engagementNotes.js";
+import { noteContentTagStyles } from "./engagementNotes/view.js";
 import { LearningArea } from "./learningArea.js";
-import { engagementLevelsRetrieved, EngagementNote } from "./personalizedLearningArea.js";
+import { EngagementNote, EngagementNoteContents } from "./engagementNotes";
+import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/index.js";
+import { EngagementNoteCreationRequested, engagementNoteDeleted, EngagementNoteDeleteRequested, engagementNotePersisted } from "./engagementNotes/writeEngagementNote.js";
 
 export interface EngagementPlanReader {
   read(user: User): Promise<Array<EngagementPlan>>
@@ -92,7 +93,9 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
 
     return templateResult("engage.html", {
       type: "personalized",
-      learningArea: { ...learningArea, engagementLevels: engagementLevelsRetrieved(levels), engagementNotes },
+      learningArea, 
+      engagementLevels: engagementLevelsRetrieved(levels), 
+      engagementNotes,
       user: context.user
     })
   }

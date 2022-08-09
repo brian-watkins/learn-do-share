@@ -1,30 +1,16 @@
 import { MessageDispatcher } from "./effect"
 
-export const BACKSTAGE_MESSAGE_TYPE = "_backstage"
 
-export interface BackstageMessage<T> {
-  type: typeof BACKSTAGE_MESSAGE_TYPE
-  wrapped: T
-}
-
-export function backstageMessage<T>(wrapped: T): BackstageMessage<T> {
-  return {
-    type: BACKSTAGE_MESSAGE_TYPE,
-    wrapped
-  }
-}
-
-export function handleBackstageMessage(dispatch: MessageDispatcher, message: BackstageMessage<any>) {
+export function handleBackstageMessage(dispatch: MessageDispatcher, _: any, message: any) {
   fetch("/api/backstage", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(message.wrapped)
+    body: JSON.stringify(message)
   }).then((response) => {
     return response.json()
   }).then((responseMessage) => {
     dispatch(responseMessage)
   })
-  dispatch(message.wrapped)
 }

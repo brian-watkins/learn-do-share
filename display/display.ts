@@ -2,13 +2,13 @@ import { Store, Action, applyMiddleware, createStore, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
 import { EffectHandler, effectMiddleware } from "./effect"
-import { BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage } from "./backstage"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
+import { Subscription, UpdateFunction } from "./message"
 
 export interface DisplayConfig<T, M extends Action<any>> {
-  update(state: T, message: M): void
   view(state: T): View
+  subscriptions: Array<Subscription<T, M>>
 }
 
 function getInitialState() {
@@ -16,16 +16,31 @@ function getInitialState() {
 }
 
 export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>, initialState: T): Reducer<T, M> {
+  const handlers = new Map<string, UpdateFunction<T, M>>()
+
+  for (const subscription of display.subscriptions) {
+    if (subscription.update !== undefined) {
+      handlers.set(subscription.messageType, subscription.update)
+    }
+  }
+
   return function (state: T = initialState, message: M): T {
     return produce(state, (draft) => {
-      display.update(draft as T, message)
+      const handler = handlers.get(message.type)
+      if (handler) {
+        handler(draft as T, message)
+      }
     })
   }
 }
 
-function effectHandlers(): Map<string, EffectHandler> {
+function effectHandlers<T, M extends Action<any>>(subscriptions: Array<Subscription<T, M>>): Map<string, EffectHandler> {
   const handlers = new Map<string, EffectHandler>()
-  handlers.set(BACKSTAGE_MESSAGE_TYPE, handleBackstageMessage)
+  for (const subscription of subscriptions) {
+    if (subscription.dispatch != undefined) {
+      handlers.set(subscription.messageType, subscription.dispatch)
+    }
+  }
   handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
   return handlers
 }
@@ -34,7 +49,7 @@ export class AppDisplay<T, M extends Action<any>> {
   private store: Store<T, M>
 
   constructor(private config: DisplayConfig<T, M>, initialState: T = getInitialState()) {
-    this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(effectHandlers())))
+    this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(effectHandlers(config.subscriptions))))
   }
 
   dispatch(message: M) {

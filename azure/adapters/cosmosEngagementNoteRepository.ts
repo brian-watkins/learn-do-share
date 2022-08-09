@@ -1,8 +1,7 @@
 import { User } from "@/api/common/user";
 import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
-import { EngagementNoteContents } from "@/src/engage/engagementNotes";
+import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
 import { LearningArea } from "@/src/engage/learningArea";
-import { EngagementNote } from "@/src/engage/personalizedLearningArea";
 import { CosmosConnection } from "./cosmosConnection";
 
 const NOTES_CONTAINER = "engagement-notes"

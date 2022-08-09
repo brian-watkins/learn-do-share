@@ -1,15 +1,14 @@
 import { behavior, Context, example, step, effect, fact } from "esbehavior"
 import display, { Model } from "@/src/engage/display"
 import { AppDisplay } from "@/display/display"
-import { User } from "@/api/common/user"
 import userEvent from "@testing-library/user-event"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup"
 import { screen } from "@testing-library/dom"
 import { rest, setupWorker, SetupWorkerApi } from "msw"
 import { expect } from "chai"
-import { engagementLevelsRetrieved } from "@/src/engage/personalizedLearningArea"
 import { FakeLearningArea, TestLearningArea } from "./fakes/learningArea"
 import { FakeUser, TestUser } from "./fakes/user"
+import { engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
 
 
 class EngageTestContext {
@@ -56,7 +55,9 @@ class EngageTestContext {
     if (this.user !== null) {
       return {
         type: "personalized",
-        learningArea: { ...this.area, engagementLevels: engagementLevelsRetrieved([]), engagementNotes: [] },
+        learningArea: this.area,
+        engagementLevels: engagementLevelsRetrieved([]),
+        engagementNotes: [],
         user: this.user
       }
     } else {

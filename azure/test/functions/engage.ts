@@ -20,7 +20,8 @@ const adapters: Adapters = {
   learningAreaReader: new HttpLearningAreaReader(),
   engagementPlanReader: engagementPlansRepository,
   engagementPlanWriter: engagementPlansRepository,
-  engagementNoteReader: engagementNotesRepository
+  engagementNoteReader: engagementNotesRepository,
+  engagementNoteWriter: engagementNotesRepository
 }
 
 export default generateEngageFunction(adapters)
