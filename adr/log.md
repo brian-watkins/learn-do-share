@@ -1393,3 +1393,354 @@ technique to suppose that a particular user has already been authenticated.
 This reduces the test speed by at least 3-5 seconds on my laptop, which is close
 to 30%. And in CI the time seems to have gone down by about 12 seconds which,
 again, is close to 30%!
+
+
+### Did we make a mistake with the testing strategy?
+
+We've been following an 'integration heavy' testing strategy. Indeed, basically
+our test suite is just running end-to-end tests of the entire system -- the
+frontend ui and the serverless functions. This is super nice for refactoring --
+there's basically nothing that restricts how we structure the code. BUT we lose
+some ability to control situations during the test. For example, suppose that we
+want to simulate the request to the backstage function taking a while to respond
+so that someone has time to click the button to increase engagement levels
+multiple times ... it's not clear how we would do that. We have control over
+what is in the database (using a local/fake cosmos db) but we don't have
+control over how the app actually attempts to make the call to interact with the
+database ... that is all inside the unit being tested. AND it's doubly difficult
+since we are building and serving up the application and then exercising it from
+the outside via Playwright methods; so the tests don't have any control right
+now over how the frontend talks with the backend.
+
+Basically we've been focusing on happy path cases and that's relatively easy to
+simulate. But now that we want to consider some error cases, it becomes more
+difficult, especially when those errors occur 'within' an area where there is a
+boundary that is not visible to our tests.
+
+So what could we do?
+
+The high-level integration test is still very useful, especially for the tests
+around authentication. But note that we kind of have gone through a certain
+process here: we discovered problems (mainly where we were not able to test some
+config in the function.json file which specified path variables and validation,
+which contained a mistake which was pushed to production). So we made our tests
+even more realistic, by starting the function emulator and the swa emulator and
+running the tests through those.
+
+So **note** if we change our testing strategy, there are some tests that will
+need to remain integration tests or otherwise be tested specifically. For
+example, the fact that we redirect logins to a function that has a route
+parameter specifying the authentication service ... this relies on some routing
+rules in function.json that we want to test. So in this case, either we see that
+clicking the login link generates a certain URL and then have another test that
+says when I follow that URL then I get the right redirect. Or we keep that as an
+integration test.
+
+So what boundaries do we want to introduce?
+
+The obvious one is the boundary between the frontend and the backend ... ie the
+`/api/backstage` endpoint, as well as the endpoints that do the server side
+rendering for the overview and engage pages. But if we introduce that boundary
+in the tests, like if we stub the backstage or something then we have
+to know about all the messages that go back and forth, which is not great.
+
+Another option would be to use the boundary at the adapter layer. So the tests
+know about the LearningAreasReader and the EngagementNoteReader and Writer. And
+the `TestApp` already kind of knows about these so it wouldn't be a huge change.
+Using that, we could control how fast a response to the EngagementLevelsWriter
+(or whatever it is) actually takes. This sounds good but may be tricker than it
+sounds I guess. We need to get the server side rendering working still and
+things like that and we still need to test those adapters.
+
+But we also know that the request to `/api/backstage` can fail. How could we
+possibly test that? Well, if we stick with the pattern where our tests really do
+make a request to an express server where the server side code runs with our
+fake adapters then we could always introduce errors there -- like by not
+starting the server or something. Then our test suite does know about the API
+endpoints but it doesn't really care about anything that passes over them ... we
+leave that up to the code, which we run during the test, and just provide fake
+data via the adapters. We could even slow down or pause processing of the API
+endpoints with this pattern too.
+
+So basically we will need two levels of testing whereas we currently only have
+one. We will have some tests that use the full stack (function emulator and swa
+emulator) as a kind of smoke test (what I would call a smoke test). And then we
+will have the majority of tests running with our test backend. This will
+probably improve the speed of our test suite, if we convert many tests to the
+new style.
+
+Note that our test suite currently takes about 12.3s to run on my laptop.
+
+We could even start by just writing one test in this new style in order to do
+this story (with slow requests to increase engagement level). And then convert
+others later.
+
+Can we consider whether there is an even faster way to run these tests? If, for
+example, we change the way the backstage action works so that it just calls a
+function directly rather than sending an HTTP request? Then we would just need
+to serve the app (with these changes and fake adapters) to Playwright and see
+that it does the right thing. Our tests would still run in node and the app
+would be running in Playwright, we just wouldn't have a test server running as
+well so no network requests during the test.
+
+The even faster way would be to run the tests themselves inside Playwright. But
+then we would not be able to take advantage of Playwright's tools for
+controlling the DOM and we'd have to replace that somehow with custom events or
+testing-library or something.
+
+After all, the `src` of our app does not even know about how backstage messages
+are processed. That's a separate concern and basically in a separate module that
+could have its own test suite. THIS is really the promise of a serverless
+strategy ... doing stuff like this where you are exercising your code without
+worrying about how it is deployed or even operationalized. BUT not sure if we
+can *really* do this because of the server-side rendering we are doing. It would
+be possible to mount the app on the page and then it looks for the results of
+server-side rendering (the initial state) in a particular variable. But this is
+starting to feel a little too much ... and the more we go down this path the
+more we have to worry about things like faking navigation etc which we so
+far haven't even had to think about. -- a lot of the tests actually click a link
+to move from one page to the other and we'd have to somehow fake that, which
+seems like too much.
+
+But probably we want these 'non-end-to-end tests' to maybe test smaller pieces
+of the app? We don't want to have to duplicate a lot of the details for running
+the entire app (like the way the user is passed around, the way the url is
+parsed to figure out the learning area to display, etc).
+
+For this particular story -- disable the increase engagement button -- what
+would we need to test? Basically we would want it to send a message but never
+respond. And then we could observe that the button is disabled. This you could
+do by providing a fake backstage. And then we would just need to change the
+`AppDisplay` object to take an initial state I guess.
+
+The trick though is that you would want to run these tests in Playwright and so
+we would need a different way to run the tests ... basically use vite to serve
+some html page with the proper JS on it to run the tests and output results via
+the console.
+
+...
+
+Ok so we have some 'unit' (component/topic) tests running in Playwright now. But
+we still have a
+few options to consider. We're using vite to serve up our test files and
+Playwright as the browser environment; the output of the test run is streamed
+back to node and printed on the console. We use MockServiceWorker to stub
+requests to the backend -- right now all we need to do is just delay the request
+so that we can test what happens when a particular request is in flight. 
+
+Questions start to come up though: How much should our tests know about the
+implementation? Right now, our tests basically know zero -- just how to run the
+code via azure functions and static web app emulator. This is good but the more
+complex our application gets, the harder it will be to maintain and test all the
+different cases. So the thought, I guess, is to keep things at this level as
+long as you can and then maybe start to drop down to more 'topic' level tests
+(component tests).
+
+But now that we have a topic test, we need to understand what the strong
+boundaries in our application are. Obviously, we've introduced a few: the api
+boundary (/api/backstage) since we are actively mocking that with MSW. The
+AppDisplay object, since that's what we use to create and initialize and mount
+the view. The question is about the Model that we need to pass to the object for
+the initial state.
+
+One option is to simply call the backstage `getInitialState` function during the
+test to generate the initial model and pass that to `AppDisplay` -- we know
+*that* it exists but we don't have to expose the shape of the model to our
+tests. The trick is that `getInitialState` is meant to run inside Node so we
+shouldn't expect that we can necessarily run it in the browser. So we have to
+use a little bit of Playwright magic to pass the proper user and learning area
+down to the Node process where this can run and then pass back up the result.
+This obviously adds some time to the test run.
+
+Another option would be to just accept that our tests should know about the
+Model. And then we just create the initial model 'by hand' and pass it to the
+initial state function. This is obviously faster since no need to jump back and
+forth across the browser/node divide. But it does mean that any time we change
+the model we will have to come in and change these tests, or at least change the
+function that generates this test data. Even though that may sound bad, we still
+do have Typescript to help us keep the shape of the model correct between the
+tests and the code.
+
+This question will come up again once we start considering error cases. Namely,
+do we want to actually have our test generate the error message 'by hand' and
+stub the request to backstage to return it? Or do we want to attempt to rig
+things up so that we somehow call the backstage function with adapters and get
+the response and then use MSW to stub that?
+
+In that case, if we were to generate the error message by hand, then we would
+have two tests: (1) Stub the error response and see that the UI does the right
+thing. (2) Write a test against the backstage function (that runs in Node) to
+show that under certain conditions, we get that error response. What would be
+great is if we could use the same fixture data in both cases so that we are sure
+that there is a situation in which the backstage could return that message.
+
+Then should we do the same set of tests when dealing with the initial state? For
+every distinct initial state object, we write a test for the initial state
+function that shows that we can obtain that initial state, given some state of
+the adapters?
+
+For example, we are introducing a case now that's impossible, namely, you could
+produce a valid Model that is in the Personalized state and has EngagementPlans
+in the Saving state -- and you could produce this as your initial model. That
+would be valid typescript. But it is semantically invalid -- there's no way that
+the initial state function should produce such a value. So for every model we
+use in our test, if we actually write a test to produce it from the initial
+state function, that would show that it's not only syntactically correct
+(because the Typescript compiler tells us that) but that it's also semantically
+correct, because we wrote a test that shows how we can exercise our code to
+produce that very value.
+
+In this way, we're accomplishing the same thing that an integration test would
+do. But we are doing it with two tests and a shared fixture -- if, that is, we
+can actually get this implemented in a nice way.
+
+Here there is a new thought: shared data in tests (kind of like shared behaviors
+but different), where the data shared is in one case part of the setup or input
+to exercising code during a test to a test and in another case the observed
+output of exercising some code during a test. This is kind of like an
+alternative to mocking in a way? But not really. I've kind of thought in the
+past that what mocking does is help you prove that your code uses some
+particular collaborator (or a collaborator of a particular type) so that when
+you write tests for that collaborator you have confidence that they are
+meaningful. But on this view, there's nothing saying that our UI will definitely
+call the correct getInitialState function ... and it would be difficult to prove
+this anyway. But we can prove that given our system there is a way to produce
+that value.
+
+Is this *better* than an integration test? Or worse? Well, you're going to write
+more tests, that's for sure. But you definitely have lots more control over what
+happens in the application. There's a risk that you take this too far. If you
+did this for every component in your UI application, or every function, that
+would basically lock in the structure of the UI and make it difficult to
+refactor.
+
+So it's at least better to start at a high level I think, and only start testing
+particular topics when it becomes clear where the boundaries of your system lie.
+
+So we wrote a unit test for the display which stubs requests to backstage. This
+allows us to simulate when a request to save an engagement level takes a long
+time so that we can prove that the button is disabled in the meantime.
+
+But note that we did need to make a change to the backstage (we had to change
+the initial state to return a type that said the engagement levels had been
+fetched) but we didn't write a unit test for that since if we did it incorrectly
+then the integration tests would fail. And, besides, we aren't using a stubbed
+value for the backstage response in our tests directly in this case. As we start
+to describe other error scenarios we might want to write some internal
+'contract' tests.
+
+So for now we just have a unit test for the display. And the idea is that we
+start with integration tests and do as much as we can with them until we start
+to need more control over the system to describe behaviors. Then we can
+introduce unit tests.
+
+And right now our test knows about our model for the display. And the shape of
+this model did change due to some other work and this broke the test (Typescript
+complained) and so we had to go and fix it. Not ideal but ok for now I guess.
+And that's the downside to a unit test.
+
+
+### Introducing Subscriptions
+
+We noticed that we have an update function in the display that is growing. We
+also have backstage messages -- messages that are tagged within the view code as
+headed to the backend. In order to do the story where we disable a button while
+a request is in flight, we had to handle the same message in the display update
+and in the backstage update. This lead us to consider if there's a better way to
+represent the effects of a message, all in one place.
+
+The `update` function is good for a few reasons: ALL transformations of data
+happen in one place. Theoretically, you could use typescript to ensure that you
+are handling ALL messages (but in practice this doesn't work since redux sends
+its own distinctive messages through the function too).
+
+But there are some downsides too: The update function tends to grow very large.
+It contains unrelated concerns right next to each other. And in our case,
+it doesn't capture the effects of all messages because it only describes how the
+model is being updated -- it doesn't describe other commands like sending a
+request to the backend etc. In fact, our system didn't allow for arbitrary
+commands at this point -- using the backstage middleware was the only thing
+possible.
+
+So, instead of providing an update function, we're switching to providing an
+array of `Subscriptions`. These contain the type of a message to respond to, an
+optional function to update the model based on that message (using immer under
+the hood), and an optional function that allows for dispatching more messages
+based on the message and the state.
+
+This has a few benefits:
+
+1. The backstage middleware is no longer 'hidden'. We can state explicitly that
+a given message, when received, should be send to the backstage. And we can
+still make this very easy since it's just a single function that we can
+reference any time we need to do this. Basically, we've allowed the middleware
+to be specified explicitly.
+2. Given (1) the `AppDisplay` system is now much more flexible when it comes to
+asynchronous message dispatching. We can easily send an HTTP request or set a
+timer or do whatever and then dispatch a message later, as part of a function.
+3. Each `Subscription` is just a record with some fields. So it's easy to map
+these objects to achieve cross-cutting effects via functional composition. For
+example, if the Subscription's update function needs a transformed model, we can
+easily write a function that wraps the subscription and does that.
+4. Each `Subscription` is independent of the others. So we can group and
+organize them in whatever module makes sense and then the main display file can
+just import them and provide them to the display. This allows us to start
+grouping subscriptions with the areas of the code that concern them. So, for
+subscriptions related to engagement notes (creating, deleting), we can put those
+in the same module as the defined messages. And, given (3) we can write the
+update function or dispatch function in this case in terms of a model that is
+specific to that part of the code. If engagement notes only cares about the
+LearningArea and the list of notes, then that's all it needs to specify and
+work with in its update function. This is a little tricky since we still want
+immer to work and for that we need to just mutate the model, but so far it works
+to allow each subscription to specify the projection of the model (basically a
+subset of its properties) that it's concerned with. This will make the code a
+little easier to change as we evolve the model.
+
+Theoretically, we could maybe have achieved the same thing by having our
+old update function call out to functions in other modules, but the real benefit
+we've introduced here is the ability to define *both* an update to the model
+*and* an asychronous action, given one message. This is more like what Elm does.
+Vue allows both of these to be defined, but they are done separately. Now we can
+define these things together in one place. And the functional nature allows us
+to use other functions to enhance subscriptions or make them easy to generate.
+
+Introducing this concept allowed us to do a major reorganization of the code.
+And luckily our tests supported that change with no problem -- we had to change
+a few imports in the test (which is maybe a smell) and the unit test did break
+because the shape of the model changed. But otherwise, no need to update any
+tests. We're now trying to move to organize the code into higher-level modules.
+So the engage page has 'engagementNotes' and 'engagementPlans' -- and these are
+directories that contain files with the types, view function, and array of
+subscriptions. So the main display file just imports these, constructs the high
+level view and configures the display appropriately. Hopefully this will make
+the code easier to understand.
+
+We want to continue this pattern with the backstage as well. So, we should move
+away from the model of having one `update` function and toward composable
+handlers for particular messages. That way, we could actually put the code that
+handles the backstage logic *together* with the other code related to that
+capability. So the `engagementNotes` module could contain the types, the view
+code, the display logic, and the backstage logic, all in one place. We would
+still need to have separate functions for code that runs in the browser and code
+that runs on the server (so that tree-shaking works effectively), but we are
+getting close to blurring that line, with the hope that this makes the code
+easier to reason about.
+
+Because we are now getting to a world where each capability could be like a
+little full-stack program. We can do this first of all because we are using one
+programming language across the entire stack. But second of all because
+esmodules allows us to do tree-shaking. We could even have all this in the very
+same file if we wanted and esbuild should be able to still bundle everything
+appropriately (ie code for the browser would not have any node dependencies
+etc). And third of all because we are taking a *serverless* approach to our
+source code. This means we basically end up with a set of functions in the
+source code that are exposed and are called by whatever 'harness' actually
+deploys them.
+
+Can we organize our app into *little programs*? And does that make our larger
+program easier to reason about? The trick is always hoping that you get the
+decomposition correct. But what we're able to do here is bring together all the
+different layers associated with a decomposed area of the code. We're able to
+organize the source code *vertically* instead of by layers (ie here's the front
+end source code, here's the api source code etc)
