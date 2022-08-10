@@ -1,7 +1,7 @@
-import { handleBackstageMessage } from "@/display/backstage"
 import { Subscription, subscribe } from "@/display/message"
 import { LearningArea } from "../learningArea"
 import { EngagementNote, EngagementNoteContents } from "."
+import { sendBackstage } from "@/api/backstage/adapter"
 
 export interface NoteModel {
   learningArea: LearningArea,
@@ -10,7 +10,7 @@ export interface NoteModel {
 
 export const subscriptions: Array<Subscription<NoteModel, any>> = [
   subscribe("engagementNoteCreationRequested", {
-    do: handleBackstageMessage
+    do: sendBackstage
   }),
   subscribe("engagementNotePersisted", {
     update: (model, action) => {
@@ -18,7 +18,7 @@ export const subscriptions: Array<Subscription<NoteModel, any>> = [
     }
   }),
   subscribe("engagementNoteDeleteRequested", {
-    do: handleBackstageMessage
+    do: sendBackstage
   }),
   subscribe("engagementNoteDeleted", {
     update: (model, action) => {

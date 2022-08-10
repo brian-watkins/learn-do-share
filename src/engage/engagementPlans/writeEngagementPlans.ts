@@ -1,8 +1,8 @@
 import { User } from "@/api/common/user"
-import { handleBackstageMessage } from "@/display/backstage"
 import { Subscription, subscribe } from "@/display/message"
 import { LearningArea } from "../learningArea"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "."
+import { sendBackstage } from "@/api/backstage/adapter"
 
 
 export interface PlansModel {
@@ -12,7 +12,7 @@ export interface PlansModel {
 
 export const subscriptions: Array<Subscription<PlansModel, any>> = [
   subscribe("writeEngagementPlan", {
-    do: handleBackstageMessage,
+    do: sendBackstage,
     update: (model) => {
       model.engagementLevels = engagementLevelsSaving(model.engagementLevels.levels)
     }
@@ -25,7 +25,7 @@ export const subscriptions: Array<Subscription<PlansModel, any>> = [
     }
   }),
   subscribe("deleteEngagementPlans", {
-    do: handleBackstageMessage
+    do: sendBackstage
   }),
   subscribe("engagementPlansDeleted", {
     update: (model) => {

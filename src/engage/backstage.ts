@@ -1,4 +1,4 @@
-import { Backstage } from "@/api/backstage/backstage.js";
+import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
 import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/writeEngagementPlans.js";
 import { Model } from "./display.js";
