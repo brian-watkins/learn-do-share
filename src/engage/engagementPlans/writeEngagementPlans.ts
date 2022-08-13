@@ -1,5 +1,5 @@
 import { User } from "@/api/common/user"
-import { Subscription, subscribe } from "@/display/message"
+import { subscribe, Subscription } from "@/display/message"
 import { LearningArea } from "../learningArea"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "."
 import { sendBackstage } from "@/api/backstage/adapter"
@@ -10,7 +10,7 @@ export interface PlansModel {
   engagementLevels: EngagementLevels
 }
 
-export const subscriptions: Array<Subscription<PlansModel, any>> = [
+export const subscriptions: Array<Subscription<PlansModel, EngagementPlanMessages>> = [
   subscribe("writeEngagementPlan", {
     do: sendBackstage,
     update: (model) => {
@@ -38,6 +38,12 @@ export interface EngagementPlanWriter {
   write(user: User, plan: EngagementPlan): Promise<EngagementPlan>
   deleteAll(user: User, learningArea: string): Promise<void>
 }
+
+export type EngagementPlanMessages
+  = WriteEngagementPlan
+  | DeleteEngagementPlans
+  | EngagementPlanPersisted
+  | EngagementPlansDeleted
 
 export interface WriteEngagementPlan {
   type: "writeEngagementPlan"

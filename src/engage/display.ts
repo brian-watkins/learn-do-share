@@ -6,9 +6,9 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { subscriptions as engagementNotesSubscriptions } from "./engagementNotes/writeEngagementNote"
+import { EngagementNoteMessages, subscriptions as engagementNotesSubscriptions } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
-import { subscriptions as engagementPlansSubscriptions } from "./engagementPlans/writeEngagementPlans"
+import { EngagementPlanMessages, subscriptions as engagementPlansSubscriptions } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote } from "./engagementNotes"
 import { EngagementLevels } from "./engagementPlans"
 import { Subscription } from "@/display/message"
@@ -96,7 +96,9 @@ function learningAreasLink(): Html.View {
   return linkBox("/", "All Learning Areas")
 }
 
-const display: DisplayConfig<Model, any> = {
+type Messages = EngagementNoteMessages | EngagementPlanMessages
+
+const display: DisplayConfig<Model, Messages> = {
   view,
   subscriptions: [
     ...engagementPlansSubscriptions.map(withPersonalizedModel),
@@ -105,19 +107,25 @@ const display: DisplayConfig<Model, any> = {
 }
 
 function withPersonalizedModel(subscription: Subscription<Personalized, any>): Subscription<Model, any> {
-  return {
-    messageType: subscription.messageType,
-    update: (state, message) => {
+  const handler: Subscription<Model, any> = { messageType: subscription.messageType }
+
+  if (subscription.update) {
+    handler.update = function (state, message) {
       if (state.type === "personalized") {
         subscription.update?.(state, message)
       }
-    },
-    dispatch: (dispatch, state, message) => {
+    }
+  }
+
+  if (subscription.dispatch) {
+    handler.dispatch = function (dispatch, state, message) {
       if (state.type === "personalized") {
         subscription.dispatch?.(dispatch, state, message)
       }
     }
   }
+
+  return handler
 }
 
 export default display

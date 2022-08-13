@@ -6,7 +6,7 @@ export interface Backstage<T> {
   messageHandler: MessageHandler<T>
 }
 
-export function sendBackstage(dispatch: (message: any) => void, _: any, message: any) {
+export function sendBackstage<T, M extends { type: string }>(dispatch: (message: M) => void, _: T, message: M) {
   fetch("/api/backstage", {
     method: "POST",
     headers: {

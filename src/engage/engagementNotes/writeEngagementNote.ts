@@ -8,7 +8,7 @@ export interface NoteModel {
   engagementNotes: Array<EngagementNote>
 }
 
-export const subscriptions: Array<Subscription<NoteModel, any>> = [
+export const subscriptions: Array<Subscription<NoteModel, EngagementNoteMessages>> = [
   subscribe("engagementNoteCreationRequested", {
     do: sendBackstage
   }),
@@ -26,6 +26,12 @@ export const subscriptions: Array<Subscription<NoteModel, any>> = [
     }
   })
 ]
+
+export type EngagementNoteMessages
+  = EngagementNoteCreationRequested
+  | EngagementNotePersisted
+  | EngagementNoteDeleteRequested
+  | EngagementNoteDeleted
 
 export interface EngagementNoteCreationRequested {
   type: "engagementNoteCreationRequested"
