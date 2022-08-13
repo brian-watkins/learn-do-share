@@ -1,4 +1,4 @@
-import { Subscription, subscribe } from "@/display/message"
+import { Subscription, subscribe } from "@/display/subscription"
 import { LearningArea } from "../learningArea"
 import { EngagementNote, EngagementNoteContents } from "."
 import { sendBackstage } from "@/api/backstage/adapter"

@@ -11,7 +11,7 @@ import { view as engagementPlansView } from "./engagementPlans/view"
 import { EngagementPlanMessages, subscriptions as engagementPlansSubscriptions } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote } from "./engagementNotes"
 import { EngagementLevels } from "./engagementPlans"
-import { Subscription } from "@/display/message"
+import { Subscription } from "@/display/subscription"
 
 export interface Informative {
   type: "informative"

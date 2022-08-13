@@ -1,5 +1,5 @@
 import { User } from "@/api/common/user"
-import { subscribe, Subscription } from "@/display/message"
+import { subscribe, Subscription } from "@/display/subscription"
 import { LearningArea } from "../learningArea"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "."
 import { sendBackstage } from "@/api/backstage/adapter"

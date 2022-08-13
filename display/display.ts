@@ -4,7 +4,7 @@ import { produce } from "immer"
 import { EffectHandler, effectMiddleware } from "./effect"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
-import { Subscription, UpdateFunction } from "./message"
+import { Subscription, UpdateFunction } from "./subscription"
 
 export interface DisplayConfig<T, M extends Action<any>> {
   view(state: T): View
@@ -26,10 +26,7 @@ export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T
 
   return function (state: T = initialState, message: M): T {
     return produce(state, (draft) => {
-      const handler = handlers.get(message.type)
-      if (handler) {
-        handler(draft as T, message)
-      }
+      handlers.get(message.type)?.(draft as T, message)
     })
   }
 }
