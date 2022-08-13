@@ -1744,3 +1744,84 @@ decomposition correct. But what we're able to do here is bring together all the
 different layers associated with a decomposed area of the code. We're able to
 organize the source code *vertically* instead of by layers (ie here's the front
 end source code, here's the api source code etc)
+
+
+### On speed in the tests
+
+We noticed that testing-library/user-event can be quite slow. For example, when
+typing a long string of text. We see that typing 400 characters in a textbox
+during a test takes about 2.2s. Now when we do something similar in an
+integration test, where playwright is actually controlling the browser, typing
+the same 400 characters takes 1.2s. So interesting to note that maybe Playwright
+is actually faster than whatever the user-event library is doing to dispatch
+events programatically in a way that simulates user behavior.
+
+It would be really cool if there were a pattern where we ran unit tests in the
+browser but had playwright control things. Right now if we think about unit
+tests, we're thinking about mounting something via javascript ourselves and then
+simulating dom events and using testing library to select things etc.
+
+During the integration tests, we are loading the app via a webserver and then
+controling it via Playwright. When we start a new test, we create a new browser
+window basically.
+
+Not sure if there's a way we could combine these approaches, where we basically
+load a page with some javascript on it for the test but then do the `perform`
+steps and the `observe` steps via playwright commands. Would also have to figure
+out how to handle things like stubbed http requests -- could we still setup MSW
+somehow? What we need is basically 'component-level testing' in playwright.
+
+Playwright does have experimental support for component testing. It does some
+crazy stuff where it actually parses the test files and tries to determine from
+the imports and calls to a `mount` function which things are actually
+components. It then somehow bundles that code only using vite and serves it in
+the browser then selects the right component at the right time. Pretty wild!
+
+They have to do that in order to be completely generic about everything I guess.
+But for us, maybe we just serve up the `TestContext` object or something like a
+`DisplayContext` object that exposes functions that can be called from each test
+to setup and mount a component. We could expose this DisplayContext object on
+the window and then just use Playwright to call functions on it at the beginning
+of a test, just like we would call functions directly on it during the setup
+phase. And then, all actions or observations occur via normal playwright
+commands. I don't think that would be too hard ... The only trick is that we can
+only pass JSON across the boundary as an argument to the DisplayContext
+functions I bet. So for stubbing requests (which we should be able to do with
+MSW etc) we couldn't really call the MSW functions directly, we'd need to pass
+over strings, and JSON objects etc to define the request and response. I think
+this actually is doable! And then we could reuse the nice DSL we've created so
+far around the Playwright API.
+
+Note that we should do this because we want our tests to be as fast as possible.
+And we have some limited evidence that actually controlling the browser during a
+test via Playwright is faster (potentially much faster) than using
+testing-library userEvent.
+
+
+### Improving Type Safety
+
+Before messing around with the tests more, I noticed that the new Subscription
+types were only working because we were using the `any` type for messages. But
+we should be able to use the Typescript compiler to give us better feedback as
+we are writing code so that in a particular subscription, for example, the
+handler functions expect the right type of message given the string we're using
+to indicate the message type -- AND that message type should be checked against
+the list of valid message types, assuming we're using a discriminated union to
+group our messages together.
+
+After a lot of experimentation it turns out that we can do this. There's little
+change to the code -- just adding the union type for the messages and specifying
+that in the type signature. We changed the `subscribe` function to use some more
+advanced Typescript features. We use an indexed type to refer to the type of the
+`type` field, which in a discriminated union turns out to be the union of all
+the message types (since we use string literal types for those). We also use the
+`Extract` type to allow us to narrow the union type of potential messages to
+the concrete type of message (in the discriminated union) that is specifyied by
+the passed in message type field.
+
+And it works! Now when we add a subscription, as long as we provide the overall
+type (specifying the model type and the general type of message) then when we
+provide the string indicating a particular message type, the handlers we specify
+will recognize that and give us the proper autocompletion etc in the editor.
+Pretty cool!
+
