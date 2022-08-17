@@ -1,14 +1,14 @@
 import { Store, Action, applyMiddleware, createStore, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
-import { EffectHandler, effectMiddleware, MessageDispatcher } from "./effect"
+import { EffectHandler, effectMiddleware, Processor } from "./effect"
 import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
 
 export interface DisplayConfig<T, M extends Action<any>> {
   view(state: T): View
-  update: (state: T, message: M) => void,
-  process: (dispatch: MessageDispatcher, state: T, message: M) => void
+  update?: (state: T, message: M) => void,
+  process?: Processor
 }
 
 function getInitialState() {
@@ -16,9 +16,15 @@ function getInitialState() {
 }
 
 export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>, initialState: T): Reducer<T, M> {
+  if (display.update === undefined) {
+    return function(state: T = initialState, _: M): T {
+      return state
+    }
+  }
+
   return function (state: T = initialState, message: M): T {
     return produce(state, (draft) => {
-      display.update(draft as T, message)
+      display.update!(draft as T, message)
     })
   }
 }

@@ -99,7 +99,7 @@ function learningAreasLink(): Html.View {
 
 type Messages = EngagementNoteMessages | EngagementPlanMessages
 
-function process(dispatch: MessageDispatcher, model: Model, message: Messages) {
+function process(forward: () => void, dispatch: MessageDispatcher, model: Model, message: Messages) {
   switch (message.type) {
     case "writeEngagementPlan":
       sendBackstage(dispatch, model, message)
@@ -110,6 +110,8 @@ function process(dispatch: MessageDispatcher, model: Model, message: Messages) {
     case "engagementNoteDeleteRequested":
       sendBackstage(dispatch, model, message)
       break
+    default:
+      forward()
   }
 }
 
@@ -140,7 +142,7 @@ function onlyPersonalized(update: (model: Personalized, message: Messages) => vo
     if (model.type === "informative") {
       return
     }
-  
+
     update(model, message)
   }
 }
