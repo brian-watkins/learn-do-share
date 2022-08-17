@@ -12,7 +12,7 @@ import { EngagementPlanMessages, engagementPlanWriteInProgress } from "./engagem
 import { EngagementNote } from "./engagementNotes"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving } from "./engagementPlans"
 import { sendBackstage } from "@/api/backstage/adapter"
-import { MessageDispatcher } from "@/display/effect"
+import { MessageDispatcher, MessageForwarder } from "@/display/effect"
 
 export interface Informative {
   type: "informative"
@@ -99,7 +99,7 @@ function learningAreasLink(): Html.View {
 
 type Messages = EngagementNoteMessages | EngagementPlanMessages
 
-function process(forward: () => void, dispatch: MessageDispatcher, model: Model, message: Messages) {
+function process(forward: MessageForwarder, dispatch: MessageDispatcher, model: Model, message: Messages) {
   switch (message.type) {
     case "writeEngagementPlan":
       sendBackstage(dispatch, model, message)

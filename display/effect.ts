@@ -1,8 +1,9 @@
 export type MessageDispatcher = (message: any) => void
+export type MessageForwarder = () => void
 
 export type EffectHandler = (dispatch: MessageDispatcher, state: any, message: any) => void
 
-export type Processor = (forward: () => void, dispatch: MessageDispatcher, state: any, message: any) => void
+export type Processor = (forward: MessageForwarder, dispatch: MessageDispatcher, state: any, message: any) => void
 
 export const effectMiddleware = (process: Processor | undefined, effectHandlers: Map<string,EffectHandler>) => (store: any) => (next: any) => (message: any) => {
   const handler = effectHandlers.get(message.type)
