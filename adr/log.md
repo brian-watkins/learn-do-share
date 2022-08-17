@@ -1825,3 +1825,148 @@ provide the string indicating a particular message type, the handlers we specify
 will recognize that and give us the proper autocompletion etc in the editor.
 Pretty cool!
 
+BUT ... actually it doesn't work in certain ways. For instance, if I want to use
+this to be able to break up the app into smaller modules, each with their own
+subscriptions or commands, then when I combine them back together I get type
+errors. One way to avoid this is to have all the messages inherit from one main
+type, and all the subscriptions and commands would just reference that type
+in their type signature. This is the easiest way forward but it wouldn't narrow
+types in the right way when working within a module (you would see all types
+across the app for autocompletion), and each module would need to import this
+parent type from somewhere which makes the modules dependent on the parent which
+isn't that great.
+
+Another option we could explore is what Elm does ... basically create a new type
+that wraps the module type. What would that look like for us? We'd create the
+top-level type and import the module type. But we need something to basically
+unwrap the parent type. I guess it has to be a subscription that unwraps and
+passes to the child subscriptions. So the hope would be that we could do the
+same thing as Elm, but since we are in javascript world, we can actually reduce
+the boilerplate somewhat. Maybe. We'd also need to wrap the incoming messages
+too. We could either do that at the message level, by providing a wrapper
+function or at the view level, by adding a custom element that listens for
+events, wraps them, and sends them on. It might be easier to just try at the
+message level for now.
+
+It turns out that wrapping the messages is harder than it seems. At least to
+wrap the messages in such a way that there is a function that hides all the
+boilerplate one would need to write to unwrap each message.
+
+We could just try leaving the update function the same and just adding some
+middleware that lets us subscribe to dispatch messages on certain events. But
+then there would be two places to look to figure out what happens when a message
+occurs. Plus then it's not clear what would come first -- the running of the
+dispatch function or the update of the model (and thus the update of the view).
+
+We could go back to wrapping the message with `BackstageMessage` to signal that
+it should go to the backend ... but then the fact that a message should go to
+the backend is now connected with how it's produced (via the view) which seems
+bad. If there are multiple ways to produce a message, I now have to remember to
+wrap all of them with `BackstageMessage`. (there are fixes for this but still)
+
+What if the message itself defined a command that should be executed. Like
+`WriteEngagementNote` had a field called `command` that took a function of
+dispatcher and the current state. And this function (if it existed) would get
+executed upon the middleware. So basically when you describe the message, you
+would also say, this message will trigger this dispatcher function
+(sendToBackstage for example), whenever it is processed. And we would just need
+to know that this would happen prior to any view updates (at least the original
+invocation of the dispatcher function). The dispatcher would have access to this
+message's attributes and the state, and be given a dispatch function to send any
+new messages.
+
+One problem with this though is that messages need to be serializable I think.
+Or it ends up with weird circular stuff. Like the sendToBackstage function would
+have to send the message itself to the backend, which feels kind of weird. It
+feels like the model is for the Message to be just data, and this would break
+that.
+
+But how different is this from the original strategy, where messages that needed
+to go to the backstage were just wrapped in a special message that signaled this
+command should run? I do like having the ability to register a dispatcher
+middleware somehow though so sending to backstage is a concern of our app and
+not the Display module.
+
+It's just a little weird though. To find out what something does, you have to
+look at its type. If it's a `BackstageMessage<WriteEngagementPlan>` then you
+know it gets sent to the backstage first. And there's no place to really see
+this besides looking through the view to find occurrences of the message you are
+concerned with. Whereas with a subscription, the message is just raw data and
+then you subscribe and then you tell it what you want to do with that data. The
+wrapping method blurs those lines so that the data now encodes what logic should
+happen to it. Not sure if that's good or bad.
+
+But of course you could just have 'custom middleware' for each message you care
+about triggering a command for. But then we get into the problem again about
+wanting to have type safety for the function which then leads to the problem
+we've been struggling with. Unless maybe there's a way to use a phantom type.
+And we've still got two places to look to understand what happens with a
+message.
+
+We could do something REALLY crazy where we just have an update function that
+has arguments of dispatch function, state, and message. And somehow the return
+value of this function is the updated state which gets passed to redux in a new
+message that just says 'replace the current state with my value'. Basically
+moving the state update into the middleware, which is probably really bad.
+
+What I really want is to define a pipeline for each message. But I want to
+somehow avoid having to specify the message type AND the discriminant ... I
+don't know if that's possible.
+
+Actually, here's another thought -- that kind of is inspired by my dim
+recollection of what redux-saga does. Basically, get rid of the assumption that
+any message can do one (or both) of two things: trigger a command or modify the
+model. Instead, any message can only do one or the other. So, when we define
+some middleware, there is no `next` function exposed to pass that message onto
+the main reducer. If you want to do something like update the model while some
+HTTP request is in progress, then in the middleware function you have to
+dispatch a *new* message like `coolStuff.inProgress`. Then, if you need to
+figure out what a message is doing you still might need to look in two places
+(the reducer or the middleware definition), but you will only find it in one
+place or the other. If you think about it, this is basiaclly what Vuex does as
+well, by dividing things into actions or mutations. And, I think redux-saga can
+*only* dispatch new messages (ie, not pass on a message). This is a little more
+verbose but in some sense it's just more precise about what events are happening
+in the system -- you aren't overloading messages with significance to accomplish
+multiple things.
+
+So there's multiple problems here that we are trying to solve:
+
+1. How do I clarify what happens when a message is received. I don't want to
+have to dig into the view to find this.
+
+2. How can I decompose the descriptions of what happens when a message is
+received into modules where they can be grouped with the relevant messages. Both
+to control some of the boilerplate code that gets generated, and to make it
+easier to find things. The main problem this leads to is how to group things
+back together while maintaining some level of type safety. (ie without resorting
+to the use of `any`)
+
+It could be that (2) is a problem that we shouldn't try to solve, or a problem
+that, if solved, makes things more complicated and worse. But (1) definitely
+seems important to solve.
+
+So now it seems like we need two things: One is a `command` or `dispatcher`
+or `action` or `generator` and another is an `updater` or `mutation` or
+`reducer`. or an `Effect` and a `Change`.
+
+Actually, I thought about this more and I decided to remove the concept of a
+Subscription. Now there are just two functions: `update` and `process`. The
+update function will change the state based on a message. The process function
+can dispatch new messages based on a message.
+
+One downside right now is that the process function processes every single
+message and passes every single message onto the update function. What I would
+like to happen is that the process function only deals with certain messages,
+and when it does it does not pass those messages onto the update function. Only
+messages that are not processed should be handled by the update function. I'm
+not sure that this is very easy to do though, so for now we have this extra
+handling of messages. It could be ok to allow messages to flow through the
+process function to the update function all the time. But to simplify things,
+I'd like to prevent the possibility of a message being used in a process
+function /and/ used in an update function.
+
+For, if we handle a given message in one place or the other, then this allows us
+to clarify better what happens when a message is received (ie #1 from above).
+And to handle #2 from above, we should be able to use the strategy of wrapping
+and unwrapping messages.
