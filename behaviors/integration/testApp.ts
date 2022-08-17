@@ -19,8 +19,8 @@ export function testContext(): Context<TestContext> {
     init: async () => {
       return new TestContext()
     },
-    teardown: async (testApp) => {
-      await testApp.stop()
+    teardown: async (testContext) => {
+      await testContext.stop()
     }
   }
 }
