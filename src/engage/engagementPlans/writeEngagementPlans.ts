@@ -1,38 +1,7 @@
 import { User } from "@/api/common/user"
-import { subscribe, Subscription } from "@/display/subscription"
 import { LearningArea } from "../learningArea"
-import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "."
-import { sendBackstage } from "@/api/backstage/adapter"
+import { EngagementPlan } from "."
 
-
-export interface PlansModel {
-  learningArea: LearningArea
-  engagementLevels: EngagementLevels
-}
-
-export const subscriptions: Array<Subscription<PlansModel, EngagementPlanMessages>> = [
-  subscribe("writeEngagementPlan", {
-    do: sendBackstage,
-    update: (model) => {
-      model.engagementLevels = engagementLevelsSaving(model.engagementLevels.levels)
-    }
-  }),
-  subscribe("engagementPlanPersisted", {
-    update: (model, action) => {
-      const levels = model.engagementLevels.levels
-      levels.push(action.plan.level)
-      model.engagementLevels = engagementLevelsRetrieved(levels)
-    }
-  }),
-  subscribe("deleteEngagementPlans", {
-    do: sendBackstage
-  }),
-  subscribe("engagementPlansDeleted", {
-    update: (model) => {
-      model.engagementLevels = engagementLevelsRetrieved([])
-    }
-  })
-]
 
 export interface EngagementPlanWriter {
   write(user: User, plan: EngagementPlan): Promise<EngagementPlan>
@@ -41,6 +10,7 @@ export interface EngagementPlanWriter {
 
 export type EngagementPlanMessages
   = WriteEngagementPlan
+  | EngagementPlanWriteInProgress
   | DeleteEngagementPlans
   | EngagementPlanPersisted
   | EngagementPlansDeleted
@@ -54,6 +24,16 @@ export function writeEngagementPlan(plan: EngagementPlan): WriteEngagementPlan {
   return {
     type: "writeEngagementPlan",
     plan
+  }
+}
+
+export interface EngagementPlanWriteInProgress {
+  type: "engagementPlanWriteInProgress"
+}
+
+export function engagementPlanWriteInProgress(): EngagementPlanWriteInProgress {
+  return {
+    type: "engagementPlanWriteInProgress"
   }
 }
 

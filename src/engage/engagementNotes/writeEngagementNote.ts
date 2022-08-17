@@ -1,31 +1,5 @@
-import { Subscription, subscribe } from "@/display/subscription"
 import { LearningArea } from "../learningArea"
 import { EngagementNote, EngagementNoteContents } from "."
-import { sendBackstage } from "@/api/backstage/adapter"
-
-export interface NoteModel {
-  learningArea: LearningArea,
-  engagementNotes: Array<EngagementNote>
-}
-
-export const subscriptions: Array<Subscription<NoteModel, EngagementNoteMessages>> = [
-  subscribe("engagementNoteCreationRequested", {
-    do: sendBackstage
-  }),
-  subscribe("engagementNotePersisted", {
-    update: (model, action) => {
-      model.engagementNotes.unshift(action.note)      
-    }
-  }),
-  subscribe("engagementNoteDeleteRequested", {
-    do: sendBackstage
-  }),
-  subscribe("engagementNoteDeleted", {
-    update: (model, action) => {
-      model.engagementNotes = model.engagementNotes.filter(note => note.id !== action.note.id)
-    }
-  })
-]
 
 export type EngagementNoteMessages
   = EngagementNoteCreationRequested

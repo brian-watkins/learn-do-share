@@ -78,7 +78,8 @@ export function learningAreasPracticeView(): Html.ViewChild {
 
 const display: DisplayConfig<AppModel, never> = {
   view,
-  subscriptions: []
+  update: () => {},
+  process: () => {}
 }
 
 export default display
