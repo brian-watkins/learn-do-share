@@ -3,10 +3,13 @@ import { User } from "@/api/common/user"
 import { Adapters, EngageContext } from "@/src/engage/backstage"
 import { Model } from "@/src/engage/display"
 import { LearningArea } from "@/src/engage/learningArea"
+import { EngageTestContext } from "./engageTestContext"
+import { TestLearningArea } from "./fakes/learningArea"
 
 export declare global {
   interface Window {
-    esbehavior_run(): Promise<Summary>
+    createEngageTestContext(area: TestLearningArea): EngageTestContext
+    _testContext: EngageTestContext
   }
 
   const __IS_DEBUG__: boolean

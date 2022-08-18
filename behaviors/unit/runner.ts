@@ -1,6 +1,8 @@
+import { validate } from "esbehavior";
 import { chromium } from "playwright";
 import { createServer } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths"
+import engageBehavior from "./engage.behavior";
 
 export function isDebug(): boolean {
   return process.env["DEBUG"] !== undefined
@@ -34,11 +36,13 @@ const page = await browser.newPage()
 page.on("console", console.log)
 page.on("pageerror", console.log)
 
-// load the tests
+// load the TestContext
 await page.goto("http://localhost:7170/behaviors/unit/index.html")
 
 // run the tests
-const summary = await page.evaluate(() => { return window.esbehavior_run() })
+const summary = await validate([
+  engageBehavior(page)
+])
 
 if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1

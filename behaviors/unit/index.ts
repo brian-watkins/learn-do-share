@@ -1,8 +1,6 @@
-import { validate } from "esbehavior"
-import engageBehavior from "./engage.behavior"
+import { EngageTestContext } from "./engageTestContext"
+import { TestLearningArea } from "./fakes/learningArea"
 
-window.esbehavior_run = () => {
-  return validate([
-    engageBehavior
-  ])
+window.createEngageTestContext = (area: TestLearningArea) => {
+  return new EngageTestContext(area)
 }
