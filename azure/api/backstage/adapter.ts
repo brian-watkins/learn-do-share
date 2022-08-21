@@ -35,7 +35,6 @@ export function sendBackstage<T extends { type: string }, M extends { type: stri
     },
     body: JSON.stringify(message)
   }).then((response) => {
-    console.log("Response status", response.ok, response.status)
     if (response.ok) {
       return response.json()
     } else {
