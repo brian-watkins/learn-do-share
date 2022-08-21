@@ -24,7 +24,7 @@ export default (page: Page) =>
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
-      .description("when a request to backstage results in a server error")
+      .description("when the engagement plan request results in a server error")
       .script({
         suppose: [
           backstageRequestsFailDueToServerError(),
@@ -40,7 +40,7 @@ export default (page: Page) =>
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
-      .description("when a request to backstage results in network error")
+      .description("when the engagement plan request results in network error")
       .script({
         suppose: [
           backstageRequestsFailDueToNetworkError(),
