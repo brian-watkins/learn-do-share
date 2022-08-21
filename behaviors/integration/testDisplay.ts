@@ -1,4 +1,5 @@
 import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
+import { waitForRequestsToComplete } from "../helpers/displayHelpers"
 import { Page } from "playwright"
 import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser"
 
@@ -32,7 +33,7 @@ export class TestDisplay {
   }
 
   async waitForRequestsToComplete(): Promise<void> {
-    await this.page?.waitForResponse(() => true, { timeout: 1000 })
+    await waitForRequestsToComplete(this.page!)
   }
 
   selectElementWithText(text: string): DisplayElement {
