@@ -68,5 +68,33 @@ export default (page: Page) =>
             expect(disabledValue).to.equal(false)
           })
         ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when a request to backstage results in network error")
+      .script({
+        suppose: [
+          fact("requests to backstage fail with a network error", async (testContext) => {
+            await testContext.stubBackstageResponse("", { networkError: true })
+          }),
+          fact("someone is logged in", async (testContext) => {
+            await testContext.withUser(FakeUser("fun-person@email.com"))
+          })
+        ],
+        perform: [
+          step("visit the learning area page", async (testContext) => {
+            await testContext.start()
+          }),
+          step("click the increase engagement button", async (testContext) => {
+            await testContext.selectElementWithText("I'm ready to learn!")
+              .click()
+          })
+        ],
+        observe: [
+          effect("the increase engagement button is enabled", async (testContext) => {
+            const disabledValue = await testContext.selectElementWithText("I'm ready to learn!")
+              .isDisabled()
+            expect(disabledValue).to.equal(false)
+          })
+        ]
       })
   ])

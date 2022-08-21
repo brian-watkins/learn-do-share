@@ -8,7 +8,8 @@ import { rest, SetupWorkerApi } from "msw"
 
 export interface BackstageResponseOptions {
   status?: number
-  delay?: number | "infinite"
+  delay?: number | "infinite",
+  networkError?: boolean
 }
 
 export class EngageTestContext {
@@ -35,6 +36,9 @@ export class EngageTestContext {
   stubBackstageResponse(response: any, options: BackstageResponseOptions) {
     this.handlers.push(
       rest.post("/api/backstage", async (_, res, ctx) => {
+        if (options.networkError) {
+          return res.networkError("Unable to connect!")
+        }
         const transformers = [
           ctx.status(options.status ?? 200),
           ctx.json(response)

@@ -8,7 +8,8 @@ export interface Backstage<T> {
 }
 
 export enum BackstageError {
-  "Failure"
+  "Failure",
+  "NetworkError"
 }
 
 export function getBackstageResult<T>(message: { type: string }): Promise<Result<T, BackstageError>> {
@@ -24,6 +25,8 @@ export function getBackstageResult<T>(message: { type: string }): Promise<Result
     } else {
       return errorResult(BackstageError.Failure)
     }
+  }).catch(() => {
+    return errorResult(BackstageError.NetworkError)
   })
 }
 
