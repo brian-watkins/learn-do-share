@@ -8,7 +8,7 @@ export async function getServiceWorker(): Promise<SetupWorkerApi> {
 
     await worker.start({
       serviceWorker: {
-        url: "/behaviors/unit/mockServiceWorker.js",
+        url: "/behaviors/unit/display/mockServiceWorker.js",
         options: {
           scope: "/"
         }

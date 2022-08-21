@@ -1,5 +1,5 @@
 import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
-import { waitForRequestsToComplete } from "../helpers/displayHelpers"
+import { waitForRequestsToComplete } from "../../helpers/displayHelpers"
 import { Context } from "esbehavior"
 import { Page } from "playwright"
 import { BackstageResponseOptions } from "./engageTestContext"

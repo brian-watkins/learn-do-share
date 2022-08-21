@@ -37,7 +37,7 @@ page.on("console", console.log)
 page.on("pageerror", console.log)
 
 // load the TestContext
-await page.goto("http://localhost:7170/behaviors/unit/index.html")
+await page.goto("http://localhost:7170/behaviors/unit/display/index.html")
 
 // run the tests
 const summary = await validate([
