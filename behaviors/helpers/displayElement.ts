@@ -42,6 +42,10 @@ export class DisplayElement {
     return true
   }
 
+  async isDisabled(): Promise<boolean> {
+    return this.locator.first().isDisabled()
+  }
+
   async text(): Promise<string | null> {
     return this.locator.first().innerText({ timeout: 1000 })
   }

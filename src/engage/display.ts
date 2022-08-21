@@ -8,11 +8,12 @@ import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
 import { EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
-import { EngagementPlanMessages, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
+import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote } from "./engagementNotes"
-import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving } from "./engagementPlans"
-import { sendBackstage } from "@/api/backstage/adapter"
+import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "./engagementPlans"
+import { BackstageError, getBackstageResult, sendBackstage } from "@/api/backstage/adapter"
 import { MessageDispatcher, MessageForwarder } from "@/display/effect"
+import { Result } from "../util/result"
 
 export interface Informative {
   type: "informative"
@@ -99,16 +100,21 @@ function learningAreasLink(): Html.View {
 
 type Messages = EngagementNoteMessages | EngagementPlanMessages
 
-function process(forward: MessageForwarder, dispatch: MessageDispatcher, model: Model, message: Messages) {
+async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _: Model, message: Messages) {
   switch (message.type) {
     case "writeEngagementPlan":
-      sendBackstage(dispatch, model, message)
       dispatch(engagementPlanWriteInProgress())
+      const result: Result<EngagementPlan, BackstageError> = await getBackstageResult(message)
+      dispatch(result.resolve({
+        ok: engagementPlanPersisted,
+        error: () => engagementPlanWriteFailed(message.plan)
+      }))
       break
     case "deleteEngagementPlans":
     case "engagementNoteCreationRequested":
     case "engagementNoteDeleteRequested":
-      sendBackstage(dispatch, model, message)
+      const nextMessage = await sendBackstage(message)
+      dispatch(nextMessage)
       break
     default:
       forward()
@@ -124,6 +130,9 @@ function update(model: Personalized, message: Messages) {
       const levels = model.engagementLevels.levels
       levels.push(message.plan.level)
       model.engagementLevels = engagementLevelsRetrieved(levels)
+      break
+    case "engagementPlanWriteFailed":
+      model.engagementLevels = engagementLevelsRetrieved(model.engagementLevels.levels)
       break
     case "engagementPlansDeleted":
       model.engagementLevels = engagementLevelsRetrieved([])

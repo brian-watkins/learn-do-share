@@ -1,6 +1,6 @@
 import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
-import { DeleteEngagementPlans, engagementPlanPersisted, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/writeEngagementPlans.js";
+import { DeleteEngagementPlans, engagementPlansDeleted, EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
@@ -47,7 +47,7 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
   switch (message.type) {
     case "writeEngagementPlan":
       await adapters.engagementPlanWriter.write(user, message.plan)
-      return engagementPlanPersisted(message.plan)
+      return message.plan
     case "deleteEngagementPlans":
       await adapters.engagementPlanWriter.deleteAll(user, message.learningArea)
       return engagementPlansDeleted(message.learningArea)

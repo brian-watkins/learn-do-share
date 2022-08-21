@@ -36,7 +36,9 @@ function effectHandlers(): Map<string, EffectHandler> {
 }
 
 export class AppDisplay<T, M extends Action<any>> {
+  private appRoot: HTMLElement | null = null
   private store: Store<T, M>
+  private displayMessageListenerController = new AbortController()
 
   constructor(private config: DisplayConfig<T, M>, initialState: T = getInitialState()) {
     this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(config.process, effectHandlers())))
@@ -54,23 +56,31 @@ export class AppDisplay<T, M extends Action<any>> {
       eventListenersModule
     ])
 
-    const appRoot = document.querySelector(selector)
+    this.appRoot = document.querySelector(selector)
 
-    if (!appRoot) {
+    if (!this.appRoot) {
       throw new Error(`Mount point element matching selector not found: ${selector}`)
     }
 
-    document.body.addEventListener("displayMessage", (evt) => {
+    const mountPoint = document.createElement("div")
+    this.appRoot.appendChild(mountPoint)
+
+    this.appRoot.addEventListener("displayMessage", (evt) => {
       const displayMessageEvent = evt as CustomEvent<any>
       this.store.dispatch(displayMessageEvent.detail)
-    })
+    }, { signal: this.displayMessageListenerController.signal })
 
-    let oldNode: Element | VNode = appRoot
+    let oldNode: Element | VNode = mountPoint
     const handleUpdate = () => {
       oldNode = patch(oldNode, this.config.view(this.store.getState()))
     }
     this.store.subscribe(handleUpdate)
 
     handleUpdate()
+  }
+
+  destroy() {
+    this.displayMessageListenerController.abort()
+    this.appRoot?.childNodes.forEach(node => node.remove())
   }
 }

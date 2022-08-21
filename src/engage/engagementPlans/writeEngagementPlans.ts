@@ -14,6 +14,7 @@ export type EngagementPlanMessages
   | DeleteEngagementPlans
   | EngagementPlanPersisted
   | EngagementPlansDeleted
+  | EngagementPlanWriteFailed
 
 export interface WriteEngagementPlan {
   type: "writeEngagementPlan"
@@ -70,5 +71,17 @@ export function engagementPlansDeleted(learningArea: string): EngagementPlansDel
   return {
     type: "engagementPlansDeleted",
     learningArea
+  }
+}
+
+export interface EngagementPlanWriteFailed {
+  type: "engagementPlanWriteFailed"
+  plan: EngagementPlan
+}
+
+export function engagementPlanWriteFailed(plan: EngagementPlan): EngagementPlanWriteFailed {
+  return {
+    type: "engagementPlanWriteFailed",
+    plan
   }
 }
