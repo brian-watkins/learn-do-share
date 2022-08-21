@@ -5,6 +5,7 @@ import { Page } from "playwright"
 import { BackstageResponseOptions } from "./engageTestContext"
 import { TestLearningArea } from "./fakes/learningArea"
 import { TestUser } from "./fakes/user"
+import { TestEngagementNote } from "./fakes/note"
 
 export function learningAreaTestContext(page: Page, area: TestLearningArea): Context<EngageTestContextProxy> {
   return {
@@ -38,6 +39,12 @@ export class EngageTestContextProxy {
     return this.page.evaluate((user) => {
       window._testContext.withUser(user)
     }, user)
+  }
+
+  withNotes(notes: Array<TestEngagementNote>): Promise<void> {
+    return this.page.evaluate((notes) => {
+      window._testContext.withNotes(notes)
+    }, notes)
   }
 
   stop(): Promise<void> {

@@ -1,6 +1,6 @@
 import { User } from "@/api/common/user";
 import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
-import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
+import { EngagementNote, EngagementNoteContents, NoteState } from "@/src/engage/engagementNotes";
 import { LearningArea } from "@/src/engage/learningArea";
 import { CosmosConnection } from "./cosmosConnection";
 
@@ -43,7 +43,8 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader, Eng
       return {
         id: resource.id,
         content: resource.content,
-        date: resource.date
+        date: resource.date,
+        state: NoteState.Retrieved
       }
     })
   }

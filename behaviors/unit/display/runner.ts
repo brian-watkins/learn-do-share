@@ -2,6 +2,7 @@ import { validate } from "esbehavior";
 import { chromium } from "playwright";
 import { createServer } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths"
+import deleteNoteBehavior from "./deleteNote.behavior";
 import engageBehavior from "./engage.behavior";
 
 export function isDebug(): boolean {
@@ -41,7 +42,8 @@ await page.goto("http://localhost:7170/behaviors/unit/display/index.html")
 
 // run the tests
 const summary = await validate([
-  engageBehavior(page)
+  engageBehavior(page),
+  deleteNoteBehavior(page)
 ])
 
 if (summary.invalid > 0 || summary.skipped > 0) {

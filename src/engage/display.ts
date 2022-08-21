@@ -6,10 +6,10 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
+import { engagementNoteDeleteInProgress, EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
 import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
-import { EngagementNote } from "./engagementNotes"
+import { EngagementNote, NoteState } from "./engagementNotes"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "./engagementPlans"
 import { BackstageError, getBackstageResult, sendBackstage } from "@/api/backstage/adapter"
 import { MessageDispatcher, MessageForwarder } from "@/display/effect"
@@ -110,9 +110,12 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
         error: () => engagementPlanWriteFailed(message.plan)
       }))
       break
+    case "engagementNoteDeleteRequested":
+      dispatch(engagementNoteDeleteInProgress(message.note))
+      dispatch(await sendBackstage(message))
+      break
     case "deleteEngagementPlans":
     case "engagementNoteCreationRequested":
-    case "engagementNoteDeleteRequested":
       const nextMessage = await sendBackstage(message)
       dispatch(nextMessage)
       break
@@ -139,6 +142,10 @@ function update(model: Personalized, message: Messages) {
       break
     case "engagementNotePersisted":
       model.engagementNotes.unshift(message.note)
+      break
+    case "engagementNoteDeleteInProgress":
+      const note = model.engagementNotes.filter(note => note.id === message.note.id)[0]
+      note.state = NoteState.Deleting
       break
     case "engagementNoteDeleted":
       model.engagementNotes = model.engagementNotes.filter(note => note.id !== message.note.id)

@@ -1,4 +1,10 @@
+export enum NoteState {
+  "Retrieved",
+  "Deleting"
+}
+
 export interface EngagementNote {
+  state: NoteState
   id: string
   content: string,
   date: string

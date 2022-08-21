@@ -1,4 +1,4 @@
-import { behavior, example, fact } from "esbehavior"
+import { behavior, example } from "esbehavior"
 import { FakeLearningArea, testContext } from "./testApp"
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { learningAreaSummaryDisplayed } from "./effects"

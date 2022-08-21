@@ -5,6 +5,7 @@ export type EngagementNoteMessages
   = EngagementNoteCreationRequested
   | EngagementNotePersisted
   | EngagementNoteDeleteRequested
+  | EngagementNoteDeleteInProgress
   | EngagementNoteDeleted
 
 export interface EngagementNoteCreationRequested {
@@ -21,6 +22,18 @@ export function createNoteMessage(area: LearningArea, content: string): Engageme
       content,
       date: new Date().toISOString()
     }
+  }
+}
+
+export interface EngagementNoteDeleteInProgress {
+  type: "engagementNoteDeleteInProgress",
+  note: EngagementNote
+}
+
+export function engagementNoteDeleteInProgress(note: EngagementNote): EngagementNoteDeleteInProgress {
+  return {
+    type: "engagementNoteDeleteInProgress",
+    note
   }
 }
 

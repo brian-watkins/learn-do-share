@@ -6,7 +6,7 @@ import { format, parseISO } from "date-fns"
 import * as Display from "@/display/context"
 import { decorate, TagDecorator } from "../../util/markdownParser"
 import { LearningArea } from "../learningArea"
-import { EngagementNote } from "."
+import { EngagementNote, NoteState } from "."
 import { createNoteMessage, deleteNoteMessage } from "./writeEngagementNote"
 
 
@@ -122,7 +122,8 @@ function engagementNoteView(note: EngagementNote): Html.View {
           "hover:text-sky-600",
           "hover:underline",
         ]),
-        Html.onClick(deleteNoteMessage(note))
+        Html.onClick(deleteNoteMessage(note)),
+        Html.disabled(isDeletingNote(note))
       ], [
         Html.text("Delete Note")
       ])
@@ -134,6 +135,10 @@ function engagementNoteView(note: EngagementNote): Html.View {
       Html.withHTMLContent(note.content)
     ], [])
   ])
+}
+
+function isDeletingNote(note: EngagementNote): boolean {
+  return note.state === NoteState.Deleting
 }
 
 export function noteContentTagStyles(): Array<TagDecorator> {

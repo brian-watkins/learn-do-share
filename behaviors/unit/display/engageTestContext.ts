@@ -5,6 +5,7 @@ import display, { Model } from "@/src/engage/display"
 import { engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
 import { getServiceWorker } from "./mockServer"
 import { rest, SetupWorkerApi } from "msw"
+import { TestEngagementNote } from "./fakes/note"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -14,6 +15,7 @@ export interface BackstageResponseOptions {
 
 export class EngageTestContext {
   private user: TestUser | null = null
+  private notes: Array<TestEngagementNote> = []
   private app: any = null
   public handlers: Array<any> = []
   private mockServiceWorker: SetupWorkerApi | null = null
@@ -56,13 +58,18 @@ export class EngageTestContext {
     return this
   }
 
+  withNotes(notes: Array<TestEngagementNote>): EngageTestContext {
+    this.notes = notes
+    return this
+  }
+
   getInitialState(): Model {
     if (this.user !== null) {
       return {
         type: "personalized",
         learningArea: this.area,
         engagementLevels: engagementLevelsRetrieved([]),
-        engagementNotes: [],
+        engagementNotes: this.notes,
         user: this.user
       }
     } else {
