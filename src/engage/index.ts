@@ -19,5 +19,5 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView({ name: "engage" });
 
-const app = new AppDisplay(display)
+const app = new AppDisplay(display, window._display_initial_state)
 app.mount("#app")

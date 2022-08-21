@@ -11,10 +11,6 @@ export interface DisplayConfig<T, M extends Action<any>> {
   process?: Processor
 }
 
-function getInitialState() {
-  return (window as any)._display_initial_state
-}
-
 export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>, initialState: T): Reducer<T, M> {
   if (display.update === undefined) {
     return function(state: T = initialState, _: M): T {
@@ -40,7 +36,7 @@ export class AppDisplay<T, M extends Action<any>> {
   private store: Store<T, M>
   private displayMessageListenerController = new AbortController()
 
-  constructor(private config: DisplayConfig<T, M>, initialState: T = getInitialState()) {
+  constructor(private config: DisplayConfig<T, M>, initialState: T) {
     this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(config.process, effectHandlers())))
   }
 
