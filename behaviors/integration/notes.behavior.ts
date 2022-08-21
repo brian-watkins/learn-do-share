@@ -250,9 +250,9 @@ Here is a *note* with some
           effect("the save note button is disabled", async (testContext) => {
             const saveNoteButtonDisabledStatus = await testContext.display
               .selectElementWithText("Save Note")
-              .getAttribute("disabled")
+              .isDisabled()
 
-            expect(saveNoteButtonDisabledStatus).to.equal("true")
+            expect(saveNoteButtonDisabledStatus).to.equal(true)
           })
         ]
       })
