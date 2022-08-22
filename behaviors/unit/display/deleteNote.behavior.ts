@@ -67,7 +67,7 @@ export default (page: Page) =>
   ])
 
   function clickToDeleteNote(index: number): Action<EngageTestContextProxy> {
-    return step("click to delete the second note", async (testContext) => {
+    return step(`click to delete note at index ${index}`, async (testContext) => {
       await testContext.selectAll("[data-engagement-note]")
         .getElement(index)
         .selectDescendantWithText("Delete Note")
