@@ -9,7 +9,7 @@ import { TestLearningArea } from "./fakes/learningArea"
 export declare global {
   interface Window {
     createEngageTestContext(area: TestLearningArea): EngageTestContext
-    _testContext: EngageTestContext
+    _testContext: EngageTestContext | null
   }
 
   const __IS_DEBUG__: boolean

@@ -31,31 +31,32 @@ export class EngageTestContextProxy {
 
   start(): Promise<void> {
     return this.page.evaluate(() => {
-      return window._testContext.start()
+      return window._testContext?.start()
     })
   }
 
   withUser(user: TestUser): Promise<void> {
     return this.page.evaluate((user) => {
-      window._testContext.withUser(user)
+      window._testContext?.withUser(user)
     }, user)
   }
 
   withNotes(notes: Array<TestEngagementNote>): Promise<void> {
     return this.page.evaluate((notes) => {
-      window._testContext.withNotes(notes)
+      window._testContext?.withNotes(notes)
     }, notes)
   }
 
   stop(): Promise<void> {
     return this.page.evaluate(() => {
-      window._testContext.stop()
+      window._testContext?.stop()
+      window._testContext = null
     })
   }
 
   stubBackstageResponse(response: any, options: BackstageResponseOptions): Promise<void> {
     return this.page.evaluate((args) => {
-      window._testContext.stubBackstageResponse(args.response, args.options)
+      window._testContext?.stubBackstageResponse(args.response, args.options)
     }, { response, options })
   }
 
