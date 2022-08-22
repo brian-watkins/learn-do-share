@@ -6,7 +6,7 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { engagementNoteDeleteInProgress, EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
+import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
 import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote, NoteState } from "./engagementNotes"
@@ -102,7 +102,7 @@ type Messages = EngagementNoteMessages | EngagementPlanMessages
 
 async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _: Model, message: Messages) {
   switch (message.type) {
-    case "writeEngagementPlan":
+    case "writeEngagementPlan": {
       dispatch(engagementPlanWriteInProgress())
       const result: Result<EngagementPlan, BackstageError> = await getBackstageResult(message)
       dispatch(result.resolve({
@@ -110,10 +110,16 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
         error: () => engagementPlanWriteFailed(message.plan)
       }))
       break
-    case "engagementNoteDeleteRequested":
+    }
+    case "engagementNoteDeleteRequested": {
       dispatch(engagementNoteDeleteInProgress(message.note))
-      dispatch(await sendBackstage(message))
+      const result: Result<EngagementNote, BackstageError> = await getBackstageResult(message)
+      dispatch(result.resolve({
+        ok: engagementNoteDeleted,
+        error: () => engagementNoteDeleteFailed(message.note)
+      }))
       break
+    }
     case "deleteEngagementPlans":
     case "engagementNoteCreationRequested":
       const nextMessage = await sendBackstage(message)
@@ -143,10 +149,20 @@ function update(model: Personalized, message: Messages) {
     case "engagementNotePersisted":
       model.engagementNotes.unshift(message.note)
       break
-    case "engagementNoteDeleteInProgress":
-      const note = model.engagementNotes.filter(note => note.id === message.note.id)[0]
-      note.state = NoteState.Deleting
+    case "engagementNoteDeleteInProgress": {
+      const note = model.engagementNotes.find(note => note.id === message.note.id)
+      if (note) {
+        note.state = NoteState.Deleting
+      }
       break
+    }
+    case "engagementNoteDeleteFailed": {
+      const note = model.engagementNotes.find(note => note.id === message.note.id)
+      if (note) {
+        note.state = NoteState.Retrieved
+      }
+      break
+    }
     case "engagementNoteDeleted":
       model.engagementNotes = model.engagementNotes.filter(note => note.id !== message.note.id)
       break

@@ -1,10 +1,10 @@
-import { behavior, effect, example, fact, pick, step } from "esbehavior";
+import { Action, behavior, effect, example, fact, pick, step } from "esbehavior";
 import { Page } from "playwright";
 import { FakeLearningArea } from "./fakes/learningArea";
-import { learningAreaTestContext } from "./engageTestContextProxy"
-import { backstageRequestsAreDelayed, someoneIsAuthenticated } from "./presuppositions"
+import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { FakeNote } from "./fakes/note";
-import { visitTheLearningAreaPage } from "./steps";
+import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
 
 export default (page: Page) =>
@@ -25,12 +25,7 @@ export default (page: Page) =>
         ],
         perform: [
           visitTheLearningAreaPage(),
-          step("click to delete the second note", async (testContext) => {
-            await testContext.selectAll("[data-engagement-note]")
-              .getElement(1)
-              .selectDescendantWithText("Delete Note")
-              .click()
-          })
+          clickToDeleteNote(1)
         ],
         observe: [
           effect("the delete note button is disabled on the second note", async (testContext) => {
@@ -42,5 +37,40 @@ export default (page: Page) =>
             expect(deleteNoteButtonDisabledStates).to.deep.equal([false, true, false])
           })
         ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when the request to delete the note results in a server error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToServerError(),
+          someoneIsAuthenticated("fun-person@email.com"),
+          fact("there is a note", (testContext) => {
+            testContext.withNotes([
+              FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
+            ])
+          })
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          clickToDeleteNote(0),
+          waitForResponseFromBackstage()
+        ],
+        observe: [
+          effect("the delete note button is enabled", async (testContext) => {
+            const deleteNoteButtonDisabledState = await testContext
+              .selectElementWithText("Delete Note")
+              .isDisabled()
+            expect(deleteNoteButtonDisabledState).to.deep.equal(false)
+          })
+        ]
       })
   ])
+
+  function clickToDeleteNote(index: number): Action<EngageTestContextProxy> {
+    return step("click to delete the second note", async (testContext) => {
+      await testContext.selectAll("[data-engagement-note]")
+        .getElement(index)
+        .selectDescendantWithText("Delete Note")
+        .click()
+    })
+  }

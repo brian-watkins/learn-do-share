@@ -6,6 +6,7 @@ export type EngagementNoteMessages
   | EngagementNotePersisted
   | EngagementNoteDeleteRequested
   | EngagementNoteDeleteInProgress
+  | EngagementNoteDeleteFailed
   | EngagementNoteDeleted
 
 export interface EngagementNoteCreationRequested {
@@ -33,6 +34,18 @@ export interface EngagementNoteDeleteInProgress {
 export function engagementNoteDeleteInProgress(note: EngagementNote): EngagementNoteDeleteInProgress {
   return {
     type: "engagementNoteDeleteInProgress",
+    note
+  }
+}
+
+export interface EngagementNoteDeleteFailed {
+  type: "engagementNoteDeleteFailed",
+  note: EngagementNote
+}
+
+export function engagementNoteDeleteFailed(note: EngagementNote): EngagementNoteDeleteFailed {
+  return {
+    type: "engagementNoteDeleteFailed",
     note
   }
 }
