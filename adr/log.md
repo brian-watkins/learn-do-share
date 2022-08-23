@@ -1970,3 +1970,86 @@ For, if we handle a given message in one place or the other, then this allows us
 to clarify better what happens when a message is received (ie #1 from above).
 And to handle #2 from above, we should be able to use the strategy of wrapping
 and unwrapping messages.
+
+
+### New Unit Test Strategy
+
+We changed the way we run the unit tests, following the strategy described
+above. So now, there is basically a class that is able to start up and render
+some segment of the app (like the learning area page) under certain conditions
+that we define in the test. We load that class in an HTML page in
+Playwright using Vite at the start of the test suite run. Then we can use
+Playwright to call functions on it. The only trick is that the arguments to
+these functions must be serializable to JSON. This then allows us to run tests
+in node, which call out to a TestApp running in playwright. The great thing is
+that it allows us to use all the facility that Playwright has for manipulating
+the page -- like finding elements, clicking them, entering text, etc. This seems
+like a trustworthy way of controlling the app in a web browser. And since these
+are unit tests, we're testing the display in isolation from the other parts of
+the system. So we use MSW to stub any responses from backstage. Indeed, we are
+mainly writing tests to cover error cases that occur when requests to backstage
+fail for various reasons.
+
+This allows us to write unit tests and we can re-use the functionality we built
+up for selecting and interacting with elements via Playwright. The only downside
+so far is that it seems like each example takes about 50ms to run. That's not
+super long, but still for a unit test it seems long.
+
+The reason here is no doubt that we are still integrating over a large portion
+of the app -- the entire display (or one page of it) -- during these tests. We
+could maybe try to make that smaller by changing the view function to only
+render a note field or something. But not sure if that would be worth it. We
+need to figure out how long each part of the example takes, so that we can
+determine if it's possible to optimize the run time.
+
+Note that we could have made a mistake here. Perhaps it is faster to run
+everything in the browser and use testing-library userEvent to control what's
+happening in the browser. We could recreate the tests using that to see what
+happens.
+
+We did try to collapse some of the calls to the javascript inside the browser
+into one call. But this didn't seem to affect the runtime all tha much. So the
+slowness does not seem to be introduced by calls between node and playwright.
+
+It does seem to be the case that both Firefox and Webkit run faster than
+Chromium under a few totally non-rigorous tests. But they both introduce some
+flakiness on tests that describe the behavior around network failures.
+
+I'm not sure there's really much we can do here. Maybe the best thing is to try
+an experiment where we use testing-library userEvent to see if that's any
+faster. But the ease of use with Playwright and confidence is hard to beat ...
+
+We did create a duplicate of the unit tests using testing-library and
+user-event. We did this by making the DisplayElement API an interface that can
+be implemented by Playwright or by testing-library and user-event. This made it
+easier to copy the behaviors and have them work with relatively little change.
+
+What we learned is that testing-library and user-event does seem to be faster
+(probably about 3-5ms per claim). The only downside seems to be that it's not
+clear how to 'wait for all requests to complete', which we need to do in certain
+cases that involve requests to the backend (whether real or simulated by MSW).
+With the testing-library approach, I think the only thing we can do is pick a
+time and just wait, hoping that all requests are complete by then. When running
+headlessly, waiting for 1ms seems sufficient. But when running in debug mode we
+had to change that to 10ms for everything to pass.
+
+Also, we haven't implemented the entire API for DisplayElement. In particular,
+it's not so clear how we implement the `isVisible`/`isHidden` checks. There are
+some ways to do this, but it's not clear to me if this is as sophisticated as
+Playwright. I think the methods testing-library suggests determine if the
+element is present in the DOM or not, not necessarily whether it is visible or
+hidden (could be in the DOM but hidden for various other reasons). Playwright
+will check for things like 'visibility:hidden' or zero bounding box also.
+
+Also, user-event does seem to have some limitations -- there are user
+interactions that haven't been implemented yet or that are maybe impossible to
+implement. So Playwright seems to be more robust in that sense, I suppose. And
+finally, user-event does need to 'mock the UI layer' in some sense to do its
+thing. It mentions the Clipboard as one thing that gets mocked, but not sure
+what else. Playwright seems to be more realistic.
+
+So the tradeoffs seem to be that in our case, for our application as it is right
+now, testing-library with user-event seems to result in faster behaviors. But
+perhaps Playwright provides a more realistic execution setting. And note too
+that really our examples in the unit tests are just clicking a single button and
+seeing what happens -- so very simple actions and observations.
