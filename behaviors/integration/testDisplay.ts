@@ -1,5 +1,5 @@
 import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
-import { waitForRequestsToComplete } from "../helpers/displayHelpers"
+import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement"
 import { Page } from "playwright"
 import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser"
 
@@ -37,15 +37,15 @@ export class TestDisplay {
   }
 
   selectElementWithText(text: string): DisplayElement {
-    return DisplayElement.withText(this.page!, text)
+    return PlaywrightDisplayElement.withText(this.page!, text)
   }
 
   select(selector: string, options: SelectorOptions = {}): DisplayElement {
-    return DisplayElement.fromSelector(this.page!, selector, options)
+    return PlaywrightDisplayElement.fromSelector(this.page!, selector, options)
   }
 
   selectAll(selector: string): DisplayElementList {
-    return DisplayElementList.fromSelector(this.page!, selector)
+    return PlaywrightDisplayElementList.fromSelector(this.page!, selector)
   }
 
   path(): string | undefined {

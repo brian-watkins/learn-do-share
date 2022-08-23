@@ -15,7 +15,9 @@
     "test:integration": "./azure/test/start.sh",
     "test:integration:debug": "DEBUG=true npm run test:integration",
     "test:unit": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/unit/display/runner.ts",
+    "test:unit:tl": "node --enable-source-maps --loader esbuild-node-loader --no-warnings ./behaviors/unit/display-tl/runner.ts",
     "test:unit:debug": "DEBUG=true npm run test:unit",
+    "test:unit:tl:debug": "DEBUG=true npm run test:unit:tl",
     "prepare": "husky install"
   },
   "author": "Brian Watkins",
@@ -23,6 +25,8 @@
   "devDependencies": {
     "@azure/functions": "^3.0.0",
     "@azure/static-web-apps-cli": "^1.0.1",
+    "@testing-library/dom": "^8.17.1",
+    "@testing-library/user-event": "^14.4.3",
     "@types/chai": "^4.3.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.21",

@@ -10,6 +10,7 @@ export declare global {
   interface Window {
     createEngageTestContext(area: TestLearningArea): EngageTestContext
     _testContext: EngageTestContext | null
+    validateBehaviors(): Promise<Summary>
   }
 
   const __IS_DEBUG__: boolean

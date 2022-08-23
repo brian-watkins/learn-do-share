@@ -1,11 +1,11 @@
 import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
-import { waitForRequestsToComplete } from "../../helpers/displayHelpers"
 import { Context } from "esbehavior"
 import { Page } from "playwright"
 import { BackstageResponseOptions } from "./engageTestContext"
 import { TestLearningArea } from "./fakes/learningArea"
 import { TestUser } from "./fakes/user"
 import { TestEngagementNote } from "./fakes/note"
+import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement"
 
 export function learningAreaTestContext(page: Page, area: TestLearningArea): Context<EngageTestContextProxy> {
   return {
@@ -61,15 +61,15 @@ export class EngageTestContextProxy {
   }
 
   selectElementWithText(text: string): DisplayElement {
-    return DisplayElement.withText(this.page!, text)
+    return PlaywrightDisplayElement.withText(this.page!, text)
   }
 
   select(selector: string, options: SelectorOptions = {}): DisplayElement {
-    return DisplayElement.fromSelector(this.page!, selector, options)
+    return PlaywrightDisplayElement.fromSelector(this.page!, selector, options)
   }
 
   selectAll(selector: string): DisplayElementList {
-    return DisplayElementList.fromSelector(this.page!, selector)
+    return PlaywrightDisplayElementList.fromSelector(this.page!, selector)
   }
 
   waitForRequestsToComplete(): Promise<void> {
