@@ -4,6 +4,7 @@ import { createServer } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths"
 import deleteNoteBehavior from "./deleteNote.behavior";
 import engageBehavior from "./engage.behavior";
+import saveNoteBehavior from "./saveNote.behavior";
 
 export function isDebug(): boolean {
   return process.env["DEBUG"] !== undefined
@@ -43,7 +44,8 @@ await page.goto("http://localhost:7170/behaviors/unit/display/index.html")
 // run the tests
 const summary = await validate([
   engageBehavior(page),
-  deleteNoteBehavior(page)
+  deleteNoteBehavior(page),
+  saveNoteBehavior(page)
 ])
 
 if (summary.invalid > 0 || summary.skipped > 0) {

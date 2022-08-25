@@ -54,19 +54,16 @@ export type CssClassname = string
 class CssClasses {
   type: "css-classes" = "css-classes"
 
-  constructor(private classes: Array<CssClassname>) { }
-
-  toObject(): any {
-    const classObject: { [key: string]: boolean } = {}
-    for (const classname of this.classes) {
-      classObject[classname] = true
-    }
-    return classObject
-  }
+  constructor(public classObject: { [key: CssClassname]: boolean }) { }
 }
 
 export function cssClasses(classes: Array<CssClassname>): ViewAttribute {
-  return new CssClasses(classes)
+  const classObject: { [key: CssClassname]: boolean } = {}
+  for (const classname of classes) {
+    classObject[classname] = true
+  }
+
+  return new CssClasses(classObject)
 }
 
 class EventHandler {
@@ -169,7 +166,7 @@ function makeAttributes(attributes: Array<ViewAttribute>): any {
         dict.attrs[attr.key] = attr.value
         break
       case "css-classes":
-        dict.class = Object.assign(dict.class, attr.toObject())
+        dict.class = Object.assign(dict.class, attr.classObject)
         break
       case "event":
         dict.on[attr.event] = function (evt: Event) {

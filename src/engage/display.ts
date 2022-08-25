@@ -6,10 +6,10 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages } from "./engagementNotes/writeEngagementNote"
+import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
 import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
-import { EngagementNote, NoteState } from "./engagementNotes"
+import { EngagementNote, EngagementNotes, engagementNoteSaving, engagementNotesRetrieved, NoteState } from "./engagementNotes"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "./engagementPlans"
 import { BackstageError, getBackstageResult, sendBackstage } from "@/api/backstage/adapter"
 import { MessageDispatcher, MessageForwarder } from "@/display/effect"
@@ -24,7 +24,7 @@ export interface Personalized {
   type: "personalized"
   learningArea: LearningArea
   engagementLevels: EngagementLevels
-  engagementNotes: Array<EngagementNote>
+  engagementNotes: EngagementNotes
   user: User
 }
 
@@ -120,8 +120,13 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
       }))
       break
     }
+    case "engagementNoteCreationRequested": {
+      dispatch(engagementNoteWriteInProgress(message.contents))
+      const nextMessage = await sendBackstage(message)
+      dispatch(nextMessage)
+      break
+    }
     case "deleteEngagementPlans":
-    case "engagementNoteCreationRequested":
       const nextMessage = await sendBackstage(message)
       dispatch(nextMessage)
       break
@@ -146,25 +151,28 @@ function update(model: Personalized, message: Messages) {
     case "engagementPlansDeleted":
       model.engagementLevels = engagementLevelsRetrieved([])
       break
+    case "engagementNoteWriteInProgress":
+      model.engagementNotes = engagementNoteSaving(model.engagementNotes.notes)
+      break
     case "engagementNotePersisted":
-      model.engagementNotes.unshift(message.note)
+      model.engagementNotes = engagementNotesRetrieved([ message.note, ...model.engagementNotes.notes ])
       break
     case "engagementNoteDeleteInProgress": {
-      const note = model.engagementNotes.find(note => note.id === message.note.id)
+      const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
       if (note) {
         note.state = NoteState.Deleting
       }
       break
     }
     case "engagementNoteDeleteFailed": {
-      const note = model.engagementNotes.find(note => note.id === message.note.id)
+      const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
       if (note) {
         note.state = NoteState.Retrieved
       }
       break
     }
     case "engagementNoteDeleted":
-      model.engagementNotes = model.engagementNotes.filter(note => note.id !== message.note.id)
+      model.engagementNotes.notes = model.engagementNotes.notes.filter(note => note.id !== message.note.id)
       break
   }
 }

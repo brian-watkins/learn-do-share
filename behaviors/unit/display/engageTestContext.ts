@@ -6,6 +6,7 @@ import { engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
 import { getServiceWorker } from "./mockServer"
 import { rest, SetupWorkerApi } from "msw"
 import { TestEngagementNote } from "./fakes/note"
+import { engagementNotesRetrieved } from "@/src/engage/engagementNotes"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -69,7 +70,7 @@ export class EngageTestContext {
         type: "personalized",
         learningArea: this.area,
         engagementLevels: engagementLevelsRetrieved([]),
-        engagementNotes: this.notes,
+        engagementNotes: engagementNotesRetrieved(this.notes),
         user: this.user
       }
     } else {

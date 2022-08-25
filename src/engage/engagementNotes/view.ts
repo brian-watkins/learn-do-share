@@ -6,11 +6,11 @@ import { format, parseISO } from "date-fns"
 import * as Display from "@/display/context"
 import { decorate, TagDecorator } from "../../util/markdownParser"
 import { LearningArea } from "../learningArea"
-import { EngagementNote, NoteState } from "."
+import { EngagementNote, EngagementNotes, NoteState } from "."
 import { createNoteMessage, deleteNoteMessage } from "./writeEngagementNote"
 
 
-export function view(area: LearningArea, notes: Array<EngagementNote>): Html.View {
+export function view(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
   return Html.div([
     Html.id("engagement-notes"),
     Html.cssClasses([
@@ -22,13 +22,13 @@ export function view(area: LearningArea, notes: Array<EngagementNote>): Html.Vie
     ])
   ], [
     headingBox("Notes"),
-    noteInputView(area),
-    ...notes.map(engagementNoteView)
+    noteInputView(area, engagementNotes),
+    ...engagementNotes.notes.map(engagementNoteView)
   ])
 }
 
-function noteInputView(area: LearningArea): Html.View {
-  return Display.context("", (noteContent, setNoteContent) =>
+function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
+  return Display.context({ initialState: "", key: `${engagementNotes.notes.length}` }, (noteContent, setNoteContent) =>
     Html.div([
       noteBox(),
       Html.cssClasses([
@@ -57,6 +57,7 @@ function noteInputView(area: LearningArea): Html.View {
           Html.data("note-input"),
           Html.value(noteContent),
           Html.onInput(setNoteContent),
+          Html.disabled(isSavingNotes(engagementNotes)),
           Html.cssClasses([
             "focus:outline-none",
             "rounded",
@@ -67,8 +68,9 @@ function noteInputView(area: LearningArea): Html.View {
             "row-start-1",
             "col-start-1",
             "row-end-2",
-            "col-end-2"
-          ])
+            "col-end-2",
+            "disabled:text-slate-300"
+          ]),
         ], [])
       ]),
       Html.button([
@@ -85,14 +87,17 @@ function noteInputView(area: LearningArea): Html.View {
         ]),
         Html.onClick(batch([
           createNoteMessage(area, noteContent),
-          setNoteContent(""),
         ])),
-        Html.disabled(noteContent.length === 0)
+        Html.disabled(noteContent.length == 0 || isSavingNotes(engagementNotes))
       ], [
         Html.text("Save Note")
       ])
     ])
   )
+}
+
+function isSavingNotes(engagementNotes: EngagementNotes): boolean {
+  return engagementNotes.type === "engagement-note-saving"
 }
 
 function engagementNoteView(note: EngagementNote): Html.View {

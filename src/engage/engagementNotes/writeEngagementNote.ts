@@ -3,6 +3,7 @@ import { EngagementNote, EngagementNoteContents } from "."
 
 export type EngagementNoteMessages
   = EngagementNoteCreationRequested
+  | EngagementNoteWriteInProgress
   | EngagementNotePersisted
   | EngagementNoteDeleteRequested
   | EngagementNoteDeleteInProgress
@@ -23,6 +24,18 @@ export function createNoteMessage(area: LearningArea, content: string): Engageme
       content,
       date: new Date().toISOString()
     }
+  }
+}
+
+export interface EngagementNoteWriteInProgress {
+  type: "engagementNoteWriteInProgress"
+  contents: EngagementNoteContents
+}
+
+export function engagementNoteWriteInProgress(contents: EngagementNoteContents): EngagementNoteWriteInProgress {
+  return {
+    type: "engagementNoteWriteInProgress",
+    contents
   }
 }
 

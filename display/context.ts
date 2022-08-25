@@ -4,8 +4,17 @@ import { View } from "./markup"
 
 export type ViewGenerator<T> = (state: T, setState: (value: T) => DisplayContextMessage) => View
 
-export function context<T>(initialState: T, generator: ViewGenerator<T>): View {
+export interface ContextOptions<T> {
+  initialState: T
+  key?: string
+}
+
+export function context<T>(options: ContextOptions<T>, generator: ViewGenerator<T>): View {
   return h("display-context", {
+    attrs: {
+      key: options.key ?? "__key"
+    },
+    displayContext: {},
     on: {
       displayMessage: function (evt: CustomEvent, vnode: VNode) {
         const contextMessage = getContextMessage(evt.detail)
@@ -16,10 +25,11 @@ export function context<T>(initialState: T, generator: ViewGenerator<T>): View {
     },
     hook: {
       init: (vNode) => {
-        updateContext(vNode, generator, initialState)
+        updateContext(vNode, generator, options.initialState)
       },
       prepatch: (oldVNode, vNode) => {
-        updateContext(vNode, generator, oldVNode.data?.displayContext)
+        const state: T = getState(oldVNode, getKey(vNode)) ?? options.initialState
+        updateContext(vNode, generator, state)
       }
     }
   })
@@ -31,7 +41,15 @@ function updateContext<T>(vNode: VNode, generator: ViewGenerator<T>, state: T) {
 }
 
 function storeState<T>(vNode: VNode, state: T) {
-  vNode.data!.displayContext = state
+  vNode.data!.displayContext[getKey(vNode)] = state
+}
+
+function getState<T>(vNode: VNode, key: string): T | undefined {
+  return vNode.data!.displayContext[key]
+}
+
+function getKey(vNode: VNode): string {
+  return vNode.data!.attrs!.key as string
 }
 
 function updateView(vNode: VNode, view: VNode) {

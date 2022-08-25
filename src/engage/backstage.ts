@@ -8,7 +8,7 @@ import { markdownToHTML } from "../util/markdownParser.js";
 import { contentTagStyles } from "./learningAreaContent.js";
 import { noteContentTagStyles } from "./engagementNotes/view.js";
 import { LearningArea } from "./learningArea.js";
-import { EngagementNote, EngagementNoteContents } from "./engagementNotes";
+import { EngagementNote, EngagementNoteContents, engagementNotesRetrieved } from "./engagementNotes";
 import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/index.js";
 import { EngagementNoteCreationRequested, EngagementNoteDeleteRequested, engagementNotePersisted } from "./engagementNotes/writeEngagementNote.js";
 
@@ -88,14 +88,14 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
 
     const engagementNoteData = await adapters.engagementNoteReader.read(context.user, learningArea)
 
-    const engagementNotes = engagementNoteData
+    const notes = engagementNoteData
       .map(displayableNote)
 
     return templateResult("engage.html", {
       type: "personalized",
       learningArea, 
       engagementLevels: engagementLevelsRetrieved(levels), 
-      engagementNotes,
+      engagementNotes: engagementNotesRetrieved(notes),
       user: context.user
     })
   }
