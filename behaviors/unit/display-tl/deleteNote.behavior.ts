@@ -1,7 +1,7 @@
 import { Action, behavior, effect, example, fact, pick, step } from "esbehavior";
 import { FakeLearningArea } from "./fakes/learningArea";
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
-import { backstageRequestsAreDelayed, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { FakeNote } from "./fakes/note";
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
@@ -42,6 +42,32 @@ export default
       .script({
         suppose: [
           backstageRequestsFailDueToServerError(),
+          someoneIsAuthenticated("fun-person@email.com"),
+          fact("there is a note", (testContext) => {
+            testContext.withNotes([
+              FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
+            ])
+          })
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          clickToDeleteNote(0),
+          waitForResponseFromBackstage()
+        ],
+        observe: [
+          effect("the delete note button is enabled", async (testContext) => {
+            const deleteNoteButtonDisabledState = await testContext
+              .selectElementWithText("Delete Note")
+              .isDisabled()
+            expect(deleteNoteButtonDisabledState).to.deep.equal(false)
+          })
+        ]
+      }),
+    example(learningAreaTestContext(FakeLearningArea(1)))
+      .description("when the request to delete the note results in a network error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToNetworkError(),
           someoneIsAuthenticated("fun-person@email.com"),
           fact("there is a note", (testContext) => {
             testContext.withNotes([

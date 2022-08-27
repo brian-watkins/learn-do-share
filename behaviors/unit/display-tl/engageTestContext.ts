@@ -11,6 +11,7 @@ import { TestingLibraryDisplayElement, TestingLibraryDisplayElementList } from "
 import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup"
 import userEvent from "@testing-library/user-event"
+import { engagementNotesRetrieved } from "@/src/engage/engagementNotes"
 
 export function learningAreaTestContext(area: TestLearningArea): Context<EngageTestContext> {
   return {
@@ -36,6 +37,7 @@ export class EngageTestContext {
   public handlers: Array<any> = []
   private mockServiceWorker: SetupWorkerApi | null = null
   private actor: UserEvent | null = null
+  attributes: { [key:string]: any } = {}
 
   constructor(private area: TestLearningArea) {}
 
@@ -88,7 +90,7 @@ export class EngageTestContext {
         type: "personalized",
         learningArea: this.area,
         engagementLevels: engagementLevelsRetrieved([]),
-        engagementNotes: this.notes,
+        engagementNotes: engagementNotesRetrieved(this.notes),
         user: this.user
       }
     } else {
