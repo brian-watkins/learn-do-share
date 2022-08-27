@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { behavior, effect, example, fact, outcome, pick } from "esbehavior";
+import { behavior, effect, example, outcome, pick } from "esbehavior";
 import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
 import { loginUser, selectLearningArea, visitTheLearningAreas } from "./actions";
 import { FakeLearningArea, testContext } from "./testApp";

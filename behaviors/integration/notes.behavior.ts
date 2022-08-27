@@ -203,58 +203,6 @@ Here is a *note* with some
             noteContainsHtmlTagWithText("LI", "cool markup")
           ])
         ]
-      }),
-    example(testContext())
-      .description("When typing into the note input")
-      .script({
-        suppose: [
-          thereAreLearningAreas([FakeLearningArea(1)]),
-          someoneIsAuthenticated("someone-cool@person.com"),
-        ],
-        perform: [
-          visitTheLearningArea(FakeLearningArea(1)),
-          step("record the note input height", async (testContext) => {
-            const clientHeight = await getNoteInputHeight(testContext)
-            testContext.attributes["default-note-input-height"] = Number(clientHeight)
-          }),
-          typeNote("This is such a super long note that you will take forever to actually read it and then what will happen? You will just have to read it again because it is so long and really cool at the same time.")
-        ],
-        observe: [
-          effect("the note input height increased to accomodate lots of text", async (testContext) => {
-            const currentNoteInputHeight = await getNoteInputHeight(testContext)
-            expect(currentNoteInputHeight).to.be.greaterThan(testContext.attributes["default-note-input-height"])
-          })
-        ]
-      }).andThen({
-        perform: [
-          typeNote("This is now a short note!", "a shorter text is typed into the note input field")
-        ],
-        observe: [
-          effect("the note input height decreased", async (testContext) => {
-            const currentNoteInputHeight = await getNoteInputHeight(testContext)
-            expect(currentNoteInputHeight).to.equal(testContext.attributes["default-note-input-height"])
-          })
-        ]
-      }),
-    example(testContext())
-      .description("When no text has been entered into the note input")
-      .script({
-        suppose: [
-          thereAreLearningAreas([FakeLearningArea(1)]),
-          someoneIsAuthenticated("someone-cool@person.com"),
-        ],
-        perform: [
-          visitTheLearningArea(FakeLearningArea(1))
-        ],
-        observe: [
-          effect("the save note button is disabled", async (testContext) => {
-            const saveNoteButtonDisabledStatus = await testContext.display
-              .selectElementWithText("Save Note")
-              .isDisabled()
-
-            expect(saveNoteButtonDisabledStatus).to.equal(true)
-          })
-        ]
       })
   ])
 
@@ -281,17 +229,11 @@ function observeNoteCount(expectedCount: number): Observation<TestContext> {
   })
 }
 
-function getNoteInputHeight(testContext: TestContext): Promise<number> {
-  return testContext.display
-    .select(noteInputView())
-    .getProperty("clientHeight")
-}
-
 function typeNote(content: string, description: string = "text is typed into the note input field"): Action<TestContext> {
   return step(description, async (testContext) => {
     await testContext.display
       .select(noteInputView())
-      .type(content, { clear: true })
+      .fill(content, { clear: true })
   })
 }
 

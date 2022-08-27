@@ -21,6 +21,8 @@ export function learningAreaTestContext(page: Page, area: TestLearningArea): Con
 }
 
 export class EngageTestContextProxy {
+  attributes: { [key:string]: any } = {}
+
   constructor(private page: Page, private area: TestLearningArea) { }
 
   create(): Promise<void> {

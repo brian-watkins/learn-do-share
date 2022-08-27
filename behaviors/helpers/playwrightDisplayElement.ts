@@ -25,6 +25,13 @@ export class PlaywrightDisplayElement implements DisplayElement {
     await this.locator.first().type(value, { timeout: 1000 })
   }
 
+  async fill(value: string, options: TypingOptions = { clear: false }): Promise<void> {
+    if (options.clear) {
+      await this.locator.first().fill("", { timeout: 1000 })
+    }
+    await this.locator.first().fill(value, { timeout: 1000 })
+  }
+
   async isVisible(): Promise<boolean> {
     await this.locator.first().waitFor({ state: "visible", timeout: 1000 })
     return true

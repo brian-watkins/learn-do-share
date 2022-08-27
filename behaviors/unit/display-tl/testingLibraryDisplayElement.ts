@@ -13,6 +13,10 @@ export class TestingLibraryDisplayElement implements DisplayElement {
 
   constructor (private actor: UserEvent, private element: HTMLElement) {}
   
+  fill(value: string, options?: TypingOptions | undefined): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
   async tagName(): Promise<string> {
     return this.element.tagName
   }

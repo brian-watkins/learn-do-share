@@ -9,7 +9,8 @@ export interface SelectorOptions {
 export interface DisplayElement {
   tagName(): Promise<string>
   click(): Promise<void>
-  type(value: string, options: TypingOptions): Promise<void>
+  type(value: string, options?: TypingOptions): Promise<void>
+  fill(value: string, options?: TypingOptions): Promise<void>
   isVisible(): Promise<boolean>
   isHidden(): Promise<boolean>
   isDisabled(): Promise<boolean>
