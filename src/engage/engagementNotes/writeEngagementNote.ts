@@ -4,6 +4,7 @@ import { EngagementNote, EngagementNoteContents } from "."
 export type EngagementNoteMessages
   = EngagementNoteCreationRequested
   | EngagementNoteWriteInProgress
+  | EngagementNoteWriteFailed
   | EngagementNotePersisted
   | EngagementNoteDeleteRequested
   | EngagementNoteDeleteInProgress
@@ -35,6 +36,18 @@ export interface EngagementNoteWriteInProgress {
 export function engagementNoteWriteInProgress(contents: EngagementNoteContents): EngagementNoteWriteInProgress {
   return {
     type: "engagementNoteWriteInProgress",
+    contents
+  }
+}
+
+export interface EngagementNoteWriteFailed {
+  type: "engagementNoteWriteFailed",
+  contents: EngagementNoteContents
+}
+
+export function engagementNoteWriteFailed(contents: EngagementNoteContents): EngagementNoteWriteFailed {
+  return {
+    type: "engagementNoteWriteFailed",
     contents
   }
 }

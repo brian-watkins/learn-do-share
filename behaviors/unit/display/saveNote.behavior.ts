@@ -1,9 +1,9 @@
-import { behavior, example, step, effect, pick } from "esbehavior";
+import { behavior, example, step, effect, pick, Action, Observation } from "esbehavior";
 import { Page } from "playwright";
 import { FakeLearningArea } from "./fakes/learningArea";
-import { learningAreaTestContext } from "./engageTestContextProxy"
-import { backstageRequestsAreDelayed, someoneIsAuthenticated } from "./presuppositions"
-import { visitTheLearningAreaPage } from "./steps";
+import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
+import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
 
 export default (page: Page) =>
@@ -17,36 +17,89 @@ export default (page: Page) =>
         ],
         perform: [
           visitTheLearningAreaPage(),
-          step("type a note", async (testContext) => {
-            await testContext
-              .select("[data-note-input]")
-              .type("Here is a fun note!", { clear: true })
-          }),
-          step("save the note", async (testContext) => {
-            await testContext
-              .selectElementWithText("Save Note")
-              .click()
-          })
+          createNote("Here is a fun note!")
         ],
         observe: [
-          effect("the save note button is disabled", async (testContext) => {
-            const saveNoteButtonDisabledState = await testContext
-              .selectElementWithText("Save Note")
-              .isDisabled()
-            expect(saveNoteButtonDisabledState).to.equal(true)
-          }),
-          effect("the save note input is disabled", async (testContext) => {
-            const saveNoteInputDisabledState = await testContext
-              .select("[data-note-input]")
-              .isDisabled()
-            expect(saveNoteInputDisabledState).to.equal(true)
-          }),
-          effect("the text is still in the input field", async (testContext) => {
-            const saveNoteInputValue = await testContext
-              .select("[data-note-input]")
-              .getInputValue()
-            expect(saveNoteInputValue).to.equal("Here is a fun note!")
+          ...noteInput({
+            hasText: "Here is a fun note!",
+            isDisabled: true
+          })
+        ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when saving a note fails due to a server error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToServerError(),
+          someoneIsAuthenticated("fun-person@email.com")
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          createNote("Here is a cool note!"),
+          waitForResponseFromBackstage()
+        ],
+        observe: [
+          ...noteInput({
+            hasText: "Here is a cool note!",
+            isDisabled: false
+          })
+        ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when saving a note fails due to a network error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToNetworkError(),
+          someoneIsAuthenticated("fun-person@email.com")
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          createNote("Here is an awesome note!")
+        ],
+        observe: [
+          ...noteInput({
+            hasText: "Here is an awesome note!",
+            isDisabled: false
           })
         ]
       })
   ])
+
+function createNote(text: string): Action<EngageTestContextProxy> {
+  return step("create a note", async (testContext) => {
+    await testContext
+      .select("[data-note-input]")
+      .type(text, { clear: true })
+    await testContext
+      .selectElementWithText("Save Note")
+      .click()
+  })
+}
+
+interface NoteInputOptions {
+  hasText: string
+  isDisabled: boolean
+}
+
+function noteInput(options: NoteInputOptions): Array<Observation<EngageTestContextProxy>> {
+  return [
+    effect(`the save note button is ${options.isDisabled ? "disabled" : "enabled"}`, async (testContext) => {
+      const saveNoteButtonDisabledState = await testContext
+        .selectElementWithText("Save Note")
+        .isDisabled()
+      expect(saveNoteButtonDisabledState).to.equal(options.isDisabled)
+    }),
+    effect(`the save note input is ${options.isDisabled ? "disabled" : "enabled"}`, async (testContext) => {
+      const saveNoteInputDisabledState = await testContext
+        .select("[data-note-input]")
+        .isDisabled()
+      expect(saveNoteInputDisabledState).to.equal(options.isDisabled)
+    }),
+    effect("the text is still in the input field", async (testContext) => {
+      const saveNoteInputValue = await testContext
+        .select("[data-note-input]")
+        .getInputValue()
+      expect(saveNoteInputValue).to.equal(options.hasText)
+    })
+  ]
+}

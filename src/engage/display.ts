@@ -6,7 +6,7 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
+import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNotePersisted, engagementNoteWriteFailed, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
 import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote, EngagementNotes, engagementNoteSaving, engagementNotesRetrieved, NoteState } from "./engagementNotes"
@@ -122,8 +122,11 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
     }
     case "engagementNoteCreationRequested": {
       dispatch(engagementNoteWriteInProgress(message.contents))
-      const nextMessage = await sendBackstage(message)
-      dispatch(nextMessage)
+      const result: Result<EngagementNote, BackstageError> = await getBackstageResult(message)
+      dispatch(result.resolve({
+        ok: engagementNotePersisted,
+        error: () => engagementNoteWriteFailed(message.contents)
+      }))
       break
     }
     case "deleteEngagementPlans":
@@ -153,6 +156,9 @@ function update(model: Personalized, message: Messages) {
       break
     case "engagementNoteWriteInProgress":
       model.engagementNotes = engagementNoteSaving(model.engagementNotes.notes)
+      break
+    case "engagementNoteWriteFailed":
+      model.engagementNotes = engagementNotesRetrieved(model.engagementNotes.notes)
       break
     case "engagementNotePersisted":
       model.engagementNotes = engagementNotesRetrieved([ message.note, ...model.engagementNotes.notes ])
