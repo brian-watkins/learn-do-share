@@ -6,6 +6,7 @@ import { TestLearningArea } from "./fakes/learningArea"
 import { TestUser } from "./fakes/user"
 import { TestEngagementNote } from "./fakes/note"
 import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement"
+import { EngagementLevel } from "@/src/engage/engagementPlans"
 
 export function learningAreaTestContext(page: Page, area: TestLearningArea): Context<EngageTestContextProxy> {
   return {
@@ -47,6 +48,12 @@ export class EngageTestContextProxy {
     return this.page.evaluate((notes) => {
       window._testContext?.withNotes(notes)
     }, notes)
+  }
+
+  withEngagementLevels(levels: Array<EngagementLevel>): Promise<void> {
+    return this.page.evaluate((levels) => {
+      window._testContext?.withEngagementLevels(levels)
+    }, levels)
   }
 
   stop(): Promise<void> {

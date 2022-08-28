@@ -7,9 +7,9 @@ export function visitTheLearningAreaPage(): Action<EngageTestContextProxy> {
   })
 }
 
-export function userClicksIncreaseEngagementButton(): Action<EngageTestContextProxy> {
-  return step("user clicks to signal they want to learn", async (testContext) => {
-    await testContext.selectElementWithText("I'm ready to learn!")
+export function userClicksIncreaseEngagementButton(message: string = "user clicks increase engagement button"): Action<EngageTestContextProxy> {
+  return step(message, async (testContext) => {
+    await testContext.select("[data-increase-engagement]")
       .click()
   })
 }

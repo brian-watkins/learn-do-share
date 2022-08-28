@@ -130,6 +130,7 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
       break
     }
     case "deleteEngagementPlans":
+      dispatch(engagementPlanWriteInProgress())
       const nextMessage = await sendBackstage(message)
       dispatch(nextMessage)
       break

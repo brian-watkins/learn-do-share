@@ -1,10 +1,11 @@
-import { behavior, example, effect, Observation } from "esbehavior"
+import { behavior, example, effect, Observation, fact, pick, Presupposition } from "esbehavior"
 import { FakeLearningArea } from "./fakes/learningArea"
 import { Page } from "playwright"
 import { expect } from "chai"
 import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps"
+import { EngagementLevel } from "@/src/engage/engagementPlans"
 
 export default (page: Page) =>
   behavior("indicate engagement with a learning area", [
@@ -14,6 +15,22 @@ export default (page: Page) =>
         suppose: [
           backstageRequestsAreDelayed(),
           someoneIsAuthenticated("fun-person@email.com")
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(true)
+        ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when the engagement levels are reset")
+      .script({
+        suppose: [
+          backstageRequestsAreDelayed(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
         ],
         perform: [
           visitTheLearningAreaPage(),
@@ -58,8 +75,18 @@ export default (page: Page) =>
 
 function increaseEngagementButtonIsDisabled(isDisabled: boolean): Observation<EngageTestContextProxy> {
   return effect(`the increase engagement button is ${isDisabled ? "disabled" : "enabled"}`, async (testContext) => {
-    const disabledValue = await testContext.selectElementWithText("I'm ready to learn!")
+    const disabledValue = await testContext.select("[data-increase-engagement]")
       .isDisabled()
     expect(disabledValue).to.equal(isDisabled)
+  })
+}
+
+function userIsMaximallyEngaged(): Presupposition<EngageTestContextProxy> {
+  return fact("user is maximally engaged", async (testContext) => {
+    await testContext.withEngagementLevels([
+      EngagementLevel.Learning,
+      EngagementLevel.Doing,
+      EngagementLevel.Sharing
+    ])
   })
 }

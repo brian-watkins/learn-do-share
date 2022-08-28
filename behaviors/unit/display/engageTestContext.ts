@@ -2,9 +2,9 @@ import { TestLearningArea } from "./fakes/learningArea"
 import { TestUser } from "./fakes/user"
 import { AppDisplay } from "@/display/display"
 import display, { Model } from "@/src/engage/display"
-import { engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
+import { EngagementLevel, engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
 import { getServiceWorker } from "./mockServer"
-import { rest, SetupWorkerApi } from "msw"
+import { DefaultBodyType, ResponseTransformer, rest, SetupWorkerApi } from "msw"
 import { TestEngagementNote } from "./fakes/note"
 import { engagementNotesRetrieved } from "@/src/engage/engagementNotes"
 
@@ -17,6 +17,7 @@ export interface BackstageResponseOptions {
 export class EngageTestContext {
   private user: TestUser | null = null
   private notes: Array<TestEngagementNote> = []
+  private engagementLevels: Array<EngagementLevel> = []
   private app: any = null
   public handlers: Array<any> = []
   private mockServiceWorker: SetupWorkerApi | null = null
@@ -42,7 +43,7 @@ export class EngageTestContext {
         if (options.networkError) {
           return res.networkError("Unable to connect!")
         }
-        const transformers = [
+        const transformers: Array<ResponseTransformer<DefaultBodyType, any>> = [
           ctx.status(options.status ?? 200),
           ctx.json(response)
         ]
@@ -64,12 +65,17 @@ export class EngageTestContext {
     return this
   }
 
+  withEngagementLevels(levels: Array<EngagementLevel>): EngageTestContext {
+    this.engagementLevels = levels
+    return this
+  }
+
   getInitialState(): Model {
     if (this.user !== null) {
       return {
         type: "personalized",
         learningArea: this.area,
-        engagementLevels: engagementLevelsRetrieved([]),
+        engagementLevels: engagementLevelsRetrieved(this.engagementLevels),
         engagementNotes: engagementNotesRetrieved(this.notes),
         user: this.user
       }
