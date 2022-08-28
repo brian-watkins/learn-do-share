@@ -1,22 +1,39 @@
 import { BulkOperationType } from "@azure/cosmos";
 import { User } from "../api/common/user";
 import { EngagementPlanReader } from "@/src/overview/backstage";
+import { EngagementPlanReader as PlanReader } from "@/src/engage/backstage"
 import { EngagementPlanWriter } from "@/src/engage/engagementPlans/writeEngagementPlans";
 import { CosmosConnection } from "./cosmosConnection";
 import { EngagementPlan } from "@/src/engage/engagementPlans";
+import { LearningArea } from "@/src/engage/learningArea";
 
 const PLANS_CONTAINER = "engagement-plans"
 
-export class CosmosEngagementPlanRepository implements EngagementPlanReader, EngagementPlanWriter {
+export class CosmosEngagementPlanRepository implements EngagementPlanReader, PlanReader, EngagementPlanWriter {
 
   constructor(private connection: CosmosConnection) { }
 
-  async read(user: User): Promise<EngagementPlan[]> {
+  async readAll(user: User): Promise<EngagementPlan[]> {
     return this.connection.execute(PLANS_CONTAINER, async (plans) => {
       const { resources } = await plans.items.query({
         query: "SELECT * FROM plans p WHERE p.userId = @userId",
         parameters: [
           { name: "@userId", value: user.identifier }
+        ]
+      }, { partitionKey: user.identifier })
+        .fetchAll()
+
+      return resources
+    })
+  }
+
+  async read(user: User, learningArea: LearningArea): Promise<EngagementPlan[]> {
+    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+      const { resources } = await plans.items.query({
+        query: "SELECT * FROM plans p WHERE p.userId = @userId AND p.learningArea = @learningAreaId",
+        parameters: [
+          { name: "@userId", value: user.identifier },
+          { name: "@learningAreaId", value: learningArea.id }
         ]
       }, { partitionKey: user.identifier })
         .fetchAll()

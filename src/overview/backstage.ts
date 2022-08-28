@@ -5,7 +5,7 @@ import { LearningArea } from "./learningAreas.js";
 import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans/index.js";
 
 export interface EngagementPlanReader {
-  read(user: User): Promise<Array<EngagementPlan>>
+  readAll(user: User): Promise<Array<EngagementPlan>>
 }
 
 export interface LearningAreasReader {
@@ -26,7 +26,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
       learningAreas: learningAreas,
     })
   } else {
-    const plans = await adapters.engagementPlanReader.read(context.user)
+    const plans = await adapters.engagementPlanReader.readAll(context.user)
     const state: AppModel = {
       state: { type: "personalized", user: context.user, engagementLevels: toEngagementPlanMap(plans) },
       learningAreas: learningAreas,

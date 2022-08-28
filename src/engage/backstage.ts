@@ -13,7 +13,8 @@ import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/ind
 import { EngagementNoteCreationRequested, EngagementNoteDeleteRequested } from "./engagementNotes/writeEngagementNote.js";
 
 export interface EngagementPlanReader {
-  read(user: User): Promise<Array<EngagementPlan>>
+  readAll(user: User): Promise<Array<EngagementPlan>>
+  read(user: User, learningArea: LearningArea): Promise<Array<EngagementPlan>>
 }
 
 export interface EngagementNoteReader {
@@ -79,12 +80,9 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
       learningArea
     })
   } else {
-    const plans = await adapters.engagementPlanReader.read(context.user)
+    const plans = await adapters.engagementPlanReader.read(context.user, learningArea)
     const levels = plans
-      .filter(plan => plan.learningArea === learningArea.id)
-      .map(plan => {
-        return plan.level
-      })
+      .map(plan => plan.level)
 
     const engagementNoteData = await adapters.engagementNoteReader.read(context.user, learningArea)
 
