@@ -24,6 +24,10 @@ export class TestDisplay {
     this.page = null
   }
 
+  async pause(): Promise<void> {
+    await this.page?.pause()
+  }
+
   async goBack(): Promise<void> {
     await this.page?.goBack()
   }
