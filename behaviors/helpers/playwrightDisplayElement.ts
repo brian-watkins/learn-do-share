@@ -43,7 +43,7 @@ export class PlaywrightDisplayElement implements DisplayElement {
   }
 
   async isDisabled(): Promise<boolean> {
-    return this.locator.first().isDisabled()
+    return this.locator.first().isDisabled({ timeout: 1000 })
   }
 
   async text(): Promise<string | null> {
