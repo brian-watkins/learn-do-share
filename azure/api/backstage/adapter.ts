@@ -29,19 +29,3 @@ export function getBackstageResult<T>(message: { type: string }): Promise<Result
     return errorResult(BackstageError.NetworkError)
   })
 }
-
-export function sendBackstage<T extends { type: string }, M extends { type: string }>(message: M): Promise<T> {
-  return fetch("/api/backstage", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(message)
-  }).then((response) => {
-    if (response.ok) {
-      return response.json()
-    } else {
-      return { type: "backstage-failure" }
-    }
-  })
-}

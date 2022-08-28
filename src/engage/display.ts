@@ -8,10 +8,10 @@ import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
 import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNotePersisted, engagementNoteWriteFailed, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
-import { EngagementPlanMessages, engagementPlanPersisted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
+import { EngagementPlanMessages, engagementPlanPersisted, engagementPlansDeleted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
 import { EngagementNote, EngagementNotes, engagementNoteSaving, engagementNotesRetrieved, NoteState } from "./engagementNotes"
 import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "./engagementPlans"
-import { BackstageError, getBackstageResult, sendBackstage } from "@/api/backstage/adapter"
+import { BackstageError, getBackstageResult } from "@/api/backstage/adapter"
 import { MessageDispatcher, MessageForwarder } from "@/display/effect"
 import { Result } from "../util/result"
 
@@ -107,7 +107,7 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
       const result: Result<EngagementPlan, BackstageError> = await getBackstageResult(message)
       dispatch(result.resolve({
         ok: engagementPlanPersisted,
-        error: () => engagementPlanWriteFailed(message.plan)
+        error: () => engagementPlanWriteFailed()
       }))
       break
     }
@@ -131,8 +131,11 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
     }
     case "deleteEngagementPlans":
       dispatch(engagementPlanWriteInProgress())
-      const nextMessage = await sendBackstage(message)
-      dispatch(nextMessage)
+      const result: Result<string, BackstageError> = await getBackstageResult(message)
+      dispatch(result.resolve({
+        ok: engagementPlansDeleted,
+        error: () => engagementPlanWriteFailed()
+      }))
       break
     default:
       forward()

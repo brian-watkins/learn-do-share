@@ -76,12 +76,10 @@ export function engagementPlansDeleted(learningArea: string): EngagementPlansDel
 
 export interface EngagementPlanWriteFailed {
   type: "engagementPlanWriteFailed"
-  plan: EngagementPlan
 }
 
-export function engagementPlanWriteFailed(plan: EngagementPlan): EngagementPlanWriteFailed {
+export function engagementPlanWriteFailed(): EngagementPlanWriteFailed {
   return {
-    type: "engagementPlanWriteFailed",
-    plan
+    type: "engagementPlanWriteFailed"
   }
 }

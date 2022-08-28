@@ -70,6 +70,39 @@ export default (page: Page) =>
         observe: [
           increaseEngagementButtonIsDisabled(false)
         ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when the engagement level reset fails due to a server error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToServerError(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton(),
+          waitForResponseFromBackstage()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(false)
+        ]
+      }),
+    example(learningAreaTestContext(page, FakeLearningArea(1)))
+      .description("when the engagement level reset fails due to a network error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToNetworkError(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(false)
+        ]
       })
   ])
 
