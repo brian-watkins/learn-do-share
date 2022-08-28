@@ -9,7 +9,7 @@ export function visitTheLearningAreaPage(): Action<EngageTestContext> {
 
 export function userClicksIncreaseEngagementButton(): Action<EngageTestContext> {
   return step("user clicks to signal they want to learn", async (testContext) => {
-    await testContext.selectElementWithText("I'm ready to learn!")
+    await testContext.select("[data-increase-engagement]")
       .click()
   })
 }

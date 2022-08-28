@@ -1,9 +1,10 @@
-import { behavior, example, effect, Observation, pick } from "esbehavior"
+import { behavior, example, effect, Observation, pick, Presupposition, fact } from "esbehavior"
 import { FakeLearningArea } from "./fakes/learningArea"
 import { expect } from "chai"
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps"
+import { EngagementLevel } from "@/src/engage/engagementPlans"
 
 export default
   behavior("indicate engagement with a learning area", [
@@ -13,6 +14,22 @@ export default
         suppose: [
           backstageRequestsAreDelayed(),
           someoneIsAuthenticated("fun-person@email.com")
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(true)
+        ]
+      }),
+    example(learningAreaTestContext(FakeLearningArea(1)))
+      .description("when the engagement levels are reset")
+      .script({
+        suppose: [
+          backstageRequestsAreDelayed(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
         ],
         perform: [
           visitTheLearningAreaPage(),
@@ -53,13 +70,56 @@ export default
         observe: [
           increaseEngagementButtonIsDisabled(false)
         ]
+      }),
+    example(learningAreaTestContext(FakeLearningArea(1)))
+      .description("when the engagement level reset fails due to a server error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToServerError(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton(),
+          waitForResponseFromBackstage()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(false)
+        ]
+      }),
+    example(learningAreaTestContext(FakeLearningArea(1)))
+      .description("when the engagement level reset fails due to a network error")
+      .script({
+        suppose: [
+          backstageRequestsFailDueToNetworkError(),
+          someoneIsAuthenticated("fun-dude@email.com"),
+          userIsMaximallyEngaged()
+        ],
+        perform: [
+          visitTheLearningAreaPage(),
+          userClicksIncreaseEngagementButton()
+        ],
+        observe: [
+          increaseEngagementButtonIsDisabled(false)
+        ]
       })
   ])
 
 function increaseEngagementButtonIsDisabled(isDisabled: boolean): Observation<EngageTestContext> {
   return effect(`the increase engagement button is ${isDisabled ? "disabled" : "enabled"}`, async (testContext) => {
-    const disabledValue = await testContext.selectElementWithText("I'm ready to learn!")
+    const disabledValue = await testContext.select("[data-increase-engagement]")
       .isDisabled()
     expect(disabledValue).to.equal(isDisabled)
+  })
+}
+
+function userIsMaximallyEngaged(): Presupposition<EngageTestContext> {
+  return fact("user is maximally engaged", (testContext) => {
+    testContext.withEngagementLevels([
+      EngagementLevel.Learning,
+      EngagementLevel.Doing,
+      EngagementLevel.Sharing
+    ])
   })
 }
