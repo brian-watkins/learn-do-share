@@ -16,6 +16,7 @@ $ npm install
 
 You may also need to install terraform globally.
 
+
 ### Run Locally
 
 ```
@@ -25,10 +26,44 @@ $ npm run start
 
 ### Run Tests
 
+There are two main parts to the test suite: 'integration' tests and 'unit' tests. The integration tests use the Azure Functions Core Tools, the Azure Static Web App Simulator, and a fake CosmosDB in an attempt to simulate the full stack of the application. The unit tests test the UI portion of the app in isolation from the backend. We use Playwright to run tests in a real browser environment.
+
+To run all the tests:
+
 ```
 $ npm run test
-$ npm run test:debug (to view the tests)
 ```
+
+To run the integration tests:
+
+```
+$ npm run test:integration
+```
+
+To run the unit tests:
+
+```
+$ npm run test:unit
+```
+
+Both the integration and the unit tests can be run in 'debug' mode, which shows the tests running
+in the browser:
+
+```
+$ npm run test:unit:debug
+$ npm run test:integration:debug
+```
+
+To debug a particular unit test, it can be helpful to use Playwright's `pause` command. Just
+insert `await page.pause()` into the test at the point you want to stop things.
+
+There's also another set of unit tests that can be run with `npm run test:unit:tl`. This is the
+same set of unit tests for the display, written using testing-library and the userEvent library.
+The point of this test suite is just to experiment with testing-library and compare its
+performance with the unit tests run using playwright.
+
+
+### Typescript
 
 Note that our code is written with Typescript, but we use tooling that's based on
 esbuild to run our tests. This means that type checking does not occur when the
