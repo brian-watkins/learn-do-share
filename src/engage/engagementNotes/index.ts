@@ -1,6 +1,7 @@
 export enum NoteState {
   "Retrieved",
-  "Deleting"
+  "Deleting",
+  "FailedDeleting"
 }
 
 export interface EngagementNoteSaving {

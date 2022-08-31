@@ -177,7 +177,7 @@ function update(model: Personalized, message: Messages) {
     case "engagementNoteDeleteFailed": {
       const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
       if (note) {
-        note.state = NoteState.Retrieved
+        note.state = NoteState.FailedDeleting
       }
       break
     }

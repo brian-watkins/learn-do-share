@@ -119,6 +119,11 @@ function engagementNoteView(note: EngagementNote): Html.View {
       ])
     ], [
       Html.text(formattedNoteDate(note.date)),
+      Html.div([
+        displaysAsAnError(whenNoteDeleteFailed(note))
+      ], [
+        Html.text("Delete failed!")
+      ]),
       Html.button([
         Html.cssClasses([
           "w-fit",
@@ -128,7 +133,7 @@ function engagementNoteView(note: EngagementNote): Html.View {
           "hover:underline",
         ]),
         Html.onClick(deleteNoteMessage(note)),
-        Html.disabled(isDeletingNote(note))
+        Html.disabled(whenDeletingNote(note))
       ], [
         Html.text("Delete Note")
       ])
@@ -142,7 +147,11 @@ function engagementNoteView(note: EngagementNote): Html.View {
   ])
 }
 
-function isDeletingNote(note: EngagementNote): boolean {
+function whenNoteDeleteFailed(note: EngagementNote): boolean {
+  return note.state === NoteState.FailedDeleting
+}
+
+function whenDeletingNote(note: EngagementNote): boolean {
   return note.state === NoteState.Deleting
 }
 
@@ -170,3 +179,11 @@ function noteBox(): Html.ViewAttribute {
   ])
 }
 
+function displaysAsAnError(errorIsVisible:boolean) {
+  return Html.cssClasses(
+    errorIsVisible ? [
+    "text-red-500"
+  ] : [
+    "hidden"
+  ])
+}

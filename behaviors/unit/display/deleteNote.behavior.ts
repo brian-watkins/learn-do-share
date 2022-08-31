@@ -38,7 +38,8 @@ export default (page: Page) =>
           backstageRequestsFailDueToServerError(),
           someoneIsAuthenticated("fun-person@email.com"),
           thereAreNotes([
-            FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 1).withContent("my original note was this text"),
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 2)
           ])
         ],
         perform: [
@@ -47,7 +48,10 @@ export default (page: Page) =>
           waitForResponseFromBackstage()
         ],
         observe: [
-          deleteNoteButtonIsDisabledForNote(0, false)
+          deleteNoteButtonIsDisabledForNote(0, false),
+          textIsVisibleForNote(0, "my original note was this text"),
+          errorMessageIsVisibleForNote(0, true),
+          errorMessageIsVisibleForNote(1, false),
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
@@ -57,7 +61,7 @@ export default (page: Page) =>
           backstageRequestsFailDueToNetworkError(),
           someoneIsAuthenticated("fun-person@email.com"),
           thereAreNotes([
-            FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 1).withContent("my original note was funny")
           ])
         ],
         perform: [
@@ -65,7 +69,10 @@ export default (page: Page) =>
           clickToDeleteNote(0)
         ],
         observe: [
-          deleteNoteButtonIsDisabledForNote(0, false)
+          deleteNoteButtonIsDisabledForNote(0, false),
+          textIsVisibleForNote(0, "my original note was funny"),
+          errorMessageIsVisibleForNote(0, true),
+          errorMessageIsVisibleForNote(1, false),
         ]
       })
   ])
@@ -93,5 +100,34 @@ function deleteNoteButtonIsDisabledForNote(index: number, isDisabled: boolean): 
 function thereAreNotes(notes: Array<TestEngagementNote>): Presupposition<EngageTestContextProxy> {
   return fact(`there are ${notes.length} notes`, (testContext) => {
     testContext.withNotes(notes)
+  })
+}
+
+function errorMessageIsVisibleForNote(index: number, isVisible: boolean): Observation<EngageTestContextProxy> {
+  return effect(`we${isVisible ? " " : " don't "}see an error message in note at position ${index}`, async (testContext) => {
+    const errorElement = testContext
+      .selectAll("[data-engagement-note]")
+      .getElement(index)
+      .selectDescendantWithText("Delete failed!")
+
+    let elementIsVisible: boolean
+    if (isVisible) {
+      elementIsVisible = await errorElement.isVisible()
+    }
+    else {
+      elementIsVisible = !await errorElement.isHidden()
+    }
+    expect(elementIsVisible).to.equal(isVisible)
+  })
+}
+
+function textIsVisibleForNote(index: number, text: string): Observation<EngageTestContextProxy> {
+  return effect(`we see the text for note ${index}`, async (testContext) => {
+    const elementIsVisible = await testContext
+      .selectAll("[data-engagement-note]")
+      .getElement(index)
+      .selectDescendantWithText(text)
+      .isVisible()
+    expect(elementIsVisible).to.equal(true)
   })
 }
