@@ -3,7 +3,7 @@ import { DisplayConfig } from "@/display/display"
 import { LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
 import { learningAreaContentView } from "./learningAreaContent"
-import { header, linkBox } from "../viewElements"
+import { footer, header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
 import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNotePersisted, engagementNoteWriteFailed, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
@@ -38,7 +38,7 @@ export type Model
 function view(model: Model): Html.View {
   switch (model.type) {
     case "informative":
-      return Html.article([], [
+      return Html.article([Html.cssClasses(["flex-col", "flex", "min-h-screen"])], [
         pageHeader([
           learningAreasLink(),
           loginView(model.learningArea)
@@ -46,9 +46,10 @@ function view(model: Model): Html.View {
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
         learningAreaContentView(model.learningArea),
+        footer()
       ])
     case "personalized":
-      return Html.article([], [
+      return Html.article([Html.cssClasses(["flex-col", "flex", "min-h-screen"])], [
         pageHeader([
           learningAreasLink(),
           userAccountView(model.user)
@@ -61,7 +62,8 @@ function view(model: Model): Html.View {
             engagementPlansView(model.learningArea, model.engagementLevels),
             engagementNotesView(model.learningArea, model.engagementNotes)
           ])
-        ])
+        ]),
+        footer()
       ])
   }
 }
@@ -74,7 +76,8 @@ function contentArea(views: Array<Html.View>): Html.View {
   return Html.div([
     Html.cssClasses([
       "flex",
-      "gap-32"
+      "gap-32",
+      "grow"
     ])
   ], views)
 }

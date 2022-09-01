@@ -43,3 +43,13 @@ export function headingBox(text: string): Html.View {
     Html.text(text)
   ])
 }
+
+export function footer(): Html.View {
+  return Html.div([Html.cssClasses([
+    "bg-indigo-500",
+    "mt-24",
+    "mx-16",
+    "h-12",
+    "rounded-t-md"
+  ])],[Html.text("Copyright Brian Watkins Industries, LLC 2022")])
+}
