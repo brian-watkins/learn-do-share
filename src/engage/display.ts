@@ -3,7 +3,7 @@ import { DisplayConfig } from "@/display/display"
 import { LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea"
 import { User } from "@/api/common/user"
 import { learningAreaContentView } from "./learningAreaContent"
-import { header, linkBox } from "../viewElements"
+import { footer, header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
 import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNotePersisted, engagementNoteWriteFailed, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
@@ -38,17 +38,17 @@ export type Model
 function view(model: Model): Html.View {
   switch (model.type) {
     case "informative":
-      return Html.article([], [
+      return page([
         pageHeader([
           learningAreasLink(),
           loginView(model.learningArea)
         ]),
         learningAreaCategoryView(model.learningArea),
         learningAreaTitleView(model.learningArea),
-        learningAreaContentView(model.learningArea),
+        learningAreaContentView(model.learningArea)
       ])
     case "personalized":
-      return Html.article([], [
+      return page([
         pageHeader([
           learningAreasLink(),
           userAccountView(model.user)
@@ -70,11 +70,29 @@ function pageHeader(views: Array<Html.View>): Html.View {
   return header([], views)
 }
 
+function page(views: Array<Html.View>): Html.View {
+  return Html.article([
+    Html.cssClasses([
+      "flex-col",
+      "flex",
+      "min-h-screen"
+    ])
+  ], [
+    ...views,
+    footer([
+      Html.cssClasses([
+        "mt-24"
+      ])
+    ])
+  ])
+}
+
 function contentArea(views: Array<Html.View>): Html.View {
   return Html.div([
     Html.cssClasses([
       "flex",
-      "gap-32"
+      "gap-32",
+      "grow"
     ])
   ], views)
 }

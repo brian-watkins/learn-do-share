@@ -62,7 +62,7 @@ export const darkTextColor = "text-slate-700"
 export const lightTextColor = "text-neutral-50"
 export const mediumTextColor = "text-slate-300"
 
-function backgroundColor(color: Colors): string {
+export function backgroundColor(color: Colors): string {
   switch (color) {
     case Colors.Dark:
       return "bg-slate-700"

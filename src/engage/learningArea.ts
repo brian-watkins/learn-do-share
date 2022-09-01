@@ -12,7 +12,7 @@ export interface LearningArea {
 }
 
 
-export function learningAreaCategoryView(area: LearningArea): Html.ViewChild {
+export function learningAreaCategoryView(area: LearningArea): Html.View {
   return Html.div([
     Html.id("learning-area-category"),
     Style.tag(Style.colorForCategory(area.category)),
@@ -25,7 +25,7 @@ export function learningAreaCategoryView(area: LearningArea): Html.ViewChild {
   ])
 }
 
-export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
+export function learningAreaTitleView(area: LearningArea): Html.View {
   return pageTitle([
     Html.id("learning-area-title"),
     Html.cssClasses([

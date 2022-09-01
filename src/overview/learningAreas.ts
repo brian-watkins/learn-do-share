@@ -13,7 +13,8 @@ export function learningAreasView<T extends LearningArea>(learningAreas: Array<T
   return Html.section([
     Html.id("learning-areas"),
     Html.cssClasses([
-      "m-16",
+      "mt-16",
+      "mx-16"
     ])
   ], learningAreas.map(toView))
 }

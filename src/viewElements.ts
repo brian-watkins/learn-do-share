@@ -43,3 +43,16 @@ export function headingBox(text: string): Html.View {
     Html.text(text)
   ])
 }
+
+export function footer(attributes: Array<Html.ViewAttribute> = []): Html.View {
+  return Html.div([
+    Html.cssClasses([
+      "mb-8",
+      "mx-16",
+      "h-24",
+      "rounded",
+      Style.backgroundColor(Colors.Dark)
+    ]),
+    ...attributes
+  ], [])
+}

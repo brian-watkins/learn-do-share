@@ -5,7 +5,7 @@ import { DisplayConfig } from "@/display/display"
 import { userAccountView } from "../user"
 import { personalizedLearningAreaView } from "./personalizedLearningAreas"
 import { User } from "@/api/common/user"
-import { header, linkBox, pageTitle } from "../viewElements"
+import { footer, header, linkBox, pageTitle } from "../viewElements"
 import { EngagementLevel } from "../engage/engagementPlans"
 
 export interface Informative {
@@ -32,7 +32,7 @@ export type AppState
 function view(model: AppModel): Html.View {
   switch (model.state.type) {
     case "informative":
-      return Html.div([], [
+      return page([
         pageHeader([
           loginView()
         ]),
@@ -41,7 +41,7 @@ function view(model: AppModel): Html.View {
         learningAreasView(model.learningAreas, learningAreaView)
       ])
     case "personalized":
-      return Html.div([], [
+      return page([
         pageHeader([
           userAccountView(model.state.user)
         ]),
@@ -56,15 +56,32 @@ function pageHeader(views: Array<Html.View>): Html.View {
   return header([Html.cssClasses(["flex-row-reverse"])], views)
 }
 
+function page(views: Array<Html.View>): Html.View {
+  return Html.article([
+    Html.cssClasses([
+      "flex-col",
+      "flex",
+      "min-h-screen"
+    ])
+  ], [
+    ...views,
+    footer([
+      Html.cssClasses([
+        "mt-16"
+      ])
+    ])
+  ])
+}
+
 export function loginView(): Html.View {
   return linkBox("/login", "Login")
 }
 
-export function learningAreasTitleView(): Html.ViewChild {
+export function learningAreasTitleView(): Html.View {
   return pageTitle([Html.id("learning-area-title")], "Principles and Practices")
 }
 
-export function learningAreasPracticeView(): Html.ViewChild {
+export function learningAreasPracticeView(): Html.View {
   return Html.div([Html.id("learning-area-practice"), Style.tag(Style.Colors.Dark),
   Html.cssClasses([
     "mt-8",
