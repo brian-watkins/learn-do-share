@@ -94,7 +94,7 @@ function pageError(): Html.View {
       "justify-center",
       "items-center",
       "gap-16",
-      "absolute",
+      "fixed",
       "animate-slidein",
       "opacity-90"
     ])
