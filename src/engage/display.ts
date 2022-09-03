@@ -28,10 +28,18 @@ export interface Personalized {
   user: User
 }
 
+export interface Error {
+  type: "error"
+  learningArea: LearningArea
+  engagementLevels: EngagementLevels
+  engagementNotes: EngagementNotes
+  user: User
+}
+
 export type Model
   = Informative
   | Personalized
-
+  | Error
 
 // View
 
@@ -48,22 +56,67 @@ function view(model: Model): Html.View {
         learningAreaContentView(model.learningArea)
       ])
     case "personalized":
-      return page([
-        pageHeader([
-          learningAreasLink(),
-          userAccountView(model.user)
-        ]),
-        learningAreaCategoryView(model.learningArea),
-        learningAreaTitleView(model.learningArea),
-        contentArea([
-          learningAreaContentView(model.learningArea),
-          contentColumn([
-            engagementPlansView(model.learningArea, model.engagementLevels),
-            engagementNotesView(model.learningArea, model.engagementNotes)
-          ])
-        ])
+      return personalizedEngagePage(model)
+    case "error":
+      return Html.div([], [
+        pageError(),
+        personalizedEngagePage(model)
       ])
   }
+}
+
+function personalizedEngagePage(model: Personalized | Error): Html.View {
+  return page([
+    pageHeader([
+      learningAreasLink(),
+      userAccountView(model.user)
+    ]),
+    learningAreaCategoryView(model.learningArea),
+    learningAreaTitleView(model.learningArea),
+    contentArea([
+      learningAreaContentView(model.learningArea),
+      contentColumn([
+        engagementPlansView(model.learningArea, model.engagementLevels),
+        engagementNotesView(model.learningArea, model.engagementNotes)
+      ])
+    ])
+  ])
+}
+
+function pageError(): Html.View {
+  return Html.div([
+    Html.data("error"),
+    Html.cssClasses([
+      "bg-green-100",
+      "h-screen",
+      "w-screen",
+      "flex",
+      "justify-center",
+      "items-center",
+      "gap-16",
+      "absolute",
+      "animate-slidein",
+      "opacity-90"
+    ])
+  ], [
+    errorText(),
+    errorText(),
+    errorText(),
+    errorText(),
+  ])
+}
+
+function errorText(): Html.View {
+  return Html.p([
+    Html.cssClasses([
+      "text-center",
+      "text-2xl",
+      "font-bold",
+      "uppercase"
+    ])
+  ], [
+    Html.text("Error")
+  ])
 }
 
 function pageHeader(views: Array<Html.View>): Html.View {
@@ -160,7 +213,7 @@ async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _
   }
 }
 
-function update(model: Personalized, message: Messages) {
+function update(model: Personalized | Error, message: Messages) {
   switch (message.type) {
     case "engagementPlanWriteInProgress":
       model.engagementLevels = engagementLevelsSaving(model.engagementLevels.levels)
@@ -183,7 +236,7 @@ function update(model: Personalized, message: Messages) {
       model.engagementNotes = engagementNotesRetrieved(model.engagementNotes.notes)
       break
     case "engagementNotePersisted":
-      model.engagementNotes = engagementNotesRetrieved([ message.note, ...model.engagementNotes.notes ])
+      model.engagementNotes = engagementNotesRetrieved([message.note, ...model.engagementNotes.notes])
       break
     case "engagementNoteDeleteInProgress": {
       const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
@@ -197,6 +250,7 @@ function update(model: Personalized, message: Messages) {
       if (note) {
         note.state = NoteState.FailedDeleting
       }
+      model.type = "error"
       break
     }
     case "engagementNoteDeleted":
@@ -205,7 +259,7 @@ function update(model: Personalized, message: Messages) {
   }
 }
 
-function onlyPersonalized(update: (model: Personalized, message: Messages) => void): (model: Model, message: Messages) => void {
+function personalizable(update: (model: Personalized | Error, message: Messages) => void): (model: Model, message: Messages) => void {
   return (model, message) => {
     if (model.type === "informative") {
       return
@@ -217,7 +271,7 @@ function onlyPersonalized(update: (model: Personalized, message: Messages) => vo
 
 const display: DisplayConfig<Model, Messages> = {
   view,
-  update: onlyPersonalized(update),
+  update: personalizable(update),
   process
 }
 

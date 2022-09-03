@@ -119,11 +119,6 @@ function engagementNoteView(note: EngagementNote): Html.View {
       ])
     ], [
       Html.text(formattedNoteDate(note.date)),
-      Html.div([
-        displaysAsAnError(whenNoteDeleteFailed(note))
-      ], [
-        Html.text("Delete failed!")
-      ]),
       Html.button([
         Html.cssClasses([
           "w-fit",
@@ -145,10 +140,6 @@ function engagementNoteView(note: EngagementNote): Html.View {
       Html.withHTMLContent(note.content)
     ], [])
   ])
-}
-
-function whenNoteDeleteFailed(note: EngagementNote): boolean {
-  return note.state === NoteState.FailedDeleting
 }
 
 function whenDeletingNote(note: EngagementNote): boolean {
@@ -176,14 +167,5 @@ function noteBox(): Html.ViewAttribute {
     "border-2",
     "border-solid",
     "border-slate-200"
-  ])
-}
-
-function displaysAsAnError(errorIsVisible:boolean) {
-  return Html.cssClasses(
-    errorIsVisible ? [
-    "text-red-500"
-  ] : [
-    "hidden"
   ])
 }

@@ -50,8 +50,7 @@ export default (page: Page) =>
         observe: [
           deleteNoteButtonIsDisabledForNote(0, false),
           textIsVisibleForNote(0, "my original note was this text"),
-          errorMessageIsVisibleForNote(0, true),
-          errorMessageIsVisibleForNote(1, false),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
@@ -71,8 +70,7 @@ export default (page: Page) =>
         observe: [
           deleteNoteButtonIsDisabledForNote(0, false),
           textIsVisibleForNote(0, "my original note was funny"),
-          errorMessageIsVisibleForNote(0, true),
-          errorMessageIsVisibleForNote(1, false),
+          errorMessageIsVisible(true)
         ]
       })
   ])
@@ -103,21 +101,19 @@ function thereAreNotes(notes: Array<TestEngagementNote>): Presupposition<EngageT
   })
 }
 
-function errorMessageIsVisibleForNote(index: number, isVisible: boolean): Observation<EngageTestContextProxy> {
-  return effect(`we${isVisible ? " " : " don't "}see an error message in note at position ${index}`, async (testContext) => {
-    const errorElement = testContext
-      .selectAll("[data-engagement-note]")
-      .getElement(index)
-      .selectDescendantWithText("Delete failed!")
+function errorMessageIsVisible(isVisible: boolean): Observation<EngageTestContextProxy> {
+  return effect(`error display is ${ isVisible ? "visible" : "hidden" }`, async (testContext) => {
+    const errorElement = testContext.select("[data-error]")
 
-    let elementIsVisible: boolean
+    let errorIsVisible: boolean
     if (isVisible) {
-      elementIsVisible = await errorElement.isVisible()
+      errorIsVisible = await errorElement.isVisible()
     }
     else {
-      elementIsVisible = !await errorElement.isHidden()
+      errorIsVisible = !await errorElement.isHidden()
     }
-    expect(elementIsVisible).to.equal(isVisible)
+
+    expect(errorIsVisible).to.equal(isVisible)
   })
 }
 
