@@ -6,6 +6,7 @@ import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, ba
 import { FakeNote, TestEngagementNote } from "./fakes/note";
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
+import { errorMessageIsVisible } from "./observations";
 
 export default (page: Page) =>
   behavior("delete a note", [
@@ -98,22 +99,6 @@ function deleteNoteButtonIsDisabledForNote(index: number, isDisabled: boolean): 
 function thereAreNotes(notes: Array<TestEngagementNote>): Presupposition<EngageTestContextProxy> {
   return fact(`there are ${notes.length} notes`, (testContext) => {
     testContext.withNotes(notes)
-  })
-}
-
-function errorMessageIsVisible(isVisible: boolean): Observation<EngageTestContextProxy> {
-  return effect(`error display is ${ isVisible ? "visible" : "hidden" }`, async (testContext) => {
-    const errorElement = testContext.select("[data-error]")
-
-    let errorIsVisible: boolean
-    if (isVisible) {
-      errorIsVisible = await errorElement.isVisible()
-    }
-    else {
-      errorIsVisible = !await errorElement.isHidden()
-    }
-
-    expect(errorIsVisible).to.equal(isVisible)
   })
 }
 

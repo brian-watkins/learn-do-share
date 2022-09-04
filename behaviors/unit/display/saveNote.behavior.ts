@@ -5,7 +5,8 @@ import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestCon
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
-import { noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations";
+import { errorMessageIsVisible, noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations";
+import { testContext } from "behaviors/integration/testApp";
 
 export default (page: Page) =>
   behavior("save a note", [
@@ -43,7 +44,8 @@ export default (page: Page) =>
           ...noteInput({
             hasText: "Here is a cool note!",
             isDisabled: false
-          })
+          }),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
@@ -61,7 +63,8 @@ export default (page: Page) =>
           ...noteInput({
             hasText: "Here is an awesome note!",
             isDisabled: false
-          })
+          }),
+          errorMessageIsVisible(true)
         ]
       })
   ])

@@ -56,7 +56,9 @@ function view(model: Model): Html.View {
         learningAreaContentView(model.learningArea)
       ])
     case "personalized":
-      return personalizedEngagePage(model)
+      return Html.div([], [
+        personalizedEngagePage(model)
+      ])
     case "error":
       return Html.div([], [
         pageError(),
@@ -225,6 +227,7 @@ function update(model: Personalized | Error, message: Messages) {
       break
     case "engagementPlanWriteFailed":
       model.engagementLevels = engagementLevelsRetrieved(model.engagementLevels.levels)
+      model.type = "error"
       break
     case "engagementPlansDeleted":
       model.engagementLevels = engagementLevelsRetrieved([])
@@ -234,6 +237,7 @@ function update(model: Personalized | Error, message: Messages) {
       break
     case "engagementNoteWriteFailed":
       model.engagementNotes = engagementNotesRetrieved(model.engagementNotes.notes)
+      model.type = "error"
       break
     case "engagementNotePersisted":
       model.engagementNotes = engagementNotesRetrieved([message.note, ...model.engagementNotes.notes])

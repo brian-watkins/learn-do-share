@@ -6,6 +6,7 @@ import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestCon
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps"
 import { EngagementLevel } from "@/src/engage/engagementPlans"
+import { errorMessageIsVisible } from "./observations"
 
 export default (page: Page) =>
   behavior("indicate engagement with a learning area", [
@@ -85,7 +86,8 @@ export default (page: Page) =>
           waitForResponseFromBackstage()
         ],
         observe: [
-          increaseEngagementButtonIsDisabled(false)
+          increaseEngagementButtonIsDisabled(false),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(page, FakeLearningArea(1)))
@@ -101,7 +103,8 @@ export default (page: Page) =>
           userClicksIncreaseEngagementButton()
         ],
         observe: [
-          increaseEngagementButtonIsDisabled(false)
+          increaseEngagementButtonIsDisabled(false),
+          errorMessageIsVisible(true)
         ]
       })
   ])

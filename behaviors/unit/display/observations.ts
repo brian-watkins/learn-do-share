@@ -19,3 +19,19 @@ export function noteInputIsDisabled(isDisabled: boolean): Observation<EngageTest
     expect(saveNoteInputDisabledState).to.equal(isDisabled)
   })
 }
+
+export function errorMessageIsVisible(isVisible: boolean): Observation<EngageTestContextProxy> {
+  return effect(`error display is ${ isVisible ? "visible" : "hidden" }`, async (testContext) => {
+    const errorElement = testContext.select("[data-error]")
+
+    let errorIsVisible: boolean
+    if (isVisible) {
+      errorIsVisible = await errorElement.isVisible()
+    }
+    else {
+      errorIsVisible = !await errorElement.isHidden()
+    }
+
+    expect(errorIsVisible).to.equal(isVisible)
+  })
+}
