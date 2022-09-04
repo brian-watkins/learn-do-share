@@ -50,8 +50,9 @@ export function footer(attributes: Array<Html.ViewAttribute> = []): Html.View {
       "mb-8",
       "mx-16",
       "h-24",
-      "rounded",
-      Style.backgroundColor(Colors.Dark)
+      "border-t-2",
+      "border-solid",
+      Style.borderColor(Colors.Dark),
     ]),
     ...attributes
   ], [])
