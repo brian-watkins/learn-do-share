@@ -1,7 +1,6 @@
 import { validate } from "esbehavior"
 import { startBrowser, stopBrowser } from "./services/browser"
 import { isDebug } from "./helpers"
-import { startCosmos, stopCosmos } from "./services/testStore"
 import { startServer, stopServer } from "./services/testServer"
 import viewBehavior from "./view.behavior"
 import contentBehavior from "./content.behavior"
@@ -39,14 +38,12 @@ await shutdown()
 
 async function start() {
   await startBrowser()
-  await startCosmos()
   await startServer()
 }
 
 async function shutdown(): Promise<void> {
   if (!isDebug()) {
     await stopServer()
-    await stopCosmos()
     await stopBrowser()
   }
 }

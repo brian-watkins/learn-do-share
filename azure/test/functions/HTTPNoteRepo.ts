@@ -23,7 +23,6 @@ export class HttpNoteEngageReader implements EngageReader {
 
 export class HttpNoteEngageWriter implements EngagementNoteWriter {
   async write(user: User, learningAreaId: string, content: EngagementNoteContents): Promise<EngagementNote> {
-    console.log("Writing new note!")
     const response = await fetch(`http://localhost:7171/user/${user.identifier}/notes`, {
       method: "POST",
       headers: {
@@ -40,10 +39,8 @@ export class HttpNoteEngageWriter implements EngagementNoteWriter {
   }
 
   async delete(user: User, note: EngagementNote): Promise<void> {
-    console.log("Deleting note", note)
     await fetch(`http://localhost:7171/user/${user.identifier}/notes/${note.id}`, {
       method: "DELETE"
     })
-    console.log("GELLO!??")
   }
 }
