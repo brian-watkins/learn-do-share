@@ -2053,3 +2053,109 @@ now, testing-library with user-event seems to result in faster behaviors. But
 perhaps Playwright provides a more realistic execution setting. And note too
 that really our examples in the unit tests are just clicking a single button and
 seeing what happens -- so very simple actions and observations.
+
+
+### Integration test problems
+
+So we did some more error case stories utilizing the unit testing strategy. That
+worked fine. But then we picked up a new full-stack story, namely, to get the
+count of notes for each learning area for a logged in user and display that on
+the overview page. The proper way to accomplish this story would involve a SQL
+query with something like this: `SELECT learningAreaId, count(*) AS noteCount
+FROM notes WHERE userId = someUserId GROUP BY learningAreaId`. But when we run
+this inside the CosmosEngagementNoteRepository during a test we get an error
+that basically indicates that GROUP BY queries are not supported.
+
+When we run this code against cosmos db in the cloud it works as expected, both
+in the Azure portal and via the node cosmosdb client.
+
+It turns out that our fake cosmos db that we use during the tests uses
+`vercel/cosmosdb-query` to parse queries and that does not support GROUP BY
+clauses.
+
+So we have a few options, none of which are that great.
+
+1. Create a pull request for `vercel/cosmosdb-query` -- but it hasn't been
+updated in three years so I bet whoever really uses this doesn't care so much
+about keeping it up to date. Also, it would be a pain to get this accepted and
+*then* need to update the main cosmosdb-server package that references this.
+
+2. Use testcontainers-node to spin up the azure cosmosdb emulator for linux.
+Great idea, except this container will not run on a mac with an M1 chip. Maybe
+when MacOS Ventura comes out there will be better support for running amd64
+images on arm64 but until then this simply won't work.
+
+3. Use another implementation that avoids the GROUP BY clause. We're not dealing
+with a ton of data. We would have to select all the users' notes and then go
+through each counting them up by learning area. But it seems really bad to let
+the limitations of our testing strategy dictate implementation decisions,
+especially when those decisions are obviously less performant.
+
+4. Use CosmosDB for real in the cloud during tests and running locally. This
+would give us the most confidence that everything works obviously but it would
+mean that our test suite needs a network connection to run, which is not ideal.
+It would also mean that we'd probably need to somehow open up our cosmos db so
+that it could be accessed from github actions. It would also mean that anyone
+who wanted to run the test suite would need access to Azure.
+
+5. Shift our testing strategy. We could mock the storage layer at the interfaces
+we use -- EngagementNoteReader, EngagementNoteWriter, etc. That would leave the
+adapters as something we either (5a) do not test at all or something that we
+(5b) test in a different way like through option (4).
+
+6. Mock the data access interfaces and don't test the adapters locally, BUT add
+a smoke test that runs on a canary deploy of the app before finally making
+the new version of the application available.
+
+7. Use a *different* database locally that is somehow compatible with the azure
+cosmos client for node. Perhaps MongoDB is compatable?
+
+8. Another option would be to use a different client library. So, instead of
+using the Azure Cosmos node library, we would use a library for mongodb or
+something like that. And it just happens that you can connect to azure cosmos db
+through that kind of library. Again, the bad thing is that we are changing our
+implementation to make it easier to test. But in this case, we gain flexibility
+in the sense that it would be easier to deploy to any infrastructure that
+provides access to mongodb or something compatible with that.
+
+I think what we need to do is to just use a different kind of fake during the
+tests, and provide adapters that can talk to this kind of fake. It should be
+something we can use for running locally as well. We could still use Mongodb for
+example. The trick is that our integration tests run using the function emulator
+and so we have to build our functions and run them in a separate process. So the
+easiest thing to do really is to use some database that we could connect to from
+the test (for setup purposes) and from the function (when it's exercised by the
+tests).
+
+Then do we leave the cosmos db adapter untested?
+
+Yes. In this case, there's no real logic in these adapters, just calls to
+cosmos. We could try the humble object pattern and pull out any logic ... but
+there really isn't anything to pull out.
+
+I should probably build upon the test data server pattern we're using already to
+serve up the learning areas during a test. But then how would we run the app
+locally? I guess we could still start that? We would probably want to test drive
+these adapters though maybe?
+
+We extended the test data server to handle data about notes and the integration
+tests are all passing again -- including the new one to describe note counts. We
+can actually still leave the fake cosmos db running to handle data about
+engagement plans (for now). 
+
+Two things we discovered though -- there is some hidden behavior in the note
+reader ... we expect the notes to come back in a particular order. So we had to
+make our fake note reader respect that as well. AND, the adapters are kind of
+weird. The initial state function for engage takes an engagement note writer ...
+but it doesn't need that. And the backstage function takes a reader, which it
+doesn't need. So we should be clearer there ...
+
+So basically we are not switching strategies at all. Just creating a different
+fake that is more under our control. I guess the lesson here is this: Fakes that
+you don't control are more of a liability than those that you do.
+
+The only small shift in strategy is that we now have certain parts of our code
+that are not under test, namely, the adapters that talk to Cosmos DB. To rectify
+that, we could have a smoke test. This would show also not only that we wrote
+the write kind of code that can talk to cosmos but that we are configured
+correctly in the production environment as well.
