@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { behavior, example, fact, effect, step, pick, outcome, Observation, Action } from "esbehavior";
-import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea } from "./actions";
-import { noteInputView, notesView } from "./effects";
+import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea, visitTheLearningAreas } from "./actions";
+import { learningAreaView, noteInputView, notesView } from "./effects";
 import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
-import { FakeEngagementNote, FakeLearningArea, TestContext, testContext } from "./testApp";
+import { FakeEngagementNote, FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
 
 export default
   behavior("engagement notes", [
@@ -24,6 +24,9 @@ export default
                 FakeEngagementNote("person@email.com", FakeLearningArea(1), 2)
                   .withContent("This is my second cool note!")
                   .withDate(new Date(2022, 6, 7, 14, 33, 22)),
+                FakeEngagementNote("person@email.com", FakeLearningArea(2), 5)
+                  .withContent("This is another cool note!")
+                  .withDate(new Date(2022, 6, 7, 14, 35, 22)),
                 FakeEngagementNote("another-person@email.com", FakeLearningArea(1), 4)
                   .withContent("This is another cool note!")
                   .withDate(new Date(2022, 6, 12, 23, 11, 22)),
@@ -32,7 +35,15 @@ export default
           someoneIsAuthenticated("person@email.com"),
         ],
         perform: [
-          visitTheLearningArea(FakeLearningArea(1))
+          visitTheLearningAreas()
+        ],
+        observe: [
+          learningAreaHasNoteCount(FakeLearningArea(1), 3),
+          learningAreaHasNoteCount(FakeLearningArea(2), 1)
+        ]
+      }).andThen({
+        perform: [
+          selectLearningArea(FakeLearningArea(1))
         ],
         observe: [
           outcome("it shows the person's notes in reverse chronological order", [
@@ -57,6 +68,13 @@ export default
         ],
         perform: [
           reloadTheApp(),
+        ],
+        observe: [
+          learningAreaHasNoteCount(FakeLearningArea(1), 1),
+          learningAreaHasNoteCount(FakeLearningArea(2), 0)
+        ]
+      }).andThen({
+        perform: [
           selectLearningArea(FakeLearningArea(1)),
         ],
         observe: [
@@ -226,6 +244,28 @@ function observeNoteCount(expectedCount: number): Observation<TestContext> {
       .count()
 
     expect(noteCount).to.equal(expectedCount)
+  })
+}
+
+function learningAreaHasNoteCount(learningArea: TestLearningArea, count: number): Observation<TestContext> {
+  return effect(`${learningArea.id} has ${count} notes`, async (testContext) => {
+    if (count === 0) {
+      const noteCountIsHidden = await testContext.display
+        .select(learningAreaView(learningArea.id))
+        .selectDescendant("[data-note-count]")
+        .isHidden()
+      expect(noteCountIsHidden).to.equal(true)
+    } else {
+      const noteCountText = await testContext.display
+        .select(learningAreaView(learningArea.id))
+        .selectDescendant("[data-note-count]")
+        .text()
+      if (count === 1) {
+        expect(noteCountText).to.equal("1 Note")
+      } else {
+        expect(noteCountText).to.equal(`${count} Notes`)
+      }
+    }
   })
 }
 

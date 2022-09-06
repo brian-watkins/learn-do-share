@@ -18,7 +18,7 @@ export interface DisplayElement {
   getAttribute(name: string): Promise<string | null>
   getProperty(name: string): Promise<any>
   getInputValue(): Promise<string>
-  selectDescendant(selector: string, options: SelectorOptions): DisplayElement
+  selectDescendant(selector: string, options?: SelectorOptions): DisplayElement
   selectAllDescendants(selector: string): DisplayElementList
   selectDescendantWithText(text: string): DisplayElement
 }

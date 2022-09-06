@@ -4,7 +4,7 @@ import { StaticLearningAreaReader } from "@/adapters/staticLearningAreasReader";
 import { generateEngageFunction } from "@/api/engage/function"
 import https from 'https'
 import { CosmosConnection } from "@/adapters/cosmosConnection";
-import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository";
+import { HttpNoteEngageReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo";
 
 const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
@@ -14,14 +14,13 @@ const cosmosConnection = new CosmosConnection({
 })
 
 const engagementPlanRepo = new CosmosEngagementPlanRepository(cosmosConnection)
-const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection)
 
 const adapters: Adapters = {
   learningAreaReader: new StaticLearningAreaReader(),
   engagementPlanReader: engagementPlanRepo,
   engagementPlanWriter: engagementPlanRepo,
-  engagementNoteReader: engagementNoteRepo,
-  engagementNoteWriter: engagementNoteRepo
+  engagementNoteReader: new HttpNoteEngageReader(),
+  engagementNoteWriter: new HttpNoteEngageWriter()
 }
 
 export default generateEngageFunction(adapters)

@@ -1,14 +1,30 @@
 import { User } from "@/api/common/user";
 import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
 import { EngagementNote, EngagementNoteContents, NoteState } from "@/src/engage/engagementNotes";
+import { EngagementNoteReader as OverviewNoteReader, NoteCount } from "@/src/overview/backstage"
 import { LearningArea } from "@/src/engage/learningArea";
 import { CosmosConnection } from "./cosmosConnection";
+import { FeedResponse } from "@azure/cosmos";
 
 const NOTES_CONTAINER = "engagement-notes"
 
-export class CosmosEngagementNoteRepository implements EngagementNoteReader, EngagementNoteWriter {
+export class CosmosEngagementNoteRepository implements EngagementNoteReader, OverviewNoteReader, EngagementNoteWriter {
 
   constructor(private connection: CosmosConnection) { }
+
+  countByLearningArea(user: User): Promise<NoteCount[]> {
+    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+      const { resources }: FeedResponse<NoteCount> = await notes.items.query({
+        query: "SELECT n.learningAreaId, count(1) as noteCount FROM n WHERE n.userId = @userId GROUP BY n.learningAreaId",
+        parameters: [
+          { name: "@userId", value: user.identifier }
+        ]
+      }, { partitionKey: user.identifier })
+        .fetchAll()
+
+      return resources
+    })
+  }
 
   async read(user: User, learningArea: LearningArea): Promise<EngagementNote[]> {
     return this.connection.execute(NOTES_CONTAINER, async (notes) => {

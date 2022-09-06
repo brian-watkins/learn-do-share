@@ -3,6 +3,7 @@ import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanR
 import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader";
 import { generateRootFunction } from "./function";
 import { CosmosConnection } from "@/adapters/cosmosConnection";
+import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository";
 
 const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
@@ -11,10 +12,12 @@ const cosmosConnection = new CosmosConnection({
 })
 
 const engagementPlanRepo = new CosmosEngagementPlanRepository(cosmosConnection)
+const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection)
 
 const adapters: Adapters = {
   learningAreasReader: new StaticLearningAreasReader(),
   engagementPlanReader: engagementPlanRepo,
+  engagementNoteReader: engagementNoteRepo
 }
 
 export default generateRootFunction(adapters)

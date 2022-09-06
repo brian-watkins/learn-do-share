@@ -4,6 +4,7 @@ import { generateRootFunction } from "@/api/root/function";
 import https from 'https'
 import { HttpLearningAreasReader } from "./HTTPLearningAreasReader";
 import { CosmosConnection } from "@/adapters/cosmosConnection";
+import { HttpNoteOverviewReader } from "./HTTPNoteRepo";
 
 const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
@@ -17,6 +18,7 @@ const engagementPlanRepository = new CosmosEngagementPlanRepository(cosmosConnec
 const adapters: Adapters = {
   learningAreasReader: new HttpLearningAreasReader(),
   engagementPlanReader: engagementPlanRepository,
+  engagementNoteReader: new HttpNoteOverviewReader()
 }
 
 export default generateRootFunction(adapters)

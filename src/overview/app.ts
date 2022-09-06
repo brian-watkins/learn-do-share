@@ -3,7 +3,7 @@ import * as Html from "@/display/markup"
 import * as Style from "../style"
 import { DisplayConfig } from "@/display/display"
 import { userAccountView } from "../user"
-import { personalizedLearningAreaView } from "./personalizedLearningAreas"
+import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
 import { User } from "@/api/common/user"
 import { footer, header, linkBox, pageTitle } from "../viewElements"
 import { EngagementLevel } from "../engage/engagementPlans"
@@ -15,6 +15,7 @@ export interface Informative {
 export interface Personalized {
   type: "personalized"
   engagementLevels: { [key:string]: Array<EngagementLevel> }
+  engagementNoteCounts: { [key:string]: number }
   user: User
 }
 
@@ -47,8 +48,20 @@ function view(model: AppModel): Html.View {
         ]),
         learningAreasPracticeView(),
         learningAreasTitleView(),
-        learningAreasView(model.learningAreas, personalizedLearningAreaView(model.state.engagementLevels)) 
+        learningAreasView(model.learningAreas, forPersonalized(model.state, personalizedLearningAreaView)) 
       ])
+  }
+}
+
+function forPersonalized(model: Personalized, generator: (personalized: PersonalizedLearningArea) => Html.View): (learningArea: LearningArea) => Html.View {
+  return (learningArea: LearningArea) => {
+    const personalizedLearningArea = {
+      ...learningArea,
+      engagementLevels: model.engagementLevels[learningArea.id] ?? [],
+      engagementNoteCount: model.engagementNoteCounts[learningArea.id] ?? 0
+    }
+
+    return generator(personalizedLearningArea)
   }
 }
 

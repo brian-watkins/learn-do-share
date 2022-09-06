@@ -7,12 +7,12 @@ import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
 import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
 import { User } from "@/api/common/user"
 import { userIdentifierFor } from './helpers'
-import { TestLearningAreasServer } from './services/testLearningAreasServer'
 import { serverHost } from './services/testServer'
 import { CosmosConnection } from '@/adapters/cosmosConnection'
 import { CosmosEngagementPlanRepository } from '@/adapters/cosmosEngagementPlanRepository'
-import { CosmosEngagementNoteRepository } from '@/adapters/cosmosEngagementNoteRepository'
 import { PageOptions } from './services/browser'
+import { TestDataServer } from './services/testDataServer'
+import { EngagementNote, NoteState } from '@/src/engage/engagementNotes'
 
 export function testContext(): Context<TestContext> {
   return {
@@ -29,7 +29,7 @@ export class TestContext {
   date: Date | null = null
   user: string | null = null
   display = new TestDisplay()
-  learningAreasServer = new TestLearningAreasServer()
+  testDataServer = new TestDataServer()
   cosmosConnection = new CosmosConnection({
     endpoint: "https://localhost:3021",
     key: "some-dumb-key",
@@ -37,7 +37,6 @@ export class TestContext {
     agent: new https.Agent({ rejectUnauthorized: false })
   })
   engagementPlans: Map<string, Array<EngagementPlan>> = new Map()
-  engagementNotes: Array<TestEngagementNote> = []
   attributes: { [key:string]: any } = {}
 
   setDate(date: Date) {
@@ -50,7 +49,7 @@ export class TestContext {
   }
 
   withLearningAreas(learningAreas: Array<TestLearningArea>): TestContext {
-    this.learningAreasServer.areas = learningAreas
+    this.testDataServer.areas = learningAreas
     return this
   }
 
@@ -66,7 +65,7 @@ export class TestContext {
   }
 
   withEngagementNotes(notes: Array<TestEngagementNote>): TestContext {
-    this.engagementNotes = notes
+    this.testDataServer.notes = notes.map(note => note.withUser(userIdentifierFor(note.user)))
     return this
   }
 
@@ -84,21 +83,6 @@ export class TestContext {
     }
   }
 
-  async writeEngagementNotes(): Promise<void> {
-    const engagementNoteRepo = new CosmosEngagementNoteRepository(this.cosmosConnection)
-
-    for (const note of this.engagementNotes) {
-      const user: User = {
-        identifier: userIdentifierFor(note.user),
-        name: note.user
-      }
-      await engagementNoteRepo.write(user, note.learningArea.id, {
-        content: note.content,
-        date: note.date.toISOString()
-      })
-    }
-  }
-
   async startAtLearningArea(learningArea: TestLearningArea): Promise<void> {
     await this.start(`/learning-areas/${learningArea.id}`)
   }
@@ -112,14 +96,13 @@ export class TestContext {
 
   async start(path: string = ""): Promise<void> {
     await this.writeEngagementPlans()
-    await this.writeEngagementNotes()
-    await this.learningAreasServer.start()
+    await this.testDataServer.start()
     await this.display.start(serverHost() + path, this.pageOptions)
   }
 
   async stop(): Promise<void> {
     await resetCosmos(this.cosmosConnection)
-    await this.learningAreasServer.stop()
+    await this.testDataServer.stop()
     await this.display.stop()
   }
 
@@ -168,13 +151,16 @@ export function FakeLearningArea(testId: number): TestLearningArea {
   return new TestLearningArea(testId)
 }
 
-class TestEngagementNote {
+export class TestEngagementNote implements EngagementNote {
   content: string
-  date: Date
+  date: string
+  state: NoteState = NoteState.Retrieved
+  id: string
 
-  constructor(public user: string, public learningArea: TestLearningArea, public testId: number) {
+  constructor(public user: string, public learningAreaId: string, public testId: number) {
     this.content = `Some funny note ${testId}`
-    this.date = new Date()
+    this.date = new Date().toISOString()
+    this.id = `note-${testId}`
   }
 
   withContent(content: string): TestEngagementNote {
@@ -183,11 +169,16 @@ class TestEngagementNote {
   }
 
   withDate(date: Date): TestEngagementNote {
-    this.date = date
+    this.date = date.toISOString()
+    return this
+  }
+
+  withUser(user: string): TestEngagementNote {
+    this.user = user
     return this
   }
 }
 
 export function FakeEngagementNote(user: string, learningArea: TestLearningArea, testId: number): TestEngagementNote {
-  return new TestEngagementNote(user, learningArea, testId)
+  return new TestEngagementNote(user, learningArea.id, testId)
 }

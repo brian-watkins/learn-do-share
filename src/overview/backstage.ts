@@ -12,9 +12,19 @@ export interface LearningAreasReader {
   read(): Promise<Array<LearningArea>>
 }
 
+export interface NoteCount {
+  learningAreaId: string
+  noteCount: number
+}
+
+export interface EngagementNoteReader {
+  countByLearningArea(user: User): Promise<Array<NoteCount>>
+}
+
 export interface Adapters {
   learningAreasReader: LearningAreasReader
   engagementPlanReader: EngagementPlanReader
+  engagementNoteReader: EngagementNoteReader
 }
 
 const initialState = (adapters: Adapters) => async (context: RenderContext<null>): Promise<InitialStateResult<AppModel>> => {
@@ -27,8 +37,14 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
     })
   } else {
     const plans = await adapters.engagementPlanReader.readAll(context.user)
+    const noteCounts = await adapters.engagementNoteReader.countByLearningArea(context.user)
     const state: AppModel = {
-      state: { type: "personalized", user: context.user, engagementLevels: toEngagementPlanMap(plans) },
+      state: {
+        type: "personalized",
+        user: context.user,
+        engagementLevels: toEngagementPlanMap(plans),
+        engagementNoteCounts: toEngagementNoteCountMap(noteCounts)
+      },
       learningAreas: learningAreas,
     }
 
@@ -36,8 +52,8 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
   }
 }
 
-function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Array<EngagementLevel> } {
-  let map: { [key:string]: Array<EngagementLevel> } = {}
+function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key: string]: Array<EngagementLevel> } {
+  let map: { [key: string]: Array<EngagementLevel> } = {}
 
   for (const plan of plans) {
     let list = map[plan.learningArea]
@@ -50,6 +66,17 @@ function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key:string]: Arra
 
   return map
 }
+
+function toEngagementNoteCountMap(counts: Array<NoteCount>): { [key: string]: number } {
+  let map: { [key: string]: number } = {}
+
+  for (const count of counts) {
+    map[count.learningAreaId] = count.noteCount
+  }
+
+  return map
+}
+
 
 export function initRenderer(adapters: Adapters): BackstageRenderer<null, AppModel> {
   return {
