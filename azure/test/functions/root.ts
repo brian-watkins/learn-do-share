@@ -1,14 +1,14 @@
 import { Adapters } from "@/src/overview/backstage";
 import { generateRootFunction } from "@/api/root/function";
 import { HttpLearningAreasReader } from "./HTTPLearningAreasReader";
-import { HttpNoteOverviewReader } from "./HTTPNoteRepo";
 import { HttpEngagementPlanReader } from "./HTTPEngagementPlanRepo";
+import { HttpEngagementNoteCounter } from "./HTTPNoteRepo";
 
 
 const adapters: Adapters = {
   learningAreasReader: new HttpLearningAreasReader(),
   engagementPlanReader: new HttpEngagementPlanReader(),
-  engagementNoteReader: new HttpNoteOverviewReader()
+  engagementNoteCounter: new HttpEngagementNoteCounter()
 }
 
 export default generateRootFunction(adapters)

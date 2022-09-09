@@ -1,6 +1,6 @@
 import { CosmosConnection } from "@/adapters/cosmosConnection";
 import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository";
-import { HttpNoteEngageReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo";
+import { HttpEngagementNoteCounter, HttpEngagementNoteReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo";
 import { TestDataServer } from "behaviors/integration/services/testDataServer";
 import { validate } from "esbehavior";
 import noteRepoBehavior from "./noteRepo.behavior";
@@ -20,8 +20,8 @@ await cosmosConnection.createContainer("test-engagement-notes")
 const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection, "test-engagement-notes")
 
 const summary = await validate([
-  noteRepoBehavior(new HttpNoteEngageReader(), new HttpNoteEngageWriter()),
-  noteRepoBehavior(engagementNoteRepo, engagementNoteRepo)
+  noteRepoBehavior(new HttpEngagementNoteReader(), new HttpEngagementNoteCounter(), new HttpNoteEngageWriter()),
+  noteRepoBehavior(engagementNoteRepo, engagementNoteRepo, engagementNoteRepo)
 ])
 
 await cosmosConnection.deleteContainer("test-engagement-notes")

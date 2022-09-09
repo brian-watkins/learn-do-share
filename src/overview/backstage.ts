@@ -17,14 +17,14 @@ export interface NoteCount {
   noteCount: number
 }
 
-export interface EngagementNoteReader {
+export interface EngagementNoteCounter {
   countByLearningArea(user: User): Promise<Array<NoteCount>>
 }
 
 export interface Adapters {
   learningAreasReader: LearningAreasReader
   engagementPlanReader: EngagementPlanReader
-  engagementNoteReader: EngagementNoteReader
+  engagementNoteCounter: EngagementNoteCounter
 }
 
 const initialState = (adapters: Adapters) => async (context: RenderContext<null>): Promise<InitialStateResult<AppModel>> => {
@@ -37,7 +37,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
     })
   } else {
     const plans = await adapters.engagementPlanReader.readAll(context.user)
-    const noteCounts = await adapters.engagementNoteReader.countByLearningArea(context.user)
+    const noteCounts = await adapters.engagementNoteCounter.countByLearningArea(context.user)
     const state: AppModel = {
       state: {
         type: "personalized",

@@ -1,11 +1,11 @@
 import { User } from "@/api/common/user";
-import { EngagementNoteReader, NoteCount } from "@/src/overview/backstage";
-import { EngagementNoteReader as EngageReader, EngagementNoteWriter } from "@/src/engage/backstage"
+import { EngagementNoteCounter, NoteCount } from "@/src/overview/backstage";
+import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage"
 import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
 import { LearningArea } from "@/src/engage/learningArea";
 import fetch from "node-fetch";
 
-export class HttpNoteOverviewReader implements EngagementNoteReader {
+export class HttpEngagementNoteCounter implements EngagementNoteCounter {
   async countByLearningArea(user: User): Promise<NoteCount[]> {
     const response = await fetch(`http://localhost:7171/user/${user.identifier}/noteCounts`)
     const data = await response.json()
@@ -13,7 +13,7 @@ export class HttpNoteOverviewReader implements EngagementNoteReader {
   }
 }
 
-export class HttpNoteEngageReader implements EngageReader {
+export class HttpEngagementNoteReader implements EngagementNoteReader {
   async read(user: User, learningArea: LearningArea): Promise<EngagementNote[]> {
     const response = await fetch(`http://localhost:7171/user/${user.identifier}/notes?learningAreaId=${learningArea.id}`)
     const data = await response.json()

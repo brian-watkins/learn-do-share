@@ -17,7 +17,7 @@ const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection)
 const adapters: Adapters = {
   learningAreasReader: new StaticLearningAreasReader(),
   engagementPlanReader: engagementPlanRepo,
-  engagementNoteReader: engagementNoteRepo
+  engagementNoteCounter: engagementNoteRepo
 }
 
 export default generateRootFunction(adapters)
