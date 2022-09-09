@@ -143,3 +143,21 @@ resource "github_actions_secret" "app-insights-connection-string" {
   secret_name     = "VITE_APP_INSIGHTS_CONNECTION_STRING"
   plaintext_value = azurerm_application_insights.metrics.connection_string
 }
+
+resource "github_actions_secret" "cosmosdb-endpoint" {
+  repository      = "learn-do-share"
+  secret_name     = "COSMOS_DB_ENDPOINT"
+  plaintext_value = azurerm_cosmosdb_account.cosmosdb.endpoint
+}
+
+resource "github_actions_secret" "cosmosdb-key" {
+  repository      = "learn-do-share"
+  secret_name     = "COSMOS_DB_READ_WRITE_KEY"
+  plaintext_value = azurerm_cosmosdb_account.cosmosdb.primary_key
+}
+
+resource "github_actions_secret" "cosmosdb-name" {
+  repository      = "learn-do-share"
+  secret_name     = "COSMOS_DB_NAME"
+  plaintext_value = azurerm_cosmosdb_sql_database.db.name
+}
