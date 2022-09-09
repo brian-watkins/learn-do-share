@@ -16,6 +16,7 @@
     "test:integration:debug": "DEBUG=true npm run test:integration",
     "test:unit": "node --enable-source-maps --loader @esbuild-kit/esm-loader --no-warnings ./behaviors/unit/display/runner.ts",
     "test:unit:tl": "node --enable-source-maps --loader @esbuild-kit/esm-loader --no-warnings ./behaviors/unit/display-tl/runner.ts",
+    "test:unit:adapters": "node --enable-source-maps --require dotenv/config --loader @esbuild-kit/esm-loader --no-warnings ./behaviors/unit/adapters/runner.ts",
     "test:unit:debug": "DEBUG=true npm run test:unit",
     "test:unit:tl:debug": "DEBUG=true npm run test:unit:tl",
     "prepare": "husky install"

@@ -14,13 +14,23 @@ export class CosmosConnection {
     this.client = new CosmosClient(config)
   }
 
-  private async container(containerName: string): Promise<Container> {
-    this.database = this.client.database(this.config.database)
-    return this.database?.container(containerName)
+  private container(containerName: string): Container {
+    const database = this.client.database(this.config.database)
+    return database.container(containerName)
   }
 
   async execute<T>(containerName: string, handler: (container: Container) => Promise<T>): Promise<T> {
-    const container = await this.container(containerName)
-    return handler(container)
+    return handler(this.container(containerName))
+  }
+
+  async createContainer(containerName: string): Promise<Container> {
+    const database = this.client.database(this.config.database)
+    const { container } = await database.containers.create({ id: containerName, partitionKey: "/userId" });
+    return container
+  }
+
+  async deleteContainer(containerName: string): Promise<void> {
+    const database = this.client.database(this.config.database)
+    await database.container(containerName).delete()
   }
 }

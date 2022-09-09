@@ -6,14 +6,12 @@ import { LearningArea } from "@/src/engage/learningArea";
 import { CosmosConnection } from "./cosmosConnection";
 import { FeedResponse } from "@azure/cosmos";
 
-const NOTES_CONTAINER = "engagement-notes"
-
 export class CosmosEngagementNoteRepository implements EngagementNoteReader, OverviewNoteReader, EngagementNoteWriter {
 
-  constructor(private connection: CosmosConnection) { }
+  constructor(private connection: CosmosConnection, private container: string = "engagement-notes") { }
 
   countByLearningArea(user: User): Promise<NoteCount[]> {
-    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+    return this.connection.execute(this.container, async (notes) => {
       const { resources }: FeedResponse<NoteCount> = await notes.items.query({
         query: "SELECT n.learningAreaId, count(1) as noteCount FROM n WHERE n.userId = @userId GROUP BY n.learningAreaId",
         parameters: [
@@ -27,9 +25,9 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader, Ove
   }
 
   async read(user: User, learningArea: LearningArea): Promise<EngagementNote[]> {
-    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+    return this.connection.execute(this.container, async (notes) => {
       const { resources } = await notes.items.query({
-        query: "SELECT n.id, n.content, n.date FROM notes n WHERE n.userId = @userId AND n.learningAreaId = @learningAreaId ORDER BY n.date DESC",
+        query: "SELECT n.id, n.content, n.date, 0 as state FROM notes n WHERE n.userId = @userId AND n.learningAreaId = @learningAreaId ORDER BY n.date DESC",
         parameters: [
           { name: "@userId", value: user.identifier },
           { name: "@learningAreaId", value: learningArea.id }
@@ -42,7 +40,7 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader, Ove
   }
 
   async write(user: User, learningAreaId: string, noteContents: EngagementNoteContents): Promise<EngagementNote> {
-    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+    return this.connection.execute(this.container, async (notes) => {
       const storeableNote = {
         content: noteContents.content,
         date: noteContents.date,
@@ -66,7 +64,7 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader, Ove
   }
 
   async delete(user: User, note: EngagementNote): Promise<void> {
-    return this.connection.execute(NOTES_CONTAINER, async (notes) => {
+    return this.connection.execute(this.container, async (notes) => {
       await notes.item(note.id, user.identifier).delete()
     })
   }
