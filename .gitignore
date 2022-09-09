@@ -10,3 +10,5 @@ az_creds.json
 plan.sh
 
 adr/*~
+
+.env
