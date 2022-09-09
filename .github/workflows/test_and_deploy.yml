@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'terraform/**'
+      - 'azure/terraform/**'
       - 'adr/**'
       - 'README.md'
   pull_request:
@@ -31,6 +31,11 @@ jobs:
       - run: npm run test
         env:
           VITE_APP_INSIGHTS_CONNECTION_STRING: "InstrumentationKey=some-fun-key;IngestionEndpoint=http://localhost"
+      - run: npm run test:unit:adapters
+        env:
+          COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
+          COSMOS_DB_READ_WRITE_KEY: ${{ secrets.COSMOS_DB_READ_WRITE_KEY }}
+          COSMOS_DB_NAME: ${{ secrets.COSMOS_DB_NAME }}
 
   build_and_deploy_job:
     needs: test
