@@ -48,7 +48,7 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
   # The next 5 ip addresses are to allow access from Azure Portal
   # The 0.0.0.0 block allows access from within Azure Data centers only
   # See https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-configure-firewall
-  ip_range_filter           = "73.114.216.99,104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26,0.0.0.0"
+  ip_range_filter = "73.114.216.99,104.42.195.92,40.76.54.131,52.176.6.30,52.169.50.45,52.187.184.26,0.0.0.0"
 
   consistency_policy {
     consistency_level = "Session"
