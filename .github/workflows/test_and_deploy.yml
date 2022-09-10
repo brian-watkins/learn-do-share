@@ -36,7 +36,7 @@ jobs:
           COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
           COSMOS_DB_READ_WRITE_KEY: ${{ secrets.COSMOS_DB_READ_WRITE_KEY }}
           COSMOS_DB_NAME: ${{ secrets.COSMOS_DB_NAME }}
-          RUNNER_KEY: ${{ env.GITHUB_RUN_ID }}
+          RUNNER_KEY: "$GITHUB_RUN_ID"
 
   build_and_deploy_job:
     needs: test
