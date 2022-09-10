@@ -1,17 +1,11 @@
 import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
 import { behavior, effect, example, step } from "esbehavior";
-import { User } from "@/api/common/user"
 import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
-import { LearningArea } from "@/src/engage/learningArea";
 import { expect } from "chai";
 import { EngagementNoteCounter } from "@/src/overview/backstage";
+import { TestUser } from "./fakes/User";
+import { TestLearningArea } from "./fakes/LearningArea";
 
-function TestUser(testId: number): User {
-  return {
-    identifier: `test-user-${testId}`,
-    name: `user-${testId}@email.com`
-  }
-}
 
 function TestNoteContents(testId: number): EngagementNoteContents {
   return {
@@ -20,17 +14,8 @@ function TestNoteContents(testId: number): EngagementNoteContents {
   }
 }
 
-function TestLearningArea(testId: number): LearningArea {
-  return {
-    id: `learning-area-${testId}`,
-    title: `Learn About Things ${testId}`,
-    content: `Some things about learning area ${testId}`,
-    category: "My Category"
-  }
-}
-
-export default (reader: EngagementNoteReader, counter: EngagementNoteCounter, writer: EngagementNoteWriter) =>
-  behavior("Reading, Writing, and Counting Notes", [
+export default (name: string, reader: EngagementNoteReader, counter: EngagementNoteCounter, writer: EngagementNoteWriter) =>
+  behavior(`Reading, Writing, and Counting Notes for ${name}`, [
     example({ init: () => new Map<string, EngagementNote>() })
       .script({
         perform: [

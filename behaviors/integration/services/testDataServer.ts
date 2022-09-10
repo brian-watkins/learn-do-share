@@ -28,11 +28,18 @@ export class TestDataServer {
       const allPlans = this.plans
         .filter(plan => plan.userId === req.params.userId)
 
+      let plansToReturn = []
+
       if (req.query.learningAreaId) {
-        res.json(allPlans.filter(plan => plan.learningArea === req.query.learningAreaId))
+        plansToReturn = allPlans
+          .filter(plan => plan.learningArea === req.query.learningAreaId)
+          .map(({ userId, ...rest }) => rest)
       } else {
-        res.json(allPlans)
+        plansToReturn = allPlans
+          .map(({ userId, ...rest }) => rest)
       }
+
+      res.json(plansToReturn)
     })
 
     app.post("/user/:userId/plans", (req, res) => {

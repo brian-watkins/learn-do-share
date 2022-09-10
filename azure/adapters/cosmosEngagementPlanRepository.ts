@@ -7,14 +7,13 @@ import { CosmosConnection } from "./cosmosConnection";
 import { EngagementPlan } from "@/src/engage/engagementPlans";
 import { LearningArea } from "@/src/engage/learningArea";
 
-const PLANS_CONTAINER = "engagement-plans"
 
 export class CosmosEngagementPlanRepository implements EngagementPlanReader, PlanReader, EngagementPlanWriter {
 
-  constructor(private connection: CosmosConnection) { }
+  constructor(private connection: CosmosConnection, private container: string = "engagement-plans") { }
 
   async readAll(user: User): Promise<EngagementPlan[]> {
-    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+    return this.connection.execute(this.container, async (plans) => {
       const { resources } = await plans.items.query({
         query: "SELECT * FROM plans p WHERE p.userId = @userId",
         parameters: [
@@ -28,7 +27,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Pla
   }
 
   async read(user: User, learningArea: LearningArea): Promise<EngagementPlan[]> {
-    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+    return this.connection.execute(this.container, async (plans) => {
       const { resources } = await plans.items.query({
         query: "SELECT * FROM plans p WHERE p.userId = @userId AND p.learningArea = @learningAreaId",
         parameters: [
@@ -43,7 +42,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Pla
   }
 
   async write(user: User, plan: EngagementPlan): Promise<EngagementPlan> {
-    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+    return this.connection.execute(this.container, async (plans) => {
       const storeablePlan = Object.assign(plan, { userId: user.identifier })
 
       const { resource } = await plans.items.create(storeablePlan)
@@ -57,7 +56,7 @@ export class CosmosEngagementPlanRepository implements EngagementPlanReader, Pla
   }
 
   async deleteAll(user: User, learningArea: string): Promise<void> {
-    return this.connection.execute(PLANS_CONTAINER, async (plans) => {
+    return this.connection.execute(this.container, async (plans) => {
       // Note: Seems like we should try to remove this query
       // But the frontend request doesn't seem to be all that much slower,
       // maybe a few ms. So doesn't matter a whole lot
