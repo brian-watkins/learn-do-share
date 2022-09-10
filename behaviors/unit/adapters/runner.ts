@@ -18,11 +18,19 @@ const cosmosConnection = new CosmosConnection({
   database: process.env["COSMOS_DB_NAME"] ?? "lds",
 })
 
-await cosmosConnection.createContainer("test-engagement-notes")
-await cosmosConnection.createContainer("test-engagement-plans")
+const runnerKey = process.env["RUNNER_KEY"] ?? "0"
 
-const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection, "test-engagement-notes")
-const engagementPlanRepo = new CosmosEngagementPlanRepository(cosmosConnection, "test-engagement-plans")
+const notesContainer = `test-engagement-notes-${runnerKey}`
+const plansContainer = `test-engagement-plans-${runnerKey}`
+
+console.log("Creating Cosmos DB Container", notesContainer)
+await cosmosConnection.createContainer(notesContainer)
+
+console.log("Creating Cosmos DB Container", plansContainer)
+await cosmosConnection.createContainer(plansContainer)
+
+const engagementNoteRepo = new CosmosEngagementNoteRepository(cosmosConnection, notesContainer)
+const engagementPlanRepo = new CosmosEngagementPlanRepository(cosmosConnection, plansContainer)
 
 const summary = await validate([
   noteRepoBehavior("Test Data Server Adapter", new HttpEngagementNoteReader(), new HttpEngagementNoteCounter(), new HttpNoteEngageWriter()),
@@ -35,7 +43,10 @@ if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1
 }
 
-await cosmosConnection.deleteContainer("test-engagement-notes")
-await cosmosConnection.deleteContainer("test-engagement-plans")
+console.log("Deleting Cosmos DB Container", notesContainer)
+await cosmosConnection.deleteContainer(notesContainer)
+
+console.log("Deleting Cosmos DB Container", plansContainer)
+await cosmosConnection.deleteContainer(plansContainer)
 
 await dataServer.stop()
