@@ -80,6 +80,13 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
       learningArea
     })
   } else {
+    // What if we could get both plans and notes at the same time?
+    // Instead we'd need something like engagementCollectionReader that could
+    // get plans and notes based on user and learning area
+    // Then our data store should be based less on the types of distinct resources
+    // we have and more on the types of *pages* we have, which themselves
+    // need various related resources
+
     const plans = await adapters.engagementPlanReader.read(context.user, learningArea)
     const levels = plans
       .map(plan => plan.level)
