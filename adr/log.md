@@ -2159,3 +2159,159 @@ that are not under test, namely, the adapters that talk to Cosmos DB. To rectify
 that, we could have a smoke test. This would show also not only that we wrote
 the write kind of code that can talk to cosmos but that we are configured
 correctly in the production environment as well.
+
+
+### Testing Adapters
+
+We considered writing a smoke test, but it just seems like the feedback would be
+coming too late, if that's the only feedback we get on code related to cosmos
+db. Plus, a smoke test like that introduces some difficulties -- if it fails it
+potentially leaves our production database in a bad state, which some test data
+that would need to be cleaned up, etc.
+
+So, instead, we wrote some adapter tests. This is a good thing anyway because it
+allows us to ensure that our fake -- the TestDataServer -- has all the same
+behavior we expect of our adapters. And we can run the same tests against that
+as we run against our Cosmos DB adapters. The tests we write against the Cosmos
+DB adapters really do use the real Cosmos DB in the cloud ... but the tests
+create a container specifically for test data and then delete that container
+when the tests are complete. This isolates data we are using for testing and
+also makes it less likely that a test failure will result in the need for manual
+cleanup.
+
+Right now, we need to run these tests manually. We should probably make them
+part of our pipeline at least, but maybe not something that runs locally all the
+time? The trick is that they probably won't run in github until we provide
+access from github to our cosmos db ...
+
+We put the credentals for CosmosDB in our `.env` file. This file was checked
+into source control, which seems bad, so we removed it from source control. It
+turns out, though, that this was necessary and now causes all our tests to fail
+in CI. So, we need some way to fix our pipeline now ... The fake instrumentation
+key is something that vite needs when running the tests. Perhaps it could just
+be an environment variable set in the github action. The other `.env` values are
+specific to running the cosmos db adapter tests.
+
+We have this running now in our pipeline -- it actually worked fine, probably
+because github actions actually run inside an Azure data center which we allow
+access to CosmosDB from. The only problem with this: the adapter test create a
+new test container and then destroys it at the end of the tests. But this means
+that if two github action pipelines are running at once then they could
+conflict, trying to create, use, or delete the same test container. So we
+probably need to give that test container a unique name somehow.
+
+We use the github run id as a unique identifier for each workflow run and so
+hopefully now we should be able to have multiple workflow runs occurring
+simultaneously if necessary, since we create cosmos db containers using the
+unique identifier for each workflow run.
+
+So now I have all the adapters under test, described using a shared behavior
+that I can validate against the test adapter and the real, cosmos db adapters.
+
+
+### Revising our Data Model for Cosmos DB
+
+
+### Restructuring our code with Patterns in mind
+
+Some goals we had with this codebase:
+1. separate the view code from the logic of the application -- ie the view
+should only render html based on some data. And it should do nothing more than
+dispatch events that indicate certain things happened in the UI
+2. make the source as 'serverless' as possible. That is, abstract all details
+about a particular deployment environment in both the source and the tests.
+3. efface the boundary between the frontend and the backend -- ie #noapi -- by
+having the backend expose one endpoint that processes messages much like a
+reducer function. We accomplish this by using typescript everywhere and
+esmodules that allow us to do automatic tree shaking and create the bundles we
+need even if there is other code in the same file that is not relevant.
+
+Some of these goals are more important that others -- in fact these are listed
+in priority order. (2) and (3) are more of experiments than imperatives.
+
+But the question is, given this, how should we organize the code so that it is
+clear how to add a new feature? Ie what is the pattern, the overall structure of
+our system?
+
+We've tried broadly organizing files according to pages. Each page is basically
+its own application: overview and engage. There are a few shared files, but
+basically there is a top-level directory for each page.
+
+But the question is really, within each page, how do we organize the view code,
+the view logic, and the backend logic? 
+
+The view logic is currently divided into two main functions: `process` and
+`update`. `process` handles what we might call `commands` -- these are functions
+that can dispatch other messages, asynchronously if need be. And then `update`
+is a collection of functions that modifies the data, which triggers an update of
+the view.
+
+One interesting thing is that you can think of the view as a command kind of,
+since it can actually dispatch new messages. The `update` function is the only
+place that modifications to the application state can occur. So it's like behind
+the scenes, update results in a message that contains the new application state
+and this is processed by the `view` function. Update, in other words, is a
+command also -- it's just that the 'message' it sends is never really made
+explicit.
+
+So a command is (1) triggered by some message and (2) can produce a new message.
+That message might be `updateViewWithThisNewState`
+
+That's super abstract: each piece of the app can be understood as something that
+responds to a message and then produces new messages.
+
+But what about particular use cases? Like consider create a new note:
+
+1. Typing in the note input field triggers context messages
+2. Clicking save note triggers a save-note message with the text and the date
+3. The save-note message triggers a command that sends a request to backstage to
+save the note. AND produces a note-save-in-progress message
+4. The request to backstage either succeeds or fails. If it succeeds it produces
+a note-saved message. If it fails it produces a note-save-failed message.
+5. The note-save-in-progress message triggers an update to the data, which
+triggers an update to the view to indicate that note-save is in progress.
+6. The note-saved message triggers an update to the data, which triggers an
+update to the view to show the saved note and clear the note input.
+7. The note-save-failed message triggers an update to the data, which triggers
+an update to the view to display the error message.
+
+So a lot of stuff happens! just for saving a note.
+
+There's a few things I could do. I could abstract this process into something
+that was somehow repeatable. I think redux slices does something like this for
+common crud operations. That's not really what I want. What I want is to be able
+to see this flow 'at once' so I could follow it in the app somehow.
+
+We could definitely do something like with reactive streams to put all the
+display related logic together in one sort of stream or whatever we would call
+it. Basically, subscribe to 'save-note' messages and then have some way to
+update the view as part of the stream and trigger a view update. That would
+basically replace the one store with lots of different reactive streams, one for
+each use case.
+
+Now, I'm not sure how that would actually help with the backstage function.
+Maybe we would have a reactive stream there too. So the backstage stream could
+also subscribe to 'save-note' and it would just do its thing and then return a
+new message. So you'd still need two things for each full-stack use case: a
+display stream and a backstage stream. I don't think there's any way around
+that. But maybe there is some way to show the connection in the display stream
+between this display stream and the particular backstage function. For example,
+remix has named functions that are inside a particular component, and then it
+must do some esbuild magic to produce all the right bundles for browser and
+server-side.
+
+Perhaps we could kind of think of the backstage and the display stream as two
+different *actors*. And what the display stream does is says: Hey at this point
+send this message to this actor (which happens to be a backstage function).
+
+That sounds cool but I'm not sure exactly what that would involve in practice.
+And it could be, if it makes it easier, that we actually have a different
+backstage endpoint for each backstage actor.
+
+What our source code would do, basically, is declare the functions that are to
+be triggered as part of some workflow. And then the framework would have to do
+the work of creating redux middleware and reducer functions from that, which get
+triggered at the right time.
+
+Basically what we want is a DSL for describing use cases that can then be
+implemented in terms of the tools we have: redux and redux middleware.
