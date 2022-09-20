@@ -106,7 +106,7 @@ export function learningAreasPracticeView(): Html.View {
 }
 
 
-const display: DisplayConfig<AppModel, never> = {
+const display: DisplayConfig<AppModel> = {
   view
 }
 

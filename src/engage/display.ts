@@ -6,14 +6,15 @@ import { learningAreaContentView } from "./learningAreaContent"
 import { footer, header, linkBox } from "../viewElements"
 import { userAccountView } from "../user"
 import { view as engagementNotesView } from "./engagementNotes/view"
-import { engagementNoteDeleted, engagementNoteDeleteFailed, engagementNoteDeleteInProgress, EngagementNoteMessages, engagementNotePersisted, engagementNoteWriteFailed, engagementNoteWriteInProgress } from "./engagementNotes/writeEngagementNote"
 import { view as engagementPlansView } from "./engagementPlans/view"
-import { EngagementPlanMessages, engagementPlanPersisted, engagementPlansDeleted, engagementPlanWriteFailed, engagementPlanWriteInProgress } from "./engagementPlans/writeEngagementPlans"
-import { EngagementNote, EngagementNotes, engagementNoteSaving, engagementNotesRetrieved, NoteState } from "./engagementNotes"
-import { EngagementLevels, engagementLevelsRetrieved, engagementLevelsSaving, EngagementPlan } from "./engagementPlans"
-import { BackstageError, getBackstageResult } from "@/api/backstage/adapter"
-import { MessageDispatcher, MessageForwarder } from "@/display/effect"
-import { Result } from "../util/result"
+import { EngagementNotes, engagementNotesRetrieved } from "./engagementNotes"
+import { EngagementLevels, engagementLevelsRetrieved } from "./engagementPlans"
+import { deleteNote } from "./engagementNotes/deleteNote"
+import { saveNote } from "./engagementNotes/saveNote"
+import { saveEngagementPlan } from "./engagementPlans/saveEngagementPlan"
+import { deleteEngagementPlansProcedure } from "./engagementPlans/deleteEngagementPlans"
+import { LearningAreaCategory } from "../overview/learningAreaCategory"
+import { mapAll } from "../util/procedures"
 
 export interface Informative {
   type: "informative"
@@ -171,112 +172,28 @@ function learningAreasLink(): Html.View {
   return linkBox("/", "All Learning Areas")
 }
 
-type Messages = EngagementNoteMessages | EngagementPlanMessages
-
-async function process(forward: MessageForwarder, dispatch: MessageDispatcher, _: Model, message: Messages) {
-  switch (message.type) {
-    case "writeEngagementPlan": {
-      dispatch(engagementPlanWriteInProgress())
-      const result: Result<EngagementPlan, BackstageError> = await getBackstageResult(message)
-      dispatch(result.resolve({
-        ok: engagementPlanPersisted,
-        error: () => engagementPlanWriteFailed()
-      }))
-      break
+function toPersonalized(model: Model): Personalized | Error {
+  if (model.type === "personalized" || model.type === "error") {
+    return model
+  } else {
+    return {
+      type: "error",
+      learningArea: { id: "", title: "", content: "", category: LearningAreaCategory.Discipline },
+      engagementLevels: engagementLevelsRetrieved([]),
+      engagementNotes: engagementNotesRetrieved([]),
+      user: { identifier: "", name: "" }
     }
-    case "engagementNoteDeleteRequested": {
-      dispatch(engagementNoteDeleteInProgress(message.note))
-      const result: Result<EngagementNote, BackstageError> = await getBackstageResult(message)
-      dispatch(result.resolve({
-        ok: engagementNoteDeleted,
-        error: () => engagementNoteDeleteFailed(message.note)
-      }))
-      break
-    }
-    case "engagementNoteCreationRequested": {
-      dispatch(engagementNoteWriteInProgress(message.contents))
-      const result: Result<EngagementNote, BackstageError> = await getBackstageResult(message)
-      dispatch(result.resolve({
-        ok: engagementNotePersisted,
-        error: () => engagementNoteWriteFailed(message.contents)
-      }))
-      break
-    }
-    case "deleteEngagementPlans":
-      dispatch(engagementPlanWriteInProgress())
-      const result: Result<string, BackstageError> = await getBackstageResult(message)
-      dispatch(result.resolve({
-        ok: engagementPlansDeleted,
-        error: () => engagementPlanWriteFailed()
-      }))
-      break
-    default:
-      forward()
   }
 }
 
-function update(model: Personalized | Error, message: Messages) {
-  switch (message.type) {
-    case "engagementPlanWriteInProgress":
-      model.engagementLevels = engagementLevelsSaving(model.engagementLevels.levels)
-      break
-    case "engagementPlanPersisted":
-      const levels = model.engagementLevels.levels
-      levels.push(message.plan.level)
-      model.engagementLevels = engagementLevelsRetrieved(levels)
-      break
-    case "engagementPlanWriteFailed":
-      model.engagementLevels = engagementLevelsRetrieved(model.engagementLevels.levels)
-      model.type = "error"
-      break
-    case "engagementPlansDeleted":
-      model.engagementLevels = engagementLevelsRetrieved([])
-      break
-    case "engagementNoteWriteInProgress":
-      model.engagementNotes = engagementNoteSaving(model.engagementNotes.notes)
-      break
-    case "engagementNoteWriteFailed":
-      model.engagementNotes = engagementNotesRetrieved(model.engagementNotes.notes)
-      model.type = "error"
-      break
-    case "engagementNotePersisted":
-      model.engagementNotes = engagementNotesRetrieved([message.note, ...model.engagementNotes.notes])
-      break
-    case "engagementNoteDeleteInProgress": {
-      const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
-      if (note) {
-        note.state = NoteState.Deleting
-      }
-      break
-    }
-    case "engagementNoteDeleteFailed": {
-      const note = model.engagementNotes.notes.find(note => note.id === message.note.id)
-      if (note) {
-        note.state = NoteState.FailedDeleting
-      }
-      model.type = "error"
-      break
-    }
-    case "engagementNoteDeleted":
-      model.engagementNotes.notes = model.engagementNotes.notes.filter(note => note.id !== message.note.id)
-      break
-  }
-}
-
-function personalizable(update: (model: Personalized | Error, message: Messages) => void): (model: Model, message: Messages) => void {
-  return (model, message) => {
-    if (model.type === "informative") {
-      return
-    }
-
-    update(model, message)
-  }
-}
-
-const display: DisplayConfig<Model, Messages> = {
+const display: DisplayConfig<Model> = {
   view,
-  update: personalizable(update),
-  process
+  procedures: mapAll(toPersonalized, [
+    saveNote,
+    deleteNote,
+    saveEngagementPlan,
+    deleteEngagementPlansProcedure
+  ])
 }
 
 export default display

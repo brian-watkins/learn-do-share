@@ -1,6 +1,5 @@
 import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
-import { DeleteEngagementPlans, EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/writeEngagementPlans.js";
 import { Model } from "./display.js";
 import { LearningAreaReader } from "./learningAreaReader"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
@@ -10,7 +9,10 @@ import { noteContentTagStyles } from "./engagementNotes/view.js";
 import { LearningArea } from "./learningArea.js";
 import { EngagementNote, EngagementNoteContents, engagementNotesRetrieved } from "./engagementNotes";
 import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/index.js";
-import { EngagementNoteCreationRequested, EngagementNoteDeleteRequested } from "./engagementNotes/writeEngagementNote.js";
+import { EngagementNoteDeleteRequested } from "./engagementNotes/deleteNote.js";
+import { EngagementNoteCreationRequested } from "./engagementNotes/saveNote.js";
+import { EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/saveEngagementPlan.js";
+import { DeleteEngagementPlans } from "./engagementPlans/deleteEngagementPlans.js";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>

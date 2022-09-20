@@ -7,7 +7,8 @@ import * as Display from "@/display/context"
 import { decorate, TagDecorator } from "../../util/markdownParser"
 import { LearningArea } from "../learningArea"
 import { EngagementNote, EngagementNotes, NoteState } from "."
-import { createNoteMessage, deleteNoteMessage } from "./writeEngagementNote"
+import { deleteNoteMessage } from "./deleteNote"
+import { createNoteMessage } from "./saveNote"
 
 
 export function view(area: LearningArea, engagementNotes: EngagementNotes): Html.View {

@@ -1,43 +1,38 @@
 import { Store, Action, applyMiddleware, createStore, Reducer } from "redux"
 import { View } from "./markup"
 import { produce } from "immer"
-import { EffectHandler, effectMiddleware, Processor } from "./effect"
-import { BATCH_MESSAGE_TYPE, handleBatchMessage } from "./batch"
+import { effectMiddleware, MessageRegistry } from "./effect"
 import { attributesModule, classModule, eventListenersModule, init, propsModule, VNode } from "snabbdom"
+import { Procedure, ReducerMessage } from "./procedure"
 
-export interface DisplayConfig<T, M extends Action<any>> {
-  view(state: T): View
-  update?: (state: T, message: M) => void,
-  process?: Processor
+export interface DisplayConfig<S> {
+  view(state: S): View
+  procedures?: Array<Procedure<any, S>>
 }
 
-export function createReducer<T, M extends Action<any>>(display: DisplayConfig<T, M>, initialState: T): Reducer<T, M> {
-  if (display.update === undefined) {
-    return function(state: T = initialState, _: M): T {
+
+function createReducer<T, M extends Action<string>>(initialState: T): Reducer<T, M> {
+  return function (state: T = initialState, message: M): T {
+    if (message.type !== "__update-view") {
       return state
     }
-  }
 
-  return function (state: T = initialState, message: M): T {
+    const reducerMessage = message as unknown as ReducerMessage<M, T>
+
     return produce(state, (draft) => {
-      display.update!(draft as T, message)
+      reducerMessage.reducer(draft as T, reducerMessage.payload)
     })
   }
 }
 
-function effectHandlers(): Map<string, EffectHandler> {
-  const handlers = new Map<string, EffectHandler>()
-  handlers.set(BATCH_MESSAGE_TYPE, handleBatchMessage)
-  return handlers
-}
-
-export class AppDisplay<T, M extends Action<any>> {
+export class AppDisplay<S, M extends Action<string>> {
   private appRoot: HTMLElement | null = null
-  private store: Store<T, M>
+  private store: Store<S, M>
   private displayMessageListenerController = new AbortController()
+  private messageRegistry = new MessageRegistry<any, S>()
 
-  constructor(private config: DisplayConfig<T, M>, initialState: T) {
-    this.store = createStore(createReducer(this.config, initialState), applyMiddleware(effectMiddleware(config.process, effectHandlers())))
+  constructor(private config: DisplayConfig<S>, initialState: S) {
+    this.store = createStore(createReducer(initialState), applyMiddleware(effectMiddleware(this.messageRegistry)))
   }
 
   dispatch(message: M) {
@@ -71,6 +66,10 @@ export class AppDisplay<T, M extends Action<any>> {
       oldNode = patch(oldNode, this.config.view(this.store.getState()))
     }
     this.store.subscribe(handleUpdate)
+
+    for (const procedure of this.config.procedures ?? []) {
+      procedure.register(this.messageRegistry.register.bind(this.messageRegistry))
+    }
 
     handleUpdate()
   }

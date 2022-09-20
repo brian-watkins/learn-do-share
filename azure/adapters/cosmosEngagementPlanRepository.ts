@@ -2,10 +2,10 @@ import { BulkOperationType } from "@azure/cosmos";
 import { User } from "../api/common/user";
 import { EngagementPlanReader } from "@/src/overview/backstage";
 import { EngagementPlanReader as PlanReader } from "@/src/engage/backstage"
-import { EngagementPlanWriter } from "@/src/engage/engagementPlans/writeEngagementPlans";
 import { CosmosConnection } from "./cosmosConnection";
 import { EngagementPlan } from "@/src/engage/engagementPlans";
 import { LearningArea } from "@/src/engage/learningArea";
+import { EngagementPlanWriter } from "@/src/engage/engagementPlans/saveEngagementPlan";
 
 
 export class CosmosEngagementPlanRepository implements EngagementPlanReader, PlanReader, EngagementPlanWriter {
