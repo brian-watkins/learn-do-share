@@ -2209,9 +2209,6 @@ So now I have all the adapters under test, described using a shared behavior
 that I can validate against the test adapter and the real, cosmos db adapters.
 
 
-### Revising our Data Model for Cosmos DB
-
-
 ### Restructuring our code with Patterns in mind
 
 Some goals we had with this codebase:
@@ -2315,3 +2312,46 @@ triggered at the right time.
 
 Basically what we want is a DSL for describing use cases that can then be
 implemented in terms of the tools we have: redux and redux middleware.
+
+AND ... WE DID IT!
+
+We introduced a notion of `Procedures` that's basically a limited DSL for
+representing actions or 'use cases' in our program. So when we configure the
+display, we simply give it a list of procedures (instead of an update function
+and a process function like we had). Each procedure (right now) ultimately
+indicates a particular message that, when received, will trigger it. Then, based
+on that value, the procedure can either update the view or initiate a promise
+that results in a new value. Then, given this new value, the procedure can
+either update the view or run another promise, and so on. So basically, we're
+building on the same insight as Elm and Vue, namely, that the two things you
+want to do is either (1) modify the application state, which then in turn
+results in the view being updated or (2) trigger some asynchronous call that
+then ultimately results in some value that you can use to either modify the
+application state or trigger some other asynchronous call. Basically, the
+procedure operates on some value (originally a message value) and then you can
+either update the view or 'issue a command'.
+
+It actually works out pretty nice so far. There were only four procedures that
+we actually needed. Each of these procedures is in its own file, along with the
+definition of the message that triggers it. We were able to move all the
+intermediate messages that weren't triggered by the UI but needed to be there to
+facilitate all the steps along the way (like 'deleteNoteInProgress',
+'deleteNoteFailed', etc). What this does, I think, is simplify the expression of
+the application logic. It's much simpler to look at four procedures, each
+clearly distinguished, as opposed to looking at one `update` function with all
+the intermediate messages intermingled.
+
+There's probably more we could do to organize the `display` module so that
+everything is factored better. But for now it works.
+
+The next step is really about somehow breaking apart of the backstage file so
+that the backstage function lives with the (frontstage) procedure. I think that
+would be helpful but we would need to figure out if it's feasible in some way.
+
+
+
+
+
+### Revising our Data Model for Cosmos DB
+
+
