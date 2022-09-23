@@ -1,7 +1,7 @@
 import * as Html from "@/display/markup"
 import * as Style from "../../style"
 import { LearningArea } from "../learningArea"
-import { EngagementLevel, EngagementLevels, engagementPlan } from "."
+import { EngagementLevel, EngagementLevels, engagementPlan, nextEngagementLevel } from "."
 import { deleteEngagementPlans } from "./deleteEngagementPlans"
 import { writeEngagementPlan } from "./saveEngagementPlan"
 
@@ -65,17 +65,4 @@ function nextEngagementLevelMessage(learningArea: LearningArea, levels: Array<En
   } else {
     return writeEngagementPlan(engagementPlan(learningArea, nextLevel))
   }
-}
-
-function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
-  if (levels.includes(EngagementLevel.Sharing)) {
-    return EngagementLevel.None
-  }
-  if (levels.includes(EngagementLevel.Doing)) {
-    return EngagementLevel.Sharing
-  }
-  if (levels.includes(EngagementLevel.Learning)) {
-    return EngagementLevel.Doing
-  }
-  return EngagementLevel.Learning
 }

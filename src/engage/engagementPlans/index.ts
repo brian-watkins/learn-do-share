@@ -7,6 +7,19 @@ export enum EngagementLevel {
   Sharing = "sharing"
 }
 
+export function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
+  if (levels.includes(EngagementLevel.Sharing)) {
+    return EngagementLevel.None
+  }
+  if (levels.includes(EngagementLevel.Doing)) {
+    return EngagementLevel.Sharing
+  }
+  if (levels.includes(EngagementLevel.Learning)) {
+    return EngagementLevel.Doing
+  }
+  return EngagementLevel.Learning
+}
+
 export interface EngagementPlan {
   learningArea: string
   level: EngagementLevel
