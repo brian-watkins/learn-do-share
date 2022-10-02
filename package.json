@@ -35,7 +35,7 @@
     "@types/wait-on": "^5.3.1",
     "autoprefixer": "^10.4.4",
     "chai": "^4.3.6",
-    "esbehavior": "^2.0.1",
+    "esbehavior": "^2.1.0",
     "express": "^4.17.3",
     "foreman": "^3.0.1",
     "husky": "^7.0.0",
