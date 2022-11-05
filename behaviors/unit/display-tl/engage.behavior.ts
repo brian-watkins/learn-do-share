@@ -1,10 +1,11 @@
-import { behavior, example, effect, Observation, pick, Presupposition, fact } from "esbehavior"
+import { behavior, example, effect, Observation, Presupposition, fact } from "esbehavior"
 import { FakeLearningArea } from "./fakes/learningArea"
 import { expect } from "chai"
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps"
 import { EngagementLevel } from "@/src/engage/engagementPlans"
+import { errorMessageIsVisible } from "./observations"
 
 export default
   behavior("indicate engagement with a learning area", [
@@ -85,7 +86,8 @@ export default
           waitForResponseFromBackstage()
         ],
         observe: [
-          increaseEngagementButtonIsDisabled(false)
+          increaseEngagementButtonIsDisabled(false),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(FakeLearningArea(1)))
@@ -98,10 +100,12 @@ export default
         ],
         perform: [
           visitTheLearningAreaPage(),
-          userClicksIncreaseEngagementButton()
+          userClicksIncreaseEngagementButton(),
+          waitForResponseFromBackstage()
         ],
         observe: [
-          increaseEngagementButtonIsDisabled(false)
+          increaseEngagementButtonIsDisabled(false),
+          errorMessageIsVisible(true)
         ]
       })
   ])

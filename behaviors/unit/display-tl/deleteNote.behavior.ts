@@ -1,10 +1,11 @@
-import { Action, behavior, effect, example, fact, pick, step } from "esbehavior";
+import { Action, behavior, effect, example, fact, Observation, Presupposition, step } from "esbehavior";
 import { FakeLearningArea } from "./fakes/learningArea";
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
-import { FakeNote } from "./fakes/note";
+import { FakeNote, TestEngagementNote } from "./fakes/note";
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
+import { errorMessageIsVisible } from "./observations";
 
 export default
   behavior("delete a note", [
@@ -27,14 +28,9 @@ export default
           clickToDeleteNote(1)
         ],
         observe: [
-          effect("the delete note button is disabled on the second note", async (testContext) => {
-            const deleteNoteButtonDisabledStates = await testContext
-              .selectAll("[data-engagement-note]")
-              .mapElements(element => {
-                return element.selectDescendantWithText("Delete Note").isDisabled()
-              })
-            expect(deleteNoteButtonDisabledStates).to.deep.equal([false, true, false])
-          })
+          deleteNoteButtonIsDisabledForNote(0, false),
+          deleteNoteButtonIsDisabledForNote(1, true),
+          deleteNoteButtonIsDisabledForNote(2, false),
         ]
       }),
     example(learningAreaTestContext(FakeLearningArea(1)))
@@ -43,11 +39,10 @@ export default
         suppose: [
           backstageRequestsFailDueToServerError(),
           someoneIsAuthenticated("fun-person@email.com"),
-          fact("there is a note", (testContext) => {
-            testContext.withNotes([
-              FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
-            ])
-          })
+          thereAreNotes([
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 1).withContent("my original note was this text"),
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 2)
+          ])
         ],
         perform: [
           visitTheLearningAreaPage(),
@@ -55,12 +50,9 @@ export default
           waitForResponseFromBackstage()
         ],
         observe: [
-          effect("the delete note button is enabled", async (testContext) => {
-            const deleteNoteButtonDisabledState = await testContext
-              .selectElementWithText("Delete Note")
-              .isDisabled()
-            expect(deleteNoteButtonDisabledState).to.deep.equal(false)
-          })
+          deleteNoteButtonIsDisabledForNote(0, false),
+          textIsVisibleForNote(0, "my original note was this text"),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(FakeLearningArea(1)))
@@ -69,11 +61,9 @@ export default
         suppose: [
           backstageRequestsFailDueToNetworkError(),
           someoneIsAuthenticated("fun-person@email.com"),
-          fact("there is a note", (testContext) => {
-            testContext.withNotes([
-              FakeNote("fun-person@email.com", FakeLearningArea(1), 1)
-            ])
-          })
+          thereAreNotes([
+            FakeNote("fun-person@email.com", FakeLearningArea(1), 1).withContent("my original note was funny")
+          ])
         ],
         perform: [
           visitTheLearningAreaPage(),
@@ -81,21 +71,46 @@ export default
           waitForResponseFromBackstage()
         ],
         observe: [
-          effect("the delete note button is enabled", async (testContext) => {
-            const deleteNoteButtonDisabledState = await testContext
-              .selectElementWithText("Delete Note")
-              .isDisabled()
-            expect(deleteNoteButtonDisabledState).to.deep.equal(false)
-          })
+          deleteNoteButtonIsDisabledForNote(0, false),
+          textIsVisibleForNote(0, "my original note was funny"),
+          errorMessageIsVisible(true)
         ]
       })
   ])
 
-  function clickToDeleteNote(index: number): Action<EngageTestContext> {
-    return step(`click to delete note at index ${index}`, async (testContext) => {
-      await testContext.selectAll("[data-engagement-note]")
-        .getElement(index)
-        .selectDescendantWithText("Delete Note")
-        .click()
-    })
-  }
+function clickToDeleteNote(index: number): Action<EngageTestContext> {
+  return step(`click to delete note at index ${index}`, async (testContext) => {
+    await testContext.selectAll("[data-engagement-note]")
+      .getElement(index)
+      .selectDescendantWithText("Delete Note")
+      .click()
+  })
+}
+
+function deleteNoteButtonIsDisabledForNote(index: number, isDisabled: boolean): Observation<EngageTestContext> {
+  return effect(`the delete note button at index ${index} is ${isDisabled ? "disabled" : "enabled"}`, async (testContext) => {
+    const deleteNoteButtonDisabledState = await testContext
+      .selectAll("[data-engagement-note]")
+      .getElement(index)
+      .selectDescendantWithText("Delete Note")
+      .isDisabled()
+    expect(deleteNoteButtonDisabledState).to.deep.equal(isDisabled)
+  })
+}
+
+function textIsVisibleForNote(index: number, text: string): Observation<EngageTestContext> {
+  return effect(`we see the text for note ${index}`, async (testContext) => {
+    const elementIsVisible = await testContext
+      .selectAll("[data-engagement-note]")
+      .getElement(index)
+      .selectDescendantWithText(text)
+      .isVisible()
+    expect(elementIsVisible).to.equal(true)
+  })
+}
+
+function thereAreNotes(notes: Array<TestEngagementNote>): Presupposition<EngageTestContext> {
+  return fact(`there are ${notes.length} notes`, (testContext) => {
+    testContext.withNotes(notes)
+  })
+}

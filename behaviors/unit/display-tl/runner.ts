@@ -20,7 +20,7 @@ const vite = await createServer({
   plugins: [
     tsConfigPaths()
   ],
-  logLevel: isDebug() ? "info" : "silent"
+  logLevel: isDebug() ? "info" : "warn"
 })
 await vite.listen(7170)
 

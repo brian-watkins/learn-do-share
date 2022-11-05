@@ -19,3 +19,9 @@ export function waitForResponseFromBackstage(): Action<EngageTestContextProxy> {
     await testContext.waitForRequestsToComplete()
   })
 }
+
+export function pause(): Action<EngageTestContextProxy> {
+  return step("pause script", async (testContext) => {
+    await testContext.pause()
+  })
+}

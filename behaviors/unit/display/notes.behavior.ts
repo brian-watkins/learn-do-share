@@ -1,6 +1,6 @@
 import { FakeLearningArea } from "behaviors/integration/testApp";
 import { expect } from "chai";
-import { behavior, effect, pick, step, Action, example } from "esbehavior";
+import { behavior, effect, step, Action, example } from "esbehavior";
 import { Page } from "playwright";
 import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy";
 import { saveNoteButtonIsDisabled } from "./observations";

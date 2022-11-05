@@ -38,6 +38,10 @@ export class EngageTestContextProxy {
     })
   }
 
+  pause(): Promise<void> {
+    return this.page.pause()
+  }
+
   withUser(user: TestUser): Promise<void> {
     return this.page.evaluate((user) => {
       window._testContext?.withUser(user)

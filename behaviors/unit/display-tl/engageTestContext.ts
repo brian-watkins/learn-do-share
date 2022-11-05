@@ -120,6 +120,6 @@ export class EngageTestContext {
   }
 
   waitForRequestsToComplete(): Promise<void> {
-    return new Promise((resolve) => { setTimeout(resolve, 10) })
+    return new Promise((resolve) => { setTimeout(resolve, 20) })
   }
 }

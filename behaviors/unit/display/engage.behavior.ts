@@ -1,4 +1,4 @@
-import { behavior, example, effect, Observation, fact, pick, Presupposition } from "esbehavior"
+import { behavior, example, effect, Observation, fact, Presupposition } from "esbehavior"
 import { FakeLearningArea } from "./fakes/learningArea"
 import { Page } from "playwright"
 import { expect } from "chai"

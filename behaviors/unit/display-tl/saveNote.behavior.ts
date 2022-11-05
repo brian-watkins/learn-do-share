@@ -1,9 +1,9 @@
-import { behavior, example, step, effect, pick, Action, Observation } from "esbehavior";
+import { behavior, example, step, effect, Action, Observation } from "esbehavior";
 import { FakeLearningArea } from "./fakes/learningArea";
 import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
-import { noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations"
+import { errorMessageIsVisible, noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations"
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
 
 export default
@@ -42,7 +42,8 @@ export default
           ...noteInput({
             hasText: "Here is a cool note!",
             isDisabled: false
-          })
+          }),
+          errorMessageIsVisible(true)
         ]
       }),
     example(learningAreaTestContext(FakeLearningArea(1)))
@@ -61,7 +62,8 @@ export default
           ...noteInput({
             hasText: "Here is an awesome note!",
             isDisabled: false
-          })
+          }),
+          errorMessageIsVisible(true)
         ]
       })
   ])

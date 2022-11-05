@@ -7,13 +7,15 @@ export class TestingLibraryDisplayElement implements DisplayElement {
     return new TestingLibraryDisplayElement(actor, screen.getByText(text))
   }
 
-  static fromSelector(actor: UserEvent, selector: string, options: SelectorOptions): DisplayElement {
+  static fromSelector(actor: UserEvent, selector: string, _: SelectorOptions): DisplayElement {
     return new TestingLibraryDisplayElement(actor, document.querySelector(selector)!)
   }
 
-  constructor (private actor: UserEvent, private element: HTMLElement) {}
+  constructor (private actor: UserEvent, private element: HTMLElement | null) {}
   
   async fill(value: string, options?: TypingOptions | undefined): Promise<void> {
+    if (!this.element) return Promise.reject("element not found")
+
     if (options?.clear) {
       await this.actor.clear(this.element)
     }
@@ -21,48 +23,66 @@ export class TestingLibraryDisplayElement implements DisplayElement {
   }
 
   async tagName(): Promise<string> {
+    if (!this.element) return Promise.reject("element not found")
+
     return this.element.tagName
   }
 
   click(): Promise<void> {
+    if (!this.element) return Promise.reject("element not found")
+
     return this.actor.click(this.element)
   }
 
   async type(value: string, options: TypingOptions): Promise<void> {
+    if (!this.element) return Promise.reject("element not found")
+
     if (options?.clear) {
       await this.actor.clear(this.element)
     }
     return this.actor.type(this.element, value)
   }
 
-  isVisible(): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async isVisible(): Promise<boolean> {
+    return this.element !== null
   }
-  isHidden(): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async isHidden(): Promise<boolean> {
+    return this.element === null
   }
   async isDisabled(): Promise<boolean> {
+    if (!this.element) return Promise.reject("element not found")
+
     return this.element.getAttribute("disabled") ? true : false
   }
   async text(): Promise<string | null> {
+    if (!this.element) return Promise.reject("element not found")
+
     return this.element.innerText
   }
   async getAttribute(name: string): Promise<string | null> {
+    if (!this.element) return Promise.reject("element not found")
+
     return this.element.getAttribute(name)
   }
   async getProperty(name: string): Promise<any> {
+    if (!this.element) return Promise.reject("element not found")
+
     return (this.element as any)[name]
   }
   async getInputValue(): Promise<string> {
+    if (!this.element) return Promise.reject("element not found")
+
     return (this.element as HTMLInputElement).value
   }
-  selectDescendant(selector: string, options: SelectorOptions): DisplayElement {
-    return new TestingLibraryDisplayElement(this.actor, this.element.querySelector(selector)!!)
+  selectDescendant(selector: string, _: SelectorOptions): DisplayElement {
+    return new TestingLibraryDisplayElement(this.actor, this.element?.querySelector(selector)!!)
   }
-  selectAllDescendants(selector: string): DisplayElementList {
+  selectAllDescendants(_: string): DisplayElementList {
     throw new Error("Method not implemented.");
   }
   selectDescendantWithText(text: string): DisplayElement {
+    if (!this.element) return new TestingLibraryDisplayElement(this.actor, null)
+
     return new TestingLibraryDisplayElement(this.actor, getByText(this.element, text))
   }
 }

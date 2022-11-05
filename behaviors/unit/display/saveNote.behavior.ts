@@ -1,4 +1,4 @@
-import { behavior, example, step, effect, pick, Action, Observation } from "esbehavior";
+import { behavior, example, step, effect, Action, Observation } from "esbehavior";
 import { Page } from "playwright";
 import { FakeLearningArea } from "./fakes/learningArea";
 import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
@@ -6,7 +6,6 @@ import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, ba
 import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
 import { expect } from "chai";
 import { errorMessageIsVisible, noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations";
-import { testContext } from "behaviors/integration/testApp";
 
 export default (page: Page) =>
   behavior("save a note", [

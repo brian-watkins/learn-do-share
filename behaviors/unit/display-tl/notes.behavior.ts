@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { behavior, effect, pick, step, Action, example, skip } from "esbehavior";
+import { behavior, effect, step, Action, example } from "esbehavior";
 import { someoneIsAuthenticated } from "./presuppositions";
 import { visitTheLearningAreaPage } from "./steps";
 import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"

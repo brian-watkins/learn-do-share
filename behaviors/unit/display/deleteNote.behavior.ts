@@ -1,4 +1,4 @@
-import { Action, behavior, effect, example, fact, Observation, pick, Presupposition, step } from "esbehavior";
+import { Action, behavior, effect, example, fact, Observation, Presupposition, step } from "esbehavior";
 import { Page } from "playwright";
 import { FakeLearningArea } from "./fakes/learningArea";
 import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
@@ -66,7 +66,7 @@ export default (page: Page) =>
         ],
         perform: [
           visitTheLearningAreaPage(),
-          clickToDeleteNote(0)
+          clickToDeleteNote(0),
         ],
         observe: [
           deleteNoteButtonIsDisabledForNote(0, false),
