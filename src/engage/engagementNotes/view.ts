@@ -1,4 +1,3 @@
-import { batch } from "@/display/batch"
 import * as Html from "@/display/markup"
 import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../../style"
 import { headingBox } from "../../viewElements"
@@ -86,9 +85,7 @@ function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Ht
           "disabled:no-underline",
           "hover:underline",
         ]),
-        Html.onClick(batch([
-          createNoteMessage(area, noteContent),
-        ])),
+        Html.onClick(createNoteMessage(area, noteContent)),
         Html.disabled(noteContent.length == 0 || isSavingNotes(engagementNotes))
       ], [
         Html.text("Save Note")
