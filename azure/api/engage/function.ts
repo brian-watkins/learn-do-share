@@ -1,7 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
-import { render } from "../common/render";
-import { azureUserParser } from "../common/azureUserParser";
-import { Adapters, initRenderer } from "@/src/engage/backstage";
+import { render } from "../common/render.js";
+import { azureUserParser } from "../common/azureUserParser.js";
+import { Adapters, initRenderer } from "@/src/engage/backstage.js";
 
 
 export function generateEngageFunction(adapters: Adapters): AzureFunction {

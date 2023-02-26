@@ -1,6 +1,11 @@
-import display from "./display"
-import { AppDisplay } from "@/display/display"
+// import display from "./display"
+// import { AppDisplay } from "@/display/display"
+import { display } from "loop/display"
+import * as View from "loop/display"
+import { container, withInitialValue } from "loop"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+import appDisplay from "./display.js"
+import { initSession, session } from "./model.js"
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -19,5 +24,9 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView({ name: "engage" });
 
-const app = new AppDisplay(display, window._display_initial_state)
-app.mount("#app")
+// const app = new AppDisplay(display, window._display_initial_state)
+
+initSession(window._display_initial_state)
+
+const mountPoint = document.getElementById("app")
+appDisplay().mount(mountPoint!)

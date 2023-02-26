@@ -1,8 +1,8 @@
-import { Adapters } from "@/src/overview/backstage";
-import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader";
-import { generateRootFunction } from "@/api/root/function";
-import { HttpEngagementPlanReader } from "azure/test/functions/HTTPEngagementPlanRepo";
-import { HttpEngagementNoteCounter } from "azure/test/functions/HTTPNoteRepo";
+import { Adapters } from "@/src/overview/backstage.js";
+import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader.js";
+import { generateRootFunction } from "@/api/root/function.js";
+import { HttpEngagementPlanReader } from "azure/test/functions/HTTPEngagementPlanRepo.js";
+import { HttpEngagementNoteCounter } from "azure/test/functions/HTTPNoteRepo.js";
 
 const adapters: Adapters = {
   learningAreasReader: new StaticLearningAreasReader(),

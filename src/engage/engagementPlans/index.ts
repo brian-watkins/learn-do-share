@@ -1,4 +1,4 @@
-import { LearningArea } from "../learningArea"
+import { LearningArea } from "../learningArea.js"
 
 export enum EngagementLevel {
   None = "none",
@@ -7,6 +7,7 @@ export enum EngagementLevel {
   Sharing = "sharing"
 }
 
+// This should be part of how we model engagement levels
 export function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
   if (levels.includes(EngagementLevel.Sharing)) {
     return EngagementLevel.None

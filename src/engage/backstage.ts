@@ -1,18 +1,16 @@
 import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
-import { Model } from "./display.js";
-import { LearningAreaReader } from "./learningAreaReader"
+import { LearningAreaReader } from "./learningAreaReader.js"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
-import { markdownToHTML } from "../util/markdownParser.js";
-import { contentTagStyles } from "./learningAreaContent.js";
-import { noteContentTagStyles } from "./engagementNotes/view.js";
-import { LearningArea } from "./learningArea.js";
-import { EngagementNote, EngagementNoteContents, engagementNotesRetrieved } from "./engagementNotes";
+import { decorate, markdownToHTML, TagDecorator } from "../util/markdownParser.js";
+import { EngagementNote, EngagementNoteContents, engagementNotesRetrieved } from "./engagementNotes/index.js";
 import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/index.js";
 import { EngagementNoteDeleteRequested } from "./engagementNotes/deleteNote.js";
 import { EngagementNoteCreationRequested } from "./engagementNotes/saveNote.js";
 import { EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/saveEngagementPlan.js";
 import { DeleteEngagementPlans } from "./engagementPlans/deleteEngagementPlans.js";
+import { Model } from "./sharedTypes.js";
+import { LearningArea } from "./learningArea.js";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>
@@ -118,4 +116,24 @@ function displayableNote(noteData: EngagementNote): EngagementNote {
     ...noteData,
     content: markdownToHTML(noteData.content, noteContentTagStyles())
   }
+}
+
+export function contentTagStyles(): Array<TagDecorator> {
+  return [
+    decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
+    decorate("h1", { classname: "font-bold text-2xl" }),
+    decorate("h3", { classname: "font-bold" }),
+    decorate("ul", { classname: "list-disc list-inside" }),
+    decorate("p", { classname: "pb-4" })
+  ]
+}
+
+export function noteContentTagStyles(): Array<TagDecorator> {
+  return [
+    decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
+    decorate("h1", { classname: "font-bold text-2xl" }),
+    decorate("h3", { classname: "font-bold" }),
+    decorate("ul", { classname: "list-disc list-inside" }),
+    decorate("p", { classname: "pb-4" })
+  ]
 }

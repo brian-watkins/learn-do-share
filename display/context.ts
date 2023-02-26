@@ -1,6 +1,6 @@
 import { h, VNode } from "snabbdom"
-import { BATCH_MESSAGE_TYPE } from "./batch"
-import { View } from "./markup"
+import { BATCH_MESSAGE_TYPE } from "./batch.js"
+import { View } from "./markup.js"
 
 export type ViewGenerator<T> = (state: T, setState: (value: T) => DisplayContextMessage) => View
 
@@ -8,6 +8,13 @@ export interface ContextOptions<T> {
   initialState: T
   key?: string
 }
+
+// Why do I need to actually store the state here?
+// Why not just use the message to generate the view? so it's just the message that
+// has the state and it's not stored in the model? I guess because the message
+// is only encountered as it bubbles up and so we store the data it contains then
+// it goes through redux and triggers an update and we read the data off the vnode to
+// render it again.
 
 export function context<T>(options: ContextOptions<T>, generator: ViewGenerator<T>): View {
   return h("display-context", {

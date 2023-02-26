@@ -1,12 +1,12 @@
-import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
+import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement.js"
 import { Context } from "esbehavior"
 import { Page } from "playwright"
-import { BackstageResponseOptions } from "./engageTestContext"
-import { TestLearningArea } from "./fakes/learningArea"
-import { TestUser } from "./fakes/user"
-import { TestEngagementNote } from "./fakes/note"
-import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement"
-import { EngagementLevel } from "@/src/engage/engagementPlans"
+import { BackstageResponseOptions } from "./engageTestContext.js"
+import { TestLearningArea } from "./fakes/learningArea.js"
+import { TestUser } from "./fakes/user.js"
+import { TestEngagementNote } from "./fakes/note.js"
+import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement.js"
+import { EngagementLevel } from "@/src/engage/engagementPlans/index.js"
 
 export function learningAreaTestContext(page: Page, area: TestLearningArea): Context<EngageTestContextProxy> {
   return {

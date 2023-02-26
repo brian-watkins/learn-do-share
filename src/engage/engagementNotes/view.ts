@@ -1,35 +1,63 @@
-import * as Html from "@/display/markup"
-import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../../style"
-import { headingBox } from "../../viewElements"
+// import * as Html from "@/display/markup"
+import * as Html from "loop/display"
+import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../../style.js"
+// import { headingBox } from "../../viewElements"
 import { format, parseISO } from "date-fns"
-import * as Display from "@/display/context"
-import { decorate, TagDecorator } from "../../util/markdownParser"
-import { LearningArea } from "../learningArea"
-import { EngagementNote, EngagementNotes, NoteState } from "."
-import { deleteNoteMessage } from "./deleteNote"
-import { createNoteMessage } from "./saveNote"
+// import * as Display from "@/display/context"
+import { decorate, TagDecorator } from "../../util/markdownParser.js"
+import { EngagementNote, EngagementNotes, NoteState } from "./index.js"
+import { deleteNoteMessage } from "./deleteNote.js"
+import { createNoteMessage } from "./saveNote.js"
+import { container, state, State, withDerivedValue, withInitialValue } from "loop"
+import { headingBox } from "../../viewElements.js"
+import { LearningArea } from "../learningArea.js"
+import { writeMessage } from "node_modules/loop/dist/loop.js"
 
+export function engagementNotesView(learningArea: LearningArea, notes: State<Array<EngagementNote>>): State<Html.View> {
+  return state(withDerivedValue(get => {
+    const engagementNotes = get(notes)
 
-export function view(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
-  return Html.div([
-    Html.id("engagement-notes"),
-    Html.cssClasses([
-      "mt-8",
-      "w-128",
-      "flex",
-      "flex-col",
-      "gap-8"
+    return Html.div([
+      Html.id("engagement-notes"),
+      Html.cssClasses([
+        "mt-8",
+        "w-128",
+        "flex",
+        "flex-col",
+        "gap-8"
+      ])
+    ], [
+      headingBox("Notes"),
+      noteInputView(learningArea, engagementNotes),
+      ...engagementNotes.map(engagementNoteView)
     ])
-  ], [
-    headingBox("Notes"),
-    noteInputView(area, engagementNotes),
-    ...engagementNotes.notes.map(engagementNoteView)
-  ])
+  }))
 }
 
-function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
-  return Display.context({ initialState: "", key: `${engagementNotes.notes.length}` }, (noteContent, setNoteContent) =>
-    Html.div([
+
+// export function view(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
+//   return Html.div([
+//     Html.id("engagement-notes"),
+//     Html.cssClasses([
+//       "mt-8",
+//       "w-128",
+//       "flex",
+//       "flex-col",
+//       "gap-8"
+//     ])
+//   ], [
+//     headingBox("Notes"),
+//     noteInputView(area, engagementNotes),
+//     ...engagementNotes.notes.map(engagementNoteView)
+//   ])
+// }
+
+const noteText = container(withInitialValue(""))
+
+function noteInputView(area: LearningArea, engagementNotes: Array<EngagementNote>): Html.View {
+  return Html.viewGenerator(state(withDerivedValue(get => {
+
+    return Html.div([
       noteBox(),
       Html.cssClasses([
         "flex",
@@ -51,13 +79,13 @@ function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Ht
           "after:row-end-2",
           "after:col-end-2",
         ]),
-        Html.data("replicated-value", `${noteContent} `)
+        Html.data("replicated-value", `${get(noteText)} `)
       ], [
         Html.textarea([
           Html.data("note-input"),
-          Html.value(noteContent),
-          Html.onInput(setNoteContent),
-          Html.disabled(isSavingNotes(engagementNotes)),
+          Html.value(get(noteText)),
+          Html.onInput(value => writeMessage(noteText, value)),
+          // Html.disabled(isSavingNotes(engagementNotes)),
           Html.cssClasses([
             "focus:outline-none",
             "rounded",
@@ -85,14 +113,83 @@ function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Ht
           "disabled:no-underline",
           "hover:underline",
         ]),
-        Html.onClick(createNoteMessage(area, noteContent)),
-        Html.disabled(noteContent.length == 0 || isSavingNotes(engagementNotes))
+        // Html.onClick(createNoteMessage(area, noteContent)),
+        // Html.disabled(noteContent.length == 0 || isSavingNotes(engagementNotes))
       ], [
         Html.text("Save Note")
       ])
     ])
-  )
+
+
+  })))
 }
+
+// function noteInputView(area: LearningArea, engagementNotes: EngagementNotes): Html.View {
+//   return Display.context({ initialState: "", key: `${engagementNotes.notes.length}` }, (noteContent, setNoteContent) =>
+//     Html.div([
+//       noteBox(),
+//       Html.cssClasses([
+//         "flex",
+//         "flex-col",
+//         focusWithinBorderColor(Colors.Engagement),
+//       ])
+//     ], [
+//       Html.div([
+//         Html.cssClasses([
+//           "grid",
+//           "after:whitespace-pre-wrap",
+//           "after:content-[attr(data-replicated-value)]",
+//           "after:invisible",
+//           "after:rounded",
+//           "after:py-4",
+//           "after:px-6",
+//           "after:row-start-1",
+//           "after:col-start-1",
+//           "after:row-end-2",
+//           "after:col-end-2",
+//         ]),
+//         Html.data("replicated-value", `${noteContent} `)
+//       ], [
+//         Html.textarea([
+//           Html.data("note-input"),
+//           Html.value(noteContent),
+//           Html.onInput(setNoteContent),
+//           Html.disabled(isSavingNotes(engagementNotes)),
+//           Html.cssClasses([
+//             "focus:outline-none",
+//             "rounded",
+//             "resize-none",
+//             "py-4",
+//             "px-6",
+//             "overflow-hidden",
+//             "row-start-1",
+//             "col-start-1",
+//             "row-end-2",
+//             "col-end-2",
+//             "disabled:text-slate-300"
+//           ]),
+//         ], [])
+//       ]),
+//       Html.button([
+//         Html.cssClasses([
+//           "w-fit",
+//           "self-end",
+//           textColor(Colors.Engagement),
+//           "disabled:text-slate-300",
+//           "font-bold",
+//           "px-4",
+//           "py-2",
+//           "disabled:no-underline",
+//           "hover:underline",
+//         ]),
+//         // Html.onClick(createNoteMessage(area, noteContent)),
+//         // Html.disabled(noteContent.length == 0 || isSavingNotes(engagementNotes))
+//       ], [
+//         Html.text("Save Note")
+//       ])
+//     ])
+//   )
+// }
 
 function isSavingNotes(engagementNotes: EngagementNotes): boolean {
   return engagementNotes.type === "engagement-note-saving"
@@ -125,8 +222,8 @@ function engagementNoteView(note: EngagementNote): Html.View {
           "hover:text-sky-600",
           "hover:underline",
         ]),
-        Html.onClick(deleteNoteMessage(note)),
-        Html.disabled(whenDeletingNote(note))
+        // Html.onClick(deleteNoteMessage(note)),
+        // Html.disabled(whenDeletingNote(note))
       ], [
         Html.text("Delete Note")
       ])
@@ -135,23 +232,14 @@ function engagementNoteView(note: EngagementNote): Html.View {
       Html.cssClasses([
         "pb-4"
       ]),
-      Html.withHTMLContent(note.content)
+      // Html.withHTMLContent(note.content)
+      Html.property("innerHTML", note.content)
     ], [])
   ])
 }
 
 function whenDeletingNote(note: EngagementNote): boolean {
   return note.state === NoteState.Deleting
-}
-
-export function noteContentTagStyles(): Array<TagDecorator> {
-  return [
-    decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
-    decorate("h1", { classname: "font-bold text-2xl" }),
-    decorate("h3", { classname: "font-bold" }),
-    decorate("ul", { classname: "list-disc list-inside" }),
-    decorate("p", { classname: "pb-4" })
-  ]
 }
 
 function formattedNoteDate(isoDate: string): string {

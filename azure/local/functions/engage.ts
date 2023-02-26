@@ -1,8 +1,8 @@
-import { Adapters } from "@/src/engage/backstage";
-import { StaticLearningAreaReader } from "@/adapters/staticLearningAreasReader";
-import { generateEngageFunction } from "@/api/engage/function"
-import { HttpEngagementNoteReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo";
-import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "azure/test/functions/HTTPEngagementPlanRepo";
+import { Adapters } from "@/src/engage/backstage.js";
+import { StaticLearningAreaReader } from "@/adapters/staticLearningAreasReader.js";
+import { generateEngageFunction } from "@/api/engage/function.js"
+import { HttpEngagementNoteReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo.js";
+import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "azure/test/functions/HTTPEngagementPlanRepo.js";
 
 
 const adapters: Adapters = {
