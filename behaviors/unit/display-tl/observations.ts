@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { effect, Observation } from "esbehavior"
-import { EngageTestContext } from "./engageTestContext"
+import { EngageTestContext } from "./engageTestContext.js"
 
 export function saveNoteButtonIsDisabled(isDisabled: boolean): Observation<EngageTestContext> {
   return effect(`the save note button is ${isDisabled ? "disabled" : "enabled"}`, async (testContext) => {

@@ -2,10 +2,10 @@ import { validate } from "esbehavior";
 import { chromium } from "playwright";
 import { createServer } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths"
-import deleteNoteBehavior from "./deleteNote.behavior";
-import engageBehavior from "./engage.behavior";
-import notesBehavior from "./notes.behavior";
-import saveNoteBehavior from "./saveNote.behavior";
+import deleteNoteBehavior from "./deleteNote.behavior.js";
+import engageBehavior from "./engage.behavior.js";
+import notesBehavior from "./notes.behavior.js";
+import saveNoteBehavior from "./saveNote.behavior.js";
 
 export function isDebug(): boolean {
   return process.env["DEBUG"] !== undefined

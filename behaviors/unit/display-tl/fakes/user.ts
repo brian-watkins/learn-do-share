@@ -1,4 +1,4 @@
-import { User } from "@/api/common/user";
+import { User } from "@/api/common/user.js";
 
 export class TestUser implements User {
   constructor(public identifier: string, public name: string) { }

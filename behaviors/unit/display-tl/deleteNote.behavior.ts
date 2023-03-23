@@ -1,11 +1,11 @@
 import { Action, behavior, effect, example, fact, Observation, Presupposition, step } from "esbehavior";
-import { FakeLearningArea } from "./fakes/learningArea";
-import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
-import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
-import { FakeNote, TestEngagementNote } from "./fakes/note";
-import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
+import { FakeLearningArea } from "./fakes/learningArea.js";
+import { EngageTestContext, learningAreaTestContext } from "./engageTestContext.js"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions.js"
+import { FakeNote, TestEngagementNote } from "./fakes/note.js";
+import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps.js";
 import { expect } from "chai";
-import { errorMessageIsVisible } from "./observations";
+import { errorMessageIsVisible } from "./observations.js";
 
 export default
   behavior("delete a note", [

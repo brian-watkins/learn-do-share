@@ -1,9 +1,9 @@
 import { behavior, example } from "esbehavior"
-import { FakeLearningArea, testContext } from "./testApp"
-import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
-import { learningAreaSummaryDisplayed } from "./effects"
-import { visitTheLearningAreas } from "./actions"
-import { thereAreLearningAreas } from "./presuppositions"
+import { FakeLearningArea, testContext } from "./testApp.js"
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js"
+import { learningAreaSummaryDisplayed } from "./effects.js"
+import { visitTheLearningAreas } from "./actions.js"
+import { thereAreLearningAreas } from "./presuppositions.js"
 
 export default
   behavior("viewing items", [

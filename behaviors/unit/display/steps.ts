@@ -1,5 +1,5 @@
 import { Action, step } from "esbehavior";
-import { EngageTestContextProxy } from "./engageTestContextProxy";
+import { EngageTestContextProxy } from "./engageTestContextProxy.js";
 
 export function visitTheLearningAreaPage(): Action<EngageTestContextProxy> {
   return step("visit the learning area page", async (testContext) => {

@@ -1,5 +1,5 @@
-import { LearningArea } from "@/src/engage/learningArea"
-import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
+import { LearningArea } from "@/src/engage/learningArea.js"
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js"
 
 export class TestLearningArea implements LearningArea {
   title: string

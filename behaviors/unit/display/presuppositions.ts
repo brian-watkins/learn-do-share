@@ -1,6 +1,6 @@
 import { fact, Presupposition } from "esbehavior"
-import { EngageTestContextProxy } from "./engageTestContextProxy"
-import { FakeUser } from "./fakes/user"
+import { EngageTestContextProxy } from "./engageTestContextProxy.js"
+import { FakeUser } from "./fakes/user.js"
 
 export function backstageRequestsAreDelayed(): Presupposition<EngageTestContextProxy> {
   return fact("requests to backstage are delayed", async (testContext) => {

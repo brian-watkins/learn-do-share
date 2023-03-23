@@ -1,13 +1,13 @@
 import { Context } from "esbehavior"
-import { TestDisplay } from "./testDisplay"
-import { LearningArea } from "@/src/overview/learningAreas"
-import { LearningAreaCategory } from "@/src/overview/learningAreaCategory"
-import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans'
-import { userIdentifierFor } from './helpers'
-import { serverHost } from './services/testServer'
-import { PageOptions } from './services/browser'
-import { TestDataServer } from './services/testDataServer'
-import { EngagementNote, NoteState } from '@/src/engage/engagementNotes'
+import { TestDisplay } from "./testDisplay.js"
+import { LearningArea } from "@/src/overview/learningAreas.js"
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js"
+import { EngagementLevel, EngagementPlan } from '@/src/engage/engagementPlans/index.js'
+import { userIdentifierFor } from './helpers.js'
+import { serverHost } from './services/testServer.js'
+import { PageOptions } from './services/browser.js'
+import { TestDataServer } from './services/testDataServer.js'
+import { EngagementNote, NoteState } from '@/src/engage/engagementNotes/index.js'
 
 export function testContext(): Context<TestContext> {
   return {

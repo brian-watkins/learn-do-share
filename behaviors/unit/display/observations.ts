@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { effect, Observation } from "esbehavior"
-import { EngageTestContextProxy } from "./engageTestContextProxy"
+import { EngageTestContextProxy } from "./engageTestContextProxy.js"
 
 export function saveNoteButtonIsDisabled(isDisabled: boolean): Observation<EngageTestContextProxy> {
   return effect(`the save note button is ${isDisabled ? "disabled" : "enabled"}`, async (testContext) => {

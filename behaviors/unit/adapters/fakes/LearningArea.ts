@@ -1,4 +1,4 @@
-import { LearningArea } from "@/src/engage/learningArea";
+import { LearningArea } from "@/src/engage/learningArea.js";
 
 export function TestLearningArea(testId: number): LearningArea {
   return {

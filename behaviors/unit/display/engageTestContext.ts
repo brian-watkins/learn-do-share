@@ -1,12 +1,13 @@
-import { TestLearningArea } from "./fakes/learningArea"
-import { TestUser } from "./fakes/user"
-import { AppDisplay } from "@/display/display"
-import display, { Model } from "@/src/engage/display"
-import { EngagementLevel, engagementLevelsRetrieved } from "@/src/engage/engagementPlans"
-import { getServiceWorker } from "./mockServer"
+import { TestLearningArea } from "./fakes/learningArea.js"
+import { TestUser } from "./fakes/user.js"
+import appDisplay from "@/src/engage/display.js"
+import { EngagementLevel, engagementLevelsRetrieved } from "@/src/engage/engagementPlans/index.js"
+import { getServiceWorker } from "./mockServer.js"
 import { DefaultBodyType, ResponseTransformer, rest, SetupWorkerApi } from "msw"
-import { TestEngagementNote } from "./fakes/note"
-import { engagementNotesRetrieved } from "@/src/engage/engagementNotes"
+import { TestEngagementNote } from "./fakes/note.js"
+import { engagementNotesRetrieved } from "@/src/engage/engagementNotes/index.js"
+import { init } from "@/src/engage/storage.js"
+import { Model } from "@/src/engage/sharedTypes.js"
 
 export interface BackstageResponseOptions {
   status?: number

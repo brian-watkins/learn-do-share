@@ -1,5 +1,5 @@
 import { Browser, chromium, Page } from "playwright"
-import { isDebug, userIdentifierFor } from "../helpers"
+import { isDebug, userIdentifierFor } from "../helpers.js"
 
 let browser: Browser
 

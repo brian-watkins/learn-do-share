@@ -1,7 +1,7 @@
-import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement"
-import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement"
+import { DisplayElement, DisplayElementList, SelectorOptions } from "behaviors/helpers/displayElement.js"
+import { PlaywrightDisplayElement, PlaywrightDisplayElementList, waitForRequestsToComplete } from "behaviors/helpers/playwrightDisplayElement.js"
 import { Page } from "playwright"
-import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser"
+import { newBrowserPage, PageOptions, resetBrowser } from "./services/browser.js"
 
 export class TestDisplay {
   private page: Page | null = null

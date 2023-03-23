@@ -1,5 +1,5 @@
 import { Locator, Page } from "playwright"
-import { DisplayElement, DisplayElementList, SelectorOptions, TypingOptions } from "./displayElement"
+import { DisplayElement, DisplayElementList, SelectorOptions, TypingOptions } from "./displayElement.js"
 
 export class PlaywrightDisplayElement implements DisplayElement {
   static withText(page: Page, text: string): DisplayElement {

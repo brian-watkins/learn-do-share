@@ -1,6 +1,6 @@
 import { Action, step } from "esbehavior"
-import { userIdentifierFor } from "./helpers"
-import { TestContext, TestLearningArea } from "./testApp"
+import { userIdentifierFor } from "./helpers.js"
+import { TestContext, TestLearningArea } from "./testApp.js"
 
 export function visitTheLearningAreas(): Action<TestContext> {
   return step("visit the list of learning areas", async (testContext) => {

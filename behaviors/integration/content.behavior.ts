@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { behavior, effect, example, fact, outcome } from "esbehavior";
-import { LearningAreaCategory } from "@/src/overview/learningAreaCategory";
-import { gotoLearningAreas, selectLearningArea, visitTheLearningAreas, visitTheLearningArea } from "./actions";
-import { FakeLearningArea, testContext } from "./testApp";
-import { EngagementLevel } from "@/src/engage/engagementPlans";
-import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
+import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js";
+import { gotoLearningAreas, selectLearningArea, visitTheLearningAreas, visitTheLearningArea } from "./actions.js";
+import { FakeLearningArea, testContext } from "./testApp.js";
+import { EngagementLevel } from "@/src/engage/engagementPlans/index.js";
+import { contentAreaView, engagementLevelSelected, learningAreaSummaryDisplayed, selectedLearningAreaCategoryDisplayed, selectedLearningAreaContentDisplayed, selectedLearningAreaTitleDisplayed } from "./effects.js";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions.js";
 
 const coolLearningArea =
   FakeLearningArea(1)

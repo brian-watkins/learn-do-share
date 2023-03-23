@@ -1,5 +1,5 @@
 import { Action, step } from "esbehavior";
-import { EngageTestContext } from "./engageTestContext";
+import { EngageTestContext } from "./engageTestContext.js";
 
 export function visitTheLearningAreaPage(): Action<EngageTestContext> {
   return step("visit the learning area page", async (testContext) => {

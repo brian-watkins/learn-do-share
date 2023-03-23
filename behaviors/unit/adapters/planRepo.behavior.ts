@@ -1,11 +1,11 @@
-import { EngagementPlanReader } from "@/src/engage/backstage";
-import { EngagementPlanReader as EngagementPlanOverviewReader } from "@/src/overview/backstage"
-import { EngagementLevel, EngagementPlan } from "@/src/engage/engagementPlans";
-import { EngagementPlanWriter } from "@/src/engage/engagementPlans/saveEngagementPlan";
+import { EngagementPlanReader } from "@/src/engage/backstage.js";
+import { EngagementPlanReader as EngagementPlanOverviewReader } from "@/src/overview/backstage.js"
+import { EngagementLevel, EngagementPlan } from "@/src/engage/engagementPlans/index.js";
+import { EngagementPlanWriter } from "@/src/engage/engagementPlans/saveEngagementPlan.js";
 import { expect } from "chai";
 import { behavior, effect, example, step } from "esbehavior";
-import { TestLearningArea } from "./fakes/LearningArea";
-import { TestUser } from "./fakes/User";
+import { TestLearningArea } from "./fakes/LearningArea.js";
+import { TestUser } from "./fakes/User.js";
 
 export default (name: string, engagementPlanReader: EngagementPlanReader & EngagementPlanOverviewReader, engagementPlanWriter: EngagementPlanWriter) =>
   behavior(`Reading, Writing, and Deleting Engagement Plans for ${name}`, [

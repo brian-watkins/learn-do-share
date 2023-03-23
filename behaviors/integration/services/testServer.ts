@@ -1,6 +1,6 @@
-import { LogLevel, StopSignal, TestProcess, waitForPort } from "./testProcess"
+import { LogLevel, StopSignal, TestProcess, waitForPort } from "./testProcess.js"
 import { createServer as createViteServer, ViteDevServer } from "vite"
-import { isDebug } from "../helpers"
+import { isDebug } from "../helpers.js"
 
 const vitePort = 7778
 const funcPort = "7072"

@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { effect, Observation } from "esbehavior"
-import { TestContext, TestLearningArea } from "./testApp"
+import { TestContext, TestLearningArea } from "./testApp.js"
 
 export function engagementLevelSelected(learningArea: TestLearningArea, indicator: string): Observation<TestContext> {
   return effect(`Engagement level '${indicator}' shown for Learning Area ${learningArea.testId}`, async (testContext) => {

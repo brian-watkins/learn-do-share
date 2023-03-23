@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { behavior, effect, example, outcome } from "esbehavior";
-import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects";
-import { loginUser, selectLearningArea, visitTheLearningAreas } from "./actions";
-import { FakeLearningArea, testContext } from "./testApp";
-import { thereAreLearningAreas } from "./presuppositions";
+import { learningAreaSummaryDisplayed, selectedLearningAreaTitleDisplayed } from "./effects.js";
+import { loginUser, selectLearningArea, visitTheLearningAreas } from "./actions.js";
+import { FakeLearningArea, testContext } from "./testApp.js";
+import { thereAreLearningAreas } from "./presuppositions.js";
 
 export default
   behavior("authentication", [

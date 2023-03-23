@@ -1,8 +1,8 @@
 import express from "express"
 import { Server } from "http"
-import { TestEngagementNote, TestEngagementPlan, TestLearningArea } from "../testApp"
-import { LearningArea } from "@/src/overview/learningAreas"
-import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea"
+import { TestEngagementNote, TestEngagementPlan, TestLearningArea } from "../testApp.js"
+import { LearningArea } from "@/src/overview/learningAreas.js"
+import { LearningArea as EngageLearningArea } from "@/src/engage/learningArea.js"
 
 
 export class TestDataServer {

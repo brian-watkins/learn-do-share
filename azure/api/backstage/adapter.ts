@@ -1,5 +1,5 @@
-import { User } from "../common/user"
-import { errorResult, okResult, Result } from "../../../src/util/result"
+import { User } from "../common/user.js"
+import { errorResult, okResult, Result } from "../../../src/util/result.js"
 
 export type MessageHandler<T> = (user: User | null, message: T) => Promise<any>
 

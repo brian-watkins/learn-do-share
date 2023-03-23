@@ -1,12 +1,12 @@
-import { CosmosConnection } from "@/adapters/cosmosConnection";
-import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository";
-import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
-import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "azure/test/functions/HTTPEngagementPlanRepo";
-import { HttpEngagementNoteCounter, HttpEngagementNoteReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo";
-import { TestDataServer } from "behaviors/integration/services/testDataServer";
+import { CosmosConnection } from "@/adapters/cosmosConnection.js";
+import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository.js";
+import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository.js";
+import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "azure/test/functions/HTTPEngagementPlanRepo.js";
+import { HttpEngagementNoteCounter, HttpEngagementNoteReader, HttpNoteEngageWriter } from "azure/test/functions/HTTPNoteRepo.js";
+import { TestDataServer } from "behaviors/integration/services/testDataServer.js";
 import { validate } from "esbehavior";
-import noteRepoBehavior from "./noteRepo.behavior";
-import planRepoBehavior from "./planRepo.behavior";
+import noteRepoBehavior from "./noteRepo.behavior.js";
+import planRepoBehavior from "./planRepo.behavior.js";
 
 
 const dataServer = new TestDataServer()

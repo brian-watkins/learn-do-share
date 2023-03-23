@@ -1,4 +1,4 @@
-import { User } from "@/api/common/user";
+import { User } from "@/api/common/user.js";
 
 export function TestUser(testId: number): User {
   return {

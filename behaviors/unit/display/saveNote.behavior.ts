@@ -1,11 +1,11 @@
 import { behavior, example, step, effect, Action, Observation } from "esbehavior";
 import { Page } from "playwright";
-import { FakeLearningArea } from "./fakes/learningArea";
-import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy"
-import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
-import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps";
+import { FakeLearningArea } from "./fakes/learningArea.js";
+import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy.js"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions.js"
+import { visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps.js";
 import { expect } from "chai";
-import { errorMessageIsVisible, noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations";
+import { errorMessageIsVisible, noteInputIsDisabled, saveNoteButtonIsDisabled } from "./observations.js";
 
 export default (page: Page) =>
   behavior("save a note", [

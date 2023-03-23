@@ -1,11 +1,11 @@
 import { behavior, example, effect, Observation, Presupposition, fact } from "esbehavior"
-import { FakeLearningArea } from "./fakes/learningArea"
+import { FakeLearningArea } from "./fakes/learningArea.js"
 import { expect } from "chai"
-import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
-import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions"
-import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps"
-import { EngagementLevel } from "@/src/engage/engagementPlans"
-import { errorMessageIsVisible } from "./observations"
+import { EngageTestContext, learningAreaTestContext } from "./engageTestContext.js"
+import { backstageRequestsAreDelayed, backstageRequestsFailDueToNetworkError, backstageRequestsFailDueToServerError, someoneIsAuthenticated } from "./presuppositions.js"
+import { userClicksIncreaseEngagementButton, visitTheLearningAreaPage, waitForResponseFromBackstage } from "./steps.js"
+import { EngagementLevel } from "@/src/engage/engagementPlans/index.js"
+import { errorMessageIsVisible } from "./observations.js"
 
 export default
   behavior("indicate engagement with a learning area", [

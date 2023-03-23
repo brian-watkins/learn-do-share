@@ -1,5 +1,5 @@
 import { fact, Presupposition } from "esbehavior";
-import { TestContext, TestLearningArea } from "./testApp";
+import { TestContext, TestLearningArea } from "./testApp.js";
 
 
 export function thereAreLearningAreas(learningAreas: Array<TestLearningArea>): Presupposition<TestContext> {

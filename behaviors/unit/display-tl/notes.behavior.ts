@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { behavior, effect, step, Action, example } from "esbehavior";
-import { someoneIsAuthenticated } from "./presuppositions";
-import { visitTheLearningAreaPage } from "./steps";
-import { EngageTestContext, learningAreaTestContext } from "./engageTestContext"
-import { FakeLearningArea } from "./fakes/learningArea";
-import { saveNoteButtonIsDisabled } from "./observations"
+import { someoneIsAuthenticated } from "./presuppositions.js";
+import { visitTheLearningAreaPage } from "./steps.js";
+import { EngageTestContext, learningAreaTestContext } from "./engageTestContext.js"
+import { FakeLearningArea } from "./fakes/learningArea.js";
+import { saveNoteButtonIsDisabled } from "./observations.js"
 
 export default
   behavior("notes", [

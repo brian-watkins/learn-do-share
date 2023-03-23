@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { behavior, example, fact, effect, step, pick, outcome, Observation, Action } from "esbehavior";
-import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea, visitTheLearningAreas } from "./actions";
-import { learningAreaView, noteInputView, notesView } from "./effects";
-import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
-import { FakeEngagementNote, FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
+import { behavior, example, fact, effect, step, outcome, Observation, Action } from "esbehavior";
+import { goBackToLearningAreas, reloadTheApp, reloadThePage, selectLearningArea, visitTheLearningArea, visitTheLearningAreas } from "./actions.js";
+import { learningAreaView, noteInputView, notesView } from "./effects.js";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions.js";
+import { FakeEngagementNote, FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp.js";
 
 export default
   behavior("engagement notes", [

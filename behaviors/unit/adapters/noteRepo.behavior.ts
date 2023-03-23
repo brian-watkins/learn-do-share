@@ -1,10 +1,10 @@
-import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
+import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage.js";
 import { behavior, effect, example, step } from "esbehavior";
-import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
+import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes/index.js";
 import { expect } from "chai";
-import { EngagementNoteCounter } from "@/src/overview/backstage";
-import { TestUser } from "./fakes/User";
-import { TestLearningArea } from "./fakes/LearningArea";
+import { EngagementNoteCounter } from "@/src/overview/backstage.js";
+import { TestUser } from "./fakes/User.js";
+import { TestLearningArea } from "./fakes/LearningArea.js";
 
 
 function TestNoteContents(testId: number): EngagementNoteContents {

@@ -1,12 +1,12 @@
 import { validate } from "esbehavior"
-import { startBrowser, stopBrowser } from "./services/browser"
-import { isDebug } from "./helpers"
-import { startServer, stopServer } from "./services/testServer"
-import viewBehavior from "./view.behavior"
-import contentBehavior from "./content.behavior"
-import engageBehavior from "./engage.behavior"
-import authBehavior from "./auth.behavior"
-import notesBehavior from "./notes.behavior"
+import { startBrowser, stopBrowser } from "./services/browser.js"
+import { isDebug } from "./helpers.js"
+import { startServer, stopServer } from "./services/testServer.js"
+import viewBehavior from "./view.behavior.js"
+import contentBehavior from "./content.behavior.js"
+import engageBehavior from "./engage.behavior.js"
+import authBehavior from "./auth.behavior.js"
+import notesBehavior from "./notes.behavior.js"
 
 process.on("uncaughtException", async (error) => {
   console.log("A horrible error occurred:", error)

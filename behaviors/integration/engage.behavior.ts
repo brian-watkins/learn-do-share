@@ -1,9 +1,9 @@
-import { EngagementLevel } from "@/src/engage/engagementPlans";
-import { Action, behavior, example, fact, outcome, pick, procedure, step } from "esbehavior";
-import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects";
-import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage, visitTheLearningAreas } from "./actions";
-import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp";
-import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions";
+import { EngagementLevel } from "@/src/engage/engagementPlans/index.js";
+import { Action, behavior, example, fact, outcome, procedure, step } from "esbehavior";
+import { engagementLevelSelected, noEngagementLevelsSelected } from "./effects.js";
+import { reloadTheApp, goBackToLearningAreas, selectLearningArea, reloadThePage, visitTheLearningAreas } from "./actions.js";
+import { FakeLearningArea, TestContext, testContext, TestLearningArea } from "./testApp.js";
+import { someoneIsAuthenticated, thereAreLearningAreas } from "./presuppositions.js";
 
 export default
   behavior("indicate engagement with a learning area", [

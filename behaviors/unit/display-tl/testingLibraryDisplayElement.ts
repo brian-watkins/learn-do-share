@@ -1,6 +1,6 @@
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
-import { DisplayElement, DisplayElementList, SelectorOptions, TypingOptions } from "behaviors/helpers/displayElement";
+import { DisplayElement, DisplayElementList, SelectorOptions, TypingOptions } from "behaviors/helpers/displayElement.js";
 import { getByText, screen } from "@testing-library/dom"
+import { UserEvent } from "node_modules/@testing-library/user-event/dist/types/setup/setup.js";
 
 export class TestingLibraryDisplayElement implements DisplayElement {
   static withText(actor: UserEvent, text: string): DisplayElement {

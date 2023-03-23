@@ -1,11 +1,11 @@
-import { FakeLearningArea } from "behaviors/integration/testApp";
+import { FakeLearningArea } from "behaviors/integration/testApp.js";
 import { expect } from "chai";
 import { behavior, effect, step, Action, example } from "esbehavior";
 import { Page } from "playwright";
-import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy";
-import { saveNoteButtonIsDisabled } from "./observations";
-import { someoneIsAuthenticated } from "./presuppositions";
-import { visitTheLearningAreaPage } from "./steps";
+import { EngageTestContextProxy, learningAreaTestContext } from "./engageTestContextProxy.js";
+import { saveNoteButtonIsDisabled } from "./observations.js";
+import { someoneIsAuthenticated } from "./presuppositions.js";
+import { visitTheLearningAreaPage } from "./steps.js";
 
 export default (page: Page) =>
   behavior("notes", [
