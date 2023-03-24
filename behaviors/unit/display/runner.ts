@@ -36,8 +36,8 @@ const browser = await chromium.launch({
 const page = await browser.newPage()
 
 // print out the logs
-page.on("console", console.log)
-page.on("pageerror", console.log)
+page.on("console", (message) => console.log(fixStackTrace(message.text())))
+page.on("pageerror", (error) => console.log(fixStackTrace(error.toString())))
 
 // load the TestContext
 await page.goto("http://localhost:7170/behaviors/unit/display/index.html")
@@ -57,4 +57,8 @@ if (summary.invalid > 0 || summary.skipped > 0) {
 if (!isDebug()) {
   await browser.close()
   await vite.close()
+}
+
+function fixStackTrace(line: string): string {
+  return line.replace(`http://localhost:7170`, '')
 }
