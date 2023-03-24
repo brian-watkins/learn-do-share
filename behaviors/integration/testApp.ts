@@ -120,7 +120,6 @@ export function FakeLearningArea(testId: number): TestLearningArea {
 export class TestEngagementNote implements EngagementNote {
   content: string
   date: string
-  state: NoteState = NoteState.Retrieved
   id: string
 
   constructor(public user: string, public learningAreaId: string, public testId: number) {

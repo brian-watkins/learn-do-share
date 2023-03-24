@@ -1,13 +1,12 @@
 import { TestLearningArea } from "./fakes/learningArea.js"
 import { TestUser } from "./fakes/user.js"
 import appDisplay from "@/src/engage/display.js"
-import { EngagementLevel, engagementLevelsRetrieved } from "@/src/engage/engagementPlans/index.js"
+import { EngagementLevel } from "@/src/engage/engagementPlans/index.js"
 import { getServiceWorker } from "./mockServer.js"
 import { DefaultBodyType, ResponseTransformer, rest, SetupWorkerApi } from "msw"
 import { TestEngagementNote } from "./fakes/note.js"
-import { engagementNotesRetrieved } from "@/src/engage/engagementNotes/index.js"
 import { init } from "@/src/engage/storage.js"
-import { Model } from "@/src/engage/sharedTypes.js"
+import { Model } from "@/src/engage/model.js"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -29,8 +28,10 @@ export class EngageTestContext {
     this.mockServiceWorker = await getServiceWorker()
     this.mockServiceWorker.use(...this.handlers)
 
-    this.app = new AppDisplay(display, this.getInitialState())
-    this.app.mount("#test-app")
+    init(this.getInitialState())
+    
+    this.app = appDisplay()
+    this.app.mount(document.getElementById("test-app"))
   }
 
   stop() {
@@ -76,8 +77,8 @@ export class EngageTestContext {
       return {
         type: "personalized",
         learningArea: this.area,
-        engagementLevels: engagementLevelsRetrieved(this.engagementLevels),
-        engagementNotes: engagementNotesRetrieved(this.notes),
+        engagementLevels: this.engagementLevels,
+        engagementNotes: this.notes,
         user: this.user
       }
     } else {

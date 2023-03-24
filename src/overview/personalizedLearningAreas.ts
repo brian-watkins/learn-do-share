@@ -1,9 +1,9 @@
-import { LearningArea, learningAreaTitleView } from "./learningAreas"
-import * as Html from '@/display/markup'
-import * as Style from "../style"
-import { cardBox } from "../viewElements"
-import { learningAreaCategoryTitle } from "./learningAreaCategory"
-import { Colors } from "../style"
+import { LearningArea, learningAreaTitleView } from "./learningAreas.js"
+import * as Html from 'loop/display'
+import * as Style from "../style.js"
+import { cardBox } from "../viewElements.js"
+import { learningAreaCategoryTitle } from "./learningAreaCategory.js"
+import { Colors } from "../style.js"
 
 type EngagementLevel = string
 
@@ -52,7 +52,7 @@ function noteCountView(count: number): Array<Html.View> {
   ]
 }
 
-function engagementIndicators(engagementIndicators: Array<Html.ViewChild>): Html.View {
+function engagementIndicators(engagementIndicators: Array<Html.View>): Html.View {
   return Html.div([
     Html.cssClasses([
       "flex",
@@ -61,7 +61,7 @@ function engagementIndicators(engagementIndicators: Array<Html.ViewChild>): Html
   ], engagementIndicators)
 }
 
-function engagementPlanView(level: string): Html.ViewChild {
+function engagementPlanView(level: string): Html.View {
   return Html.div([
     Style.tag(Style.Colors.Engagement),
     Html.data("engagement-indicator")

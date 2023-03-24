@@ -1,12 +1,11 @@
-import { learningAreasView, LearningArea, learningAreaView } from "./learningAreas"
-import * as Html from "@/display/markup"
-import * as Style from "../style"
-import { DisplayConfig } from "@/display/display"
-import { userAccountView } from "../user"
-import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas"
-import { User } from "@/api/common/user"
-import { footer, header, linkBox, pageTitle } from "../viewElements"
-import { EngagementLevel } from "../engage/engagementPlans"
+import { learningAreasView, LearningArea, learningAreaView } from "./learningAreas.js"
+import * as Html from "loop/display"
+import * as Style from "../style.js"
+import { userAccountView } from "../user.js"
+import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas.js"
+import { User } from "@/api/common/user.js"
+import { footer, header, linkBox, pageTitle } from "../viewElements.js"
+import { EngagementLevel } from "../engage/engagementPlans/index.js"
 
 export interface Informative {
   type: "informative"
@@ -105,9 +104,4 @@ export function learningAreasPracticeView(): Html.View {
   ])
 }
 
-
-const display: DisplayConfig<AppModel> = {
-  view
-}
-
-export default display
+export default (model: AppModel) => Html.display(view(model))

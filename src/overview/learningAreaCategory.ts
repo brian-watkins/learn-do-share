@@ -1,5 +1,5 @@
-import * as Html from "@/display/markup"
-import * as Style from "../style"
+import * as Html from "loop/display"
+import * as Style from "../style.js"
 
 export enum LearningAreaCategory {
   Team = "team",
@@ -7,7 +7,7 @@ export enum LearningAreaCategory {
   Theory = "theory"
 }
 
-export function learningAreaCategoryTitle(category: LearningAreaCategory): Html.ViewChild {
+export function learningAreaCategoryTitle(category: LearningAreaCategory): Html.View {
   return Html.div([
     Style.tag(Style.colorForCategory(category))
   ], [

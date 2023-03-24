@@ -3,13 +3,13 @@ import { User } from "@/api/common/user.js";
 import { LearningAreaReader } from "./learningAreaReader.js"
 import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
 import { decorate, markdownToHTML, TagDecorator } from "../util/markdownParser.js";
-import { EngagementNote, EngagementNoteContents, engagementNotesRetrieved } from "./engagementNotes/index.js";
-import { engagementLevelsRetrieved, EngagementPlan } from "./engagementPlans/index.js";
+import { EngagementNote, EngagementNoteContents } from "./engagementNotes/index.js";
+import { EngagementPlan } from "./engagementPlans/index.js";
 import { EngagementNoteDeleteRequested } from "./engagementNotes/deleteNote.js";
 import { EngagementNoteCreationRequested } from "./engagementNotes/saveNote.js";
 import { EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/saveEngagementPlan.js";
 import { DeleteEngagementPlans } from "./engagementPlans/deleteEngagementPlans.js";
-import { Model } from "./sharedTypes.js";
+import { Model } from "./model.js";
 import { LearningArea } from "./learningArea.js";
 
 export interface EngagementPlanReader {
@@ -91,9 +91,9 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
 
     return templateResult("engage.html", {
       type: "personalized",
-      learningArea, 
-      engagementLevels: engagementLevelsRetrieved(levels), 
-      engagementNotes: engagementNotesRetrieved(notes),
+      learningArea,
+      engagementLevels: levels,
+      engagementNotes: notes,
       user: context.user
     })
   }

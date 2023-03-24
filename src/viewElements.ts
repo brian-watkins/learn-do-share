@@ -1,6 +1,6 @@
-import * as Html from "@/display/markup"
-import * as Style from "./style"
-import { Colors, tag } from "./style"
+import * as Html from "loop/display"
+import * as Style from "./style.js"
+import { Colors, tag } from "./style.js"
 
 export function header(attributes: Array<Html.ViewAttribute>, views: Array<Html.View>): Html.View {
   return Html.div([Html.cssClasses([
@@ -27,7 +27,7 @@ export function linkBox(href: string, text: string): Html.View {
   ])
 }
 
-export function cardBox(attributes: Array<Html.ViewAttribute>, children: Array<Html.ViewChild>): Html.View {
+export function cardBox(attributes: Array<Html.ViewAttribute>, children: Array<Html.View>): Html.View {
   return Html.section([...attributes, Style.box(), Html.cssClasses([
     "my-8",
     "flex",

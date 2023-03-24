@@ -1,6 +1,5 @@
-import display from "./app"
+import appDisplay from "./app.js"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
-import { AppDisplay } from "@/display/display";
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -19,5 +18,5 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView({ name: "overview" });
 
-const app = new AppDisplay(display, window._display_initial_state)
-app.mount("#app")
+const mountPoint = document.getElementById("app")
+appDisplay(window._display_initial_state).mount(mountPoint!)

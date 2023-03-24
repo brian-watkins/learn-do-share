@@ -58,7 +58,6 @@ export class CosmosEngagementNoteRepository implements EngagementNoteReader, Eng
         id: resource.id,
         content: resource.content,
         date: resource.date,
-        state: NoteState.Retrieved
       }
     })
   }

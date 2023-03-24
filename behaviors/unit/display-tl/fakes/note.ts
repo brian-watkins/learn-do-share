@@ -1,8 +1,7 @@
-import { EngagementNote, NoteState } from "@/src/engage/engagementNotes/index.js"
+import { EngagementNote } from "@/src/engage/engagementNotes/index.js"
 import { TestLearningArea } from "./learningArea.js"
 
 export class TestEngagementNote implements EngagementNote {
-  state: NoteState = NoteState.Retrieved
   id: string
   content: string
   date: string

@@ -1,3 +1,4 @@
+import { container, rule, state, State, withReducer } from "loop"
 import { LearningArea } from "../learningArea.js"
 
 export enum EngagementLevel {
@@ -5,20 +6,6 @@ export enum EngagementLevel {
   Learning = "learning",
   Doing = "doing",
   Sharing = "sharing"
-}
-
-// This should be part of how we model engagement levels
-export function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
-  if (levels.includes(EngagementLevel.Sharing)) {
-    return EngagementLevel.None
-  }
-  if (levels.includes(EngagementLevel.Doing)) {
-    return EngagementLevel.Sharing
-  }
-  if (levels.includes(EngagementLevel.Learning)) {
-    return EngagementLevel.Doing
-  }
-  return EngagementLevel.Learning
 }
 
 export interface EngagementPlan {
@@ -33,31 +20,86 @@ export function engagementPlan(learningArea: LearningArea, level: EngagementLeve
   }
 }
 
-export type EngagementLevels
-  = EngagementLevelsRetrieved
-  | EngagementLevelsSaving
-
-export interface EngagementLevelsRetrieved {
-  type: "engagement-levels-retrieved"
+interface SetEngagementLevels {
+  type: "set-levels"
   levels: Array<EngagementLevel>
 }
 
-export function engagementLevelsRetrieved(levels: Array<EngagementLevel>): EngagementLevels {
+export function setEngagementLevels(levels: Array<EngagementLevel>): SetEngagementLevels {
   return {
-    type: "engagement-levels-retrieved",
+    type: "set-levels",
     levels
   }
 }
 
-export interface EngagementLevelsSaving {
-  type: "engagement-levels-saving"
-  levels: Array<EngagementLevel>
+interface AddEngagementLevel {
+  type: "add-plan"
+  level: EngagementLevel
 }
 
-export function engagementLevelsSaving(levels: Array<EngagementLevel>): EngagementLevels {
+function addEngagementLevel(level: EngagementLevel): AddEngagementLevel {
   return {
-    type: "engagement-levels-saving",
-    levels
+    type: "add-plan",
+    level
   }
 }
 
+interface ClearEngagementLevels {
+  type: "clear-levels"
+}
+
+function clearEngagementLevels(): ClearEngagementLevels {
+  return {
+    type: "clear-levels"
+  }
+}
+
+type EngagementPlanMessage = SetEngagementLevels | AddEngagementLevel | ClearEngagementLevels
+
+export const engagementLevels = container<Array<EngagementLevel>, EngagementPlanMessage>(withReducer([], (message, current: Array<EngagementLevel>) => {
+  switch (message.type) {
+    case "set-levels":
+      return message.levels
+    case "add-plan":
+      return [ ...current, message.level ]
+    case "clear-levels":
+      return []
+  }
+}))
+
+function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
+  if (levels.includes(EngagementLevel.Sharing)) {
+    return EngagementLevel.None
+  }
+  if (levels.includes(EngagementLevel.Doing)) {
+    return EngagementLevel.Sharing
+  }
+  if (levels.includes(EngagementLevel.Learning)) {
+    return EngagementLevel.Doing
+  }
+  return EngagementLevel.Learning
+}
+
+export const increaseEngagementLevelRule = rule(engagementLevels, (get) => {
+  const current = get(engagementLevels)
+  const nextLevel = nextEngagementLevel(current)
+  if (nextLevel === EngagementLevel.None) {
+    return clearEngagementLevels()
+  } else {
+    return addEngagementLevel(nextLevel)
+  }
+})
+
+export const increaseEngagementText: State<string> = state(get => {
+  const levels = get(engagementLevels)
+  switch (nextEngagementLevel(levels)) {
+    case EngagementLevel.Learning:
+      return "I'm ready to learn!"
+    case EngagementLevel.Doing:
+      return "Let's do it!"
+    case EngagementLevel.Sharing:
+      return "I'm ready to share!"
+    case EngagementLevel.None:
+      return "I'm done for now!"
+  }
+})

@@ -1,7 +1,7 @@
-import * as Html from "@/display/markup"
-import * as Style from "../style"
-import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory"
-import { cardBox } from "../viewElements"
+import * as Html from "loop/display"
+import * as Style from "../style.js"
+import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory.js"
+import { cardBox } from "../viewElements.js"
 
 export interface LearningArea {
   id: string
@@ -30,7 +30,7 @@ export function learningAreaView(learningArea: LearningArea): Html.View {
   ])
 }
 
-export function learningAreaTitleView(area: LearningArea): Html.ViewChild {
+export function learningAreaTitleView(area: LearningArea): Html.View {
   return Html.h4([Html.cssClasses([
     "font-bold",
     Style.darkTextColor,

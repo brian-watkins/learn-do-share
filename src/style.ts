@@ -1,5 +1,5 @@
-import * as Html from "@/display/markup"
-import { LearningAreaCategory } from "./overview/learningAreaCategory"
+import * as Html from "loop/display"
+import { LearningAreaCategory } from "./overview/learningAreaCategory.js"
 
 export function bannerText(): Html.ViewAttribute {
   return Html.cssClasses([
