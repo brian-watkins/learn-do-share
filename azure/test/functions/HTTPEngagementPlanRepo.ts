@@ -1,9 +1,9 @@
-import { User } from "@/api/common/user";
-import { EngagementPlanReader as EngagePlanReader } from "@/src/engage/backstage"
-import { EngagementPlanReader as OverviewPlanReader } from "@/src/overview/backstage"
-import { EngagementPlan } from "@/src/engage/engagementPlans";
-import { LearningArea } from "@/src/engage/learningArea";
-import { EngagementPlanWriter } from "@/src/engage/engagementPlans/writeEngagementPlans";
+import { User } from "@/api/common/user.js";
+import { EngagementPlanReader as EngagePlanReader } from "@/src/engage/backstage.js"
+import { EngagementPlanReader as OverviewPlanReader } from "@/src/overview/backstage.js"
+import { EngagementPlan } from "@/src/engage/engagementPlans/index.js";
+import { LearningArea } from "@/src/engage/learningArea.js";
+import { EngagementPlanWriter } from "@/src/engage/engagementPlans/saveEngagementPlan.js";
 import fetch from "node-fetch";
 
 export class HttpEngagementPlanReader implements EngagePlanReader, OverviewPlanReader {

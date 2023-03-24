@@ -7,7 +7,7 @@ import { userIdentifierFor } from './helpers.js'
 import { serverHost } from './services/testServer.js'
 import { PageOptions } from './services/browser.js'
 import { TestDataServer } from './services/testDataServer.js'
-import { EngagementNote, NoteState } from '@/src/engage/engagementNotes/index.js'
+import { EngagementNote } from '@/src/engage/engagementNotes/index.js'
 
 export function testContext(): Context<TestContext> {
   return {

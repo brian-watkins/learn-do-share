@@ -1,8 +1,8 @@
-import { User } from "@/api/common/user";
-import { EngagementNoteCounter, NoteCount } from "@/src/overview/backstage";
-import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage"
-import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes";
-import { LearningArea } from "@/src/engage/learningArea";
+import { User } from "@/api/common/user.js";
+import { EngagementNoteCounter, NoteCount } from "@/src/overview/backstage.js";
+import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage.js"
+import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes/index.js";
+import { LearningArea } from "@/src/engage/learningArea.js";
 import fetch from "node-fetch";
 
 export class HttpEngagementNoteCounter implements EngagementNoteCounter {

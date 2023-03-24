@@ -2,7 +2,7 @@ import { LearningArea as AreaToEngage } from "@/src/engage/learningArea.js";
 import { LearningAreaReader } from "@/src/engage/learningAreaReader.js";
 import { LearningAreaCategory } from "@/src/overview/learningAreaCategory.js";
 import { LearningArea } from "@/src/overview/learningAreas.js";
-import { LearningAreasReader } from "@/src/overview/backstage";
+import { LearningAreasReader } from "@/src/overview/backstage.js";
 
 function allLearningAreas(): Array<AreaToEngage> {
   return [

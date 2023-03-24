@@ -1,5 +1,5 @@
 import { Context } from "@azure/functions"
-import { User } from "./user"
+import { User } from "./user.js"
 
 export interface Request {
   headers: { [name: string]: string }

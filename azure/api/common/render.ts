@@ -1,5 +1,5 @@
 import { Context } from "@azure/functions"
-import { User } from "./user"
+import { User } from "./user.js"
 import fs from "fs"
 import path from "path"
 

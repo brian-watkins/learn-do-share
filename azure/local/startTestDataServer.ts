@@ -1,4 +1,4 @@
-import { TestDataServer } from "behaviors/integration/services/testDataServer"
+import { TestDataServer } from "behaviors/integration/services/testDataServer.js"
 
 const server = new TestDataServer()
 await server.start(7171)

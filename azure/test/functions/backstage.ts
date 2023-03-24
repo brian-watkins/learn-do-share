@@ -1,8 +1,8 @@
-import { Adapters } from "@/src/engage/backstage"
-import { generateBackstageFunction } from "@/api/backstage/function"
-import { HttpLearningAreaReader } from "./HTTPLearningAreasReader"
-import { HttpEngagementNoteReader, HttpNoteEngageWriter } from "./HTTPNoteRepo"
-import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "./HTTPEngagementPlanRepo"
+import { Adapters } from "@/src/engage/backstage.js"
+import { generateBackstageFunction } from "@/api/backstage/function.js"
+import { HttpLearningAreaReader } from "./HTTPLearningAreasReader.js"
+import { HttpEngagementNoteReader, HttpNoteEngageWriter } from "./HTTPNoteRepo.js"
+import { HttpEngagementPlanReader, HttpEngagementPlanWriter } from "./HTTPEngagementPlanRepo.js"
 
 
 const adapters: Adapters = {

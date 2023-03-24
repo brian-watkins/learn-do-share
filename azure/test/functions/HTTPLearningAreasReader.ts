@@ -1,7 +1,7 @@
-import { LearningArea as LearningAreaToEngage } from "@/src/engage/learningArea";
-import { LearningAreaReader } from "@/src/engage/learningAreaReader";
-import { LearningAreasReader } from "@/src/overview/backstage";
-import { LearningArea } from "@/src/overview/learningAreas";
+import { LearningArea as LearningAreaToEngage } from "@/src/engage/learningArea.js";
+import { LearningAreaReader } from "@/src/engage/learningAreaReader.js";
+import { LearningAreasReader } from "@/src/overview/backstage.js";
+import { LearningArea } from "@/src/overview/learningAreas.js";
 import fetch from "node-fetch"
 
 export class HttpLearningAreasReader implements LearningAreasReader {

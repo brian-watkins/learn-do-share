@@ -1,8 +1,8 @@
-import { Adapters } from "@/src/overview/backstage";
-import { generateRootFunction } from "@/api/root/function";
-import { HttpLearningAreasReader } from "./HTTPLearningAreasReader";
-import { HttpEngagementPlanReader } from "./HTTPEngagementPlanRepo";
-import { HttpEngagementNoteCounter } from "./HTTPNoteRepo";
+import { Adapters } from "@/src/overview/backstage.js";
+import { generateRootFunction } from "@/api/root/function.js";
+import { HttpLearningAreasReader } from "./HTTPLearningAreasReader.js";
+import { HttpEngagementPlanReader } from "./HTTPEngagementPlanRepo.js";
+import { HttpEngagementNoteCounter } from "./HTTPNoteRepo.js";
 
 
 const adapters: Adapters = {

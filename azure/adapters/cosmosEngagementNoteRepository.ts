@@ -1,9 +1,9 @@
-import { User } from "@/api/common/user";
-import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage";
-import { EngagementNote, EngagementNoteContents, NoteState } from "@/src/engage/engagementNotes";
-import { EngagementNoteCounter, NoteCount } from "@/src/overview/backstage"
-import { LearningArea } from "@/src/engage/learningArea";
-import { CosmosConnection } from "./cosmosConnection";
+import { User } from "@/api/common/user.js";
+import { EngagementNoteReader, EngagementNoteWriter } from "@/src/engage/backstage.js";
+import { EngagementNote, EngagementNoteContents } from "@/src/engage/engagementNotes/index.js";
+import { EngagementNoteCounter, NoteCount } from "@/src/overview/backstage.js"
+import { LearningArea } from "@/src/engage/learningArea.js";
+import { CosmosConnection } from "./cosmosConnection.js";
 import { FeedResponse } from "@azure/cosmos";
 
 export class CosmosEngagementNoteRepository implements EngagementNoteReader, EngagementNoteCounter, EngagementNoteWriter {

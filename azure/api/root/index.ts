@@ -1,9 +1,9 @@
-import { Adapters } from "@/src/overview/backstage";
-import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository";
-import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader";
-import { generateRootFunction } from "./function";
-import { CosmosConnection } from "@/adapters/cosmosConnection";
-import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository";
+import { Adapters } from "@/src/overview/backstage.js";
+import { CosmosEngagementPlanRepository } from "@/adapters/cosmosEngagementPlanRepository.js";
+import { StaticLearningAreasReader } from "@/adapters/staticLearningAreasReader.js";
+import { generateRootFunction } from "./function.js";
+import { CosmosConnection } from "@/adapters/cosmosConnection.js";
+import { CosmosEngagementNoteRepository } from "@/adapters/cosmosEngagementNoteRepository.js";
 
 const cosmosConnection = new CosmosConnection({
   endpoint: process.env["COSMOS_DB_ENDPOINT"] ?? "unknown",
