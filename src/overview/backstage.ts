@@ -1,8 +1,9 @@
-import { BackstageRenderer, InitialStateResult, templateResult, RenderContext } from "@/api/common/render.js";
-import { AppModel } from "./app.js";
+import { BackstageRenderer, InitialStateResult, RenderContext, viewResult } from "@/api/common/render.js";
+import app, { AppModel } from "./app.js";
 import { User } from "@/api/common/user.js";
 import { LearningArea } from "./learningAreas.js";
 import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans/index.js";
+import { render } from "loop/display";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>
@@ -31,10 +32,10 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
   const learningAreas = await adapters.learningAreasReader.read()
 
   if (context.user === null) {
-    return templateResult("index.html", {
+    return viewResult("index.html", render(app({
       state: { type: "informative" },
       learningAreas: learningAreas,
-    })
+    })))
   } else {
     const plans = await adapters.engagementPlanReader.readAll(context.user)
     const noteCounts = await adapters.engagementNoteCounter.countByLearningArea(context.user)
@@ -48,7 +49,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
       learningAreas: learningAreas,
     }
 
-    return templateResult("index.html", state)
+    return viewResult("index.html", render(app(state)))
   }
 }
 

@@ -1,4 +1,3 @@
-import appDisplay from "./app.js"
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 
 const appInsights = new ApplicationInsights({
@@ -17,6 +16,3 @@ appInsights.addTelemetryInitializer(function (envelope) {
   envelope.tags!["ai.cloud.role"] = "display";
 });
 appInsights.trackPageView({ name: "overview" });
-
-const mountPoint = document.getElementById("app")
-appDisplay(window._display_initial_state).mount(mountPoint!)

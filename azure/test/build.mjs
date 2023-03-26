@@ -34,7 +34,8 @@ await esbuild.build({
     external: [
         "@azure/functions",
         "@azure/cosmos",
-        "node-fetch"
+        "node-fetch",
+        "loop"
     ],
     logLevel: "info"
 })
@@ -56,7 +57,8 @@ await esbuild.build({
         "remark-parse",
         "remark-rehype",
         "hast-util-select",
-        "node-fetch"
+        "node-fetch",
+        "loop"
     ],
     logLevel: "info"
 })

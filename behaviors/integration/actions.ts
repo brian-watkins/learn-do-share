@@ -35,6 +35,7 @@ export function goBackToLearningAreas(): Action<TestContext> {
 export function gotoLearningAreas(): Action<TestContext> {
   return step("Link to view learning areas is clicked", async (testContext) => {
     await testContext.display.selectElementWithText("All Learning Areas").click()
+    await testContext.display.waitForPageLoad()
   })
 }
 

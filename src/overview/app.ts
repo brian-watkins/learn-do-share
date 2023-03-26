@@ -104,4 +104,4 @@ export function learningAreasPracticeView(): Html.View {
   ])
 }
 
-export default (model: AppModel) => Html.display(view(model))
+export default (model: AppModel) => view(model)

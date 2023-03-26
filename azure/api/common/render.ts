@@ -34,7 +34,21 @@ export function redirectResult(location: string): RedirectResult {
   }
 }
 
-export type InitialStateResult<M> = TemplateResult<M> | RedirectResult
+export interface ViewResult {
+  type: "view"
+  templateName: string
+  content: string
+}
+
+export function viewResult(templateName: string, content: string): ViewResult {
+  return {
+    type: "view",
+    templateName,
+    content
+  }
+}
+
+export type InitialStateResult<M> = TemplateResult<M> | RedirectResult | ViewResult
 
 export interface BackstageRenderer<C, M> {
   initialState(context: RenderContext<C>): Promise<InitialStateResult<M>>
@@ -50,7 +64,7 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
         }
       }
       break
-    case "template":
+    case "template": {
       let template = fetchTemplate(context, result.templateName)
       const html = renderTemplate(template, result.state)
       context.res = {
@@ -61,6 +75,20 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
         body: html
       }
       break
+    }
+    case "view": {
+      let template = fetchTemplate(context, result.templateName)
+      const html = renderViewTemplate(template, result.content)
+
+      context.res = {
+        headers: {
+          'Content-Type': 'text/html',
+          'Cache-Control': 'no-store'
+        },
+        body: html
+      }
+      break
+    }
   }
 }
 
@@ -72,4 +100,8 @@ function fetchTemplate(context: Context, templateName: string): string {
 function renderTemplate(template: string, content: any): string {
   const jsContent = `window._display_initial_state = ${JSON.stringify(content)};`
   return template.replace("/* DISPLAY_INITIAL_STATE */", jsContent)
+}
+
+function renderViewTemplate(template: string, content: string): string {
+  return template.replace("/* DISPLAY_CONTENT */", content)
 }
