@@ -25,7 +25,7 @@ const summary = await validate([
   engageBehavior,
   authBehavior,
   notesBehavior
-])
+], { failFast: true })
 
 if (summary.invalid > 0 || summary.skipped > 0) {
   process.exitCode = 1
