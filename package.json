@@ -39,7 +39,7 @@
     "express": "^4.17.3",
     "foreman": "^3.0.1",
     "husky": "^7.0.0",
-    "msw": "^0.44.2",
+    "msw": "^1.2.1",
     "node-fetch": "^3.2.4",
     "playwright": "^1.31.2",
     "postcss": "^8.4.12",
