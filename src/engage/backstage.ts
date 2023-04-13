@@ -1,7 +1,7 @@
 import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
 import { LearningAreaReader } from "./learningAreaReader.js"
-import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext } from "@/api/common/render.js";
+import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext, viewResult } from "@/api/common/render.js";
 import { decorate, markdownToHTML, TagDecorator } from "../util/markdownParser.js";
 import { EngagementNote, EngagementNoteContents } from "./engagementNotes/index.js";
 import { EngagementPlan } from "./engagementPlans/index.js";
@@ -11,6 +11,9 @@ import { EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/sav
 import { DeleteEngagementPlans } from "./engagementPlans/deleteEngagementPlans.js";
 import { Model } from "./model.js";
 import { LearningArea } from "./learningArea.js";
+import { render } from "loop/display";
+import App from "./display.js"
+import { init } from "./storage.js";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>
@@ -89,13 +92,29 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<Engag
     const notes = engagementNoteData
       .map(displayableNote)
 
-    return templateResult("engage.html", {
+    const model: Model = {
       type: "personalized",
       learningArea,
       engagementLevels: levels,
       engagementNotes: notes,
       user: context.user
-    })
+    }
+
+    init(model)
+    
+    // I need to provide the data to the state first
+    const view = await App()
+
+    // I need to *also* send the data 
+    return viewResult("engage.html", render(view), model)
+
+    // return templateResult("engage.html", {
+    //   type: "personalized",
+    //   learningArea,
+    //   engagementLevels: levels,
+    //   engagementNotes: notes,
+    //   user: context.user
+    // })
   }
 }
 

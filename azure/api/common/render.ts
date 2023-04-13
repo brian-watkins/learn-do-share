@@ -38,13 +38,15 @@ export interface ViewResult {
   type: "view"
   templateName: string
   content: string
+  state?: any
 }
 
-export function viewResult(templateName: string, content: string): ViewResult {
+export function viewResult(templateName: string, content: string, state?: any): ViewResult {
   return {
     type: "view",
     templateName,
-    content
+    content,
+    state
   }
 }
 
@@ -78,7 +80,10 @@ export function render<M>(context: Context, result: InitialStateResult<M>) {
     }
     case "view": {
       let template = fetchTemplate(context, result.templateName)
-      const html = renderViewTemplate(template, result.content)
+      let html = renderViewTemplate(template, result.content)
+      if (result.state) {
+        html = renderTemplate(html, result.state)
+      }
 
       context.res = {
         headers: {

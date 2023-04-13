@@ -16,8 +16,13 @@ const config = {
       }
     },
     outDir: "azure/build/display",
-    emptyOutDir: true,
-    sourcemap: true
+    emptyOutDir: false,
+    sourcemap: true,
+  },
+  ssr: {
+    noExternal: [
+      
+    ]
   },
   plugins: [
     copyHtml("index.html", "./azure/api/root/index.html"),

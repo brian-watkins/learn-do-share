@@ -1,6 +1,6 @@
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
-import appDisplay from "./display.js"
 import { init } from "./storage.js"
+import { activateIslands } from 'loop/display';
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -19,7 +19,13 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView({ name: "engage" });
 
+// this should still work to provide the state
 init(window._display_initial_state)
 
-const mountPoint = document.getElementById("app")
-appDisplay().mount(mountPoint!)
+document.addEventListener("DOMContentLoaded", () => {
+// const mountPoint = document.getElementById("app")
+// appDisplay().mount(mountPoint!)
+
+// this is async -- should we await or anything?
+  activateIslands()
+})

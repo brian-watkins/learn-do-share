@@ -6,7 +6,7 @@ import { container, meta, ok, state, State, useProvider, withInitialValue, write
 import { headingBox } from "../../viewElements.js"
 
 
-export function engagementNotesView(get: <S>(state: State<S>) => S): Html.View {
+export default function engagementNotesView(get: <S>(state: State<S>) => S): Html.View {
   const notes = get(engagementNotes)
 
   return Html.div([
@@ -134,6 +134,9 @@ function engagementNoteView(note: EngagementNote): Html.View {
       ])
     ], [
       Html.text(formattedNoteDate(note.date)),
+      // Not sure if this is a good idea to have a
+      // inline function here for withState. Each time this is run
+      // it will generate a new state
       Html.withState(get => Html.button([
         Html.cssClasses([
           "w-fit",

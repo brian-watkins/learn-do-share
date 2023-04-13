@@ -1,8 +1,11 @@
 // import * as Html from "@/display/markup"
 import * as Html from "loop/display"
-import { LearningArea } from "./learningArea.js"
+import { learningArea } from "./learningArea.js"
+import { GetState } from "loop"
 
-export function learningAreaContentView(area: LearningArea): Html.View {
+// export function learningAreaContentView(area: LearningArea): Html.View {
+export function learningAreaContentView(get: GetState): Html.View {
+  const area = get(learningArea)
   return Html.p([
     Html.id("learning-area-content"),
     Html.cssClasses([
@@ -13,6 +16,6 @@ export function learningAreaContentView(area: LearningArea): Html.View {
       "text-xl"
     ]),
     Html.property("innerHTML", area.content)
-  ], [])
+  ], [ Html.text("Hello this is content!")])
 }
 

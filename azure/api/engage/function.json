@@ -15,5 +15,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../build/engage/index.mjs"
+  "scriptFile": "../build/engage/engage.js"
 }
