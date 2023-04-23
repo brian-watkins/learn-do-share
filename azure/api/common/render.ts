@@ -108,5 +108,5 @@ function renderTemplate(template: string, content: any): string {
 }
 
 function renderViewTemplate(template: string, content: string): string {
-  return template.replace("/* DISPLAY_CONTENT */", content)
+  return template.replace("<!-- DISPLAY_CONTENT -->", content)
 }

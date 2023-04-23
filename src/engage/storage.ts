@@ -14,17 +14,22 @@ import { learningArea } from "./learningArea.js";
 export function init(model: Model) {
   const provider: Provider = {
     provide: (_, set) => {
-      console.log("***** GOT MODEL", model)
       set(meta(learningArea), ok(model.learningArea))
 
-      if (model.type === "personalized") {
-        console.log("SETTING STUFF")
-        set(meta(engagementLevels), ok(setEngagementLevels(model.engagementLevels)))
-        set(meta(engagementNotes), ok(setNotes(model.engagementNotes)))
-        set(meta(session), ok<Session>({
-          type: "personalized-session",
-          user: model.user,
-        }))
+      switch (model.type) {
+        case "personalized":
+          set(meta(engagementLevels), ok(setEngagementLevels(model.engagementLevels)))
+          set(meta(engagementNotes), ok(setNotes(model.engagementNotes)))
+          set(meta(session), ok<Session>({
+            type: "personalized-session",
+            user: model.user,
+          }))
+          break
+        case "informative":
+          set(meta(session), ok<Session>({
+            type: "public-session"
+          }))
+          break
       }
     }
   }
@@ -34,11 +39,8 @@ export function init(model: Model) {
 
 // Writers
 
-console.log("Hello writers!")
-
 useWriter(engagementLevels, {
   write: async (message, get, set) => {
-    console.log("Writing engagement levels", message)
     const area = get(learningArea)
     set(pending(message))
     switch (message.type) {
@@ -70,7 +72,6 @@ useWriter(engagementLevels, {
 
 useWriter(engagementNotes, {
   write: async (message, get, set) => {
-    console.log("Writing engagement notes", message)
     const area = get(learningArea)
     set(pending(message))
     switch (message.type) {

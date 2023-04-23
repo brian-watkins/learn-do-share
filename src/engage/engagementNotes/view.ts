@@ -6,7 +6,7 @@ import { container, meta, ok, state, State, useProvider, withInitialValue, write
 import { headingBox } from "../../viewElements.js"
 
 
-export default function engagementNotesView(get: <S>(state: State<S>) => S): Html.View {
+export default Html.withState({ activationId: "engagement-notes" }, (get) => {
   const notes = get(engagementNotes)
 
   return Html.div([
@@ -23,7 +23,7 @@ export default function engagementNotesView(get: <S>(state: State<S>) => S): Htm
     Html.withState(noteInputView),
     ...notes.map(engagementNoteView)
   ])
-}
+})
 
 const noteText = container(withInitialValue(""))
 

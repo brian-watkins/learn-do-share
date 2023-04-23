@@ -1,26 +1,18 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { render } from "../common/render.js";
 import { azureUserParser } from "../common/azureUserParser.js";
-
-// This should probably be a dynamic import
-//@ts-ignore
-import { Adapters, initRenderer } from "/Users/bwatkins/workspace/learn-do-share/azure/build/display/backstage.js";
-
+import { initRenderer } from "@/src/engage/backstageRenderer.js" 
 
 export function generateEngageFunction(adapters: any): AzureFunction {
-  return async function (context: Context, req: HttpRequest): Promise<void> {
-    // not good to do on every request but whatever?
-    // const { initRenderer } = await import("@/src/engage/backstage.js")
-    const renderer = initRenderer(adapters)
+  const renderer = initRenderer(adapters)
   
+  return async function (context: Context, req: HttpRequest): Promise<void> {
     const result = await renderer.initialState({
       user: azureUserParser(req, context),
       attributes: {
         learningAreaId: getLearningAreaId(req)
       }
     })
-
-    console.log("Got result", result)
 
     render(context, result)
   }

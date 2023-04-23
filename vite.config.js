@@ -12,7 +12,7 @@ const config = {
     rollupOptions: {
       input: {
         main: path.resolve(dirname(), "index.html"),
-        engage: path.resolve(dirname(), "engage.html")
+        engage: path.resolve(dirname(), "engage.html"),
       }
     },
     outDir: "azure/build/display",
@@ -20,9 +20,7 @@ const config = {
     sourcemap: true,
   },
   ssr: {
-    noExternal: [
-      
-    ]
+    noExternal: []
   },
   plugins: [
     copyHtml("index.html", "./azure/api/root/index.html"),

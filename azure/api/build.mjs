@@ -8,6 +8,7 @@ await esbuild.build({
     format: "esm",
     target: "node16",
     bundle: true,
+    minify: true,
     outfile: "./build/backstage/index.mjs",
     external: [
         "@azure/functions",
@@ -16,7 +17,9 @@ await esbuild.build({
         "rehype-stringify",
         "remark-parse",
         "remark-rehype",
-        "hast-util-select"
+        "hast-util-select",
+        "date-fns",
+        "loop"
     ],
     logLevel: "info"
 })
@@ -29,10 +32,12 @@ await esbuild.build({
     format: "esm",
     target: "node16",
     bundle: true,
+    minify: true,
     outfile: "./build/root/index.mjs",
     external: [
         "@azure/functions",
-        "@azure/cosmos"
+        "@azure/cosmos",
+        "loop"
     ],
     logLevel: "info"
 })
@@ -45,6 +50,7 @@ await esbuild.build({
     format: "esm",
     target: "node16",
     bundle: true,
+    minify: true,
     outfile: "./build/engage/index.mjs",
     external: [
         "@azure/functions",
@@ -53,7 +59,9 @@ await esbuild.build({
         "rehype-stringify",
         "remark-parse",
         "remark-rehype",
-        "hast-util-select"
+        "hast-util-select",
+        "loop",
+        "date-fns"
     ],
     logLevel: "info"
 })
@@ -66,6 +74,7 @@ await esbuild.build({
     format: "esm",
     target: "node16",
     bundle: true,
+    minify: true,
     outfile: "./build/login/index.mjs",
     external: [
         "@azure/functions"

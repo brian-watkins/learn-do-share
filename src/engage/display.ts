@@ -4,34 +4,24 @@ import { learningAreaContentView } from "./learningAreaContent.js"
 import { footer, header, linkBox } from "../viewElements.js"
 import { userAccountView } from "../user.js"
 import { meta, State } from "loop"
-// import { engagementPlansView } from "./engagementPlans/view.js"
-// import { engagementNotesView } from "./engagementNotes/view.js"
+import engagementPlansView from "./engagementPlans/view.js"
+import engagementNotesView from "./engagementNotes/view.js"
 import { session } from "./session.js"
 import { engagementLevels } from "./engagementPlans/index.js"
 import { engagementNotes } from "./engagementNotes/index.js"
 
 // View
 
-// Some need to be islands and some it doesn't matter
-async function view(): Promise<Html.View> {
+function view(): Html.View {
   return page([
-    Html.withState(pageError), // this should be server-side
+    Html.withState(pageError),
     pageHeader([
       learningAreasLink(),
-      Html.withState(sessionView) // this should be server-side
+      Html.withState(sessionView)
     ]),
-    Html.withState(learningAreaCategoryView), // server-side
-    Html.withState(learningAreaTitleView), // server-side
-    // await Html.withState(contentView) // server-side BUT contains the islands ...
-    contentArea([
-      Html.withState(learningAreaContentView),
-      contentColumn([
-        // Html.withState(engagementPlansView), // island
-        await Html.island(() => import("./engagementPlans/view.js")),
-        // Html.withState(engagementNotesView) // island
-        await Html.island(() => import("./engagementNotes/view.js"))
-      ])
-    ])
+    Html.withState(learningAreaCategoryView),
+    Html.withState(learningAreaTitleView),
+    Html.withState(contentView)
   ])
 }
 
@@ -45,24 +35,22 @@ function sessionView(get: <S>(state: State<S>) => S): Html.View {
   }
 }
 
-// async function contentView(get: <S>(state: State<S>) => S): Promise<Html.View> {
-//   const userSession = get(session)
-//   const area = get(learningArea)
-//   switch (userSession.type) {
-//     case "public-session":
-//       return learningAreaContentView(area)
-//     case "personalized-session":
-//       return contentArea([
-//         learningAreaContentView(area),
-//         contentColumn([
-//           // Html.withState(engagementPlansView), // island
-//           await Html.island(() => import("./engagementPlans/view.js")),
-//           // Html.withState(engagementNotesView) // island
-//           await Html.island(() => import("./engagementNotes/view.js"))
-//         ])
-//       ])
-//   }
-// }
+function contentView(get: <S>(state: State<S>) => S): Html.View {
+  const userSession = get(session)
+  switch (userSession.type) {
+    case "public-session":
+      const statefulElement = Html.withState(learningAreaContentView)
+      return statefulElement
+    case "personalized-session":
+      return contentArea([
+        Html.withState(learningAreaContentView),
+        contentColumn([
+          engagementPlansView,
+          engagementNotesView
+        ])
+      ])
+  }
+}
 
 function pageError(get: <S>(state: State<S>) => S): Html.View {
   const hasError = get(meta(engagementLevels)).type === "error" ||
@@ -157,5 +145,4 @@ function learningAreasLink(): Html.View {
   return linkBox("/", "All Learning Areas")
 }
 
-// export default () => Html.display(view())
 export default () => view()

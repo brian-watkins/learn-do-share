@@ -3,6 +3,6 @@
   "Values": {
     "AzureWebJobsStorage": "",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "TEMPLATE_PATH": "/Users/bwatkins/workspace/learn-do-share/azure/build/display/"
+    "TEMPLATE_PATH": "../../"
   }
 }

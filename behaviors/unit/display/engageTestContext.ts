@@ -3,10 +3,11 @@ import { TestUser } from "./fakes/user.js"
 import appDisplay from "@/src/engage/display.js"
 import { EngagementLevel } from "@/src/engage/engagementPlans/index.js"
 import { getServiceWorker } from "./mockServer.js"
-import { DefaultBodyType, ResponseTransformer, rest, SetupWorkerApi } from "msw"
+import { DefaultBodyType, ResponseTransformer, rest, SetupWorker } from "msw"
 import { TestEngagementNote } from "./fakes/note.js"
 import { init } from "@/src/engage/storage.js"
 import { Model } from "@/src/engage/model.js"
+import { createDisplay, Display } from "loop/display"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -18,9 +19,9 @@ export class EngageTestContext {
   private user: TestUser | null = null
   private notes: Array<TestEngagementNote> = []
   private engagementLevels: Array<EngagementLevel> = []
-  private app: any = null
+  private app: Display | null = null
   public handlers: Array<any> = []
-  private mockServiceWorker: SetupWorkerApi | null = null
+  private mockServiceWorker: SetupWorker | null = null
 
   constructor(private area: TestLearningArea) {}
 
@@ -30,12 +31,18 @@ export class EngageTestContext {
 
     init(this.getInitialState())
     
-    this.app = appDisplay()
-    this.app.mount(document.getElementById("test-app"))
+    const view = appDisplay()
+    this.app = createDisplay()
+    const mountPoint = document.getElementById("test-app")
+    if (mountPoint) {
+      this.app.mountView(mountPoint, view)
+    } else {
+      console.log("NO MOUNT POINT!??!")
+    }
   }
 
   stop() {
-    this.app.destroy()
+    this.app?.destroy()
     this.mockServiceWorker?.resetHandlers()
   }
 

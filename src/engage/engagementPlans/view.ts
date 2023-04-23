@@ -3,7 +3,7 @@ import * as Style from "../../style.js"
 import { meta, State, trigger } from "loop"
 import { engagementLevels, increaseEngagementLevelRule, increaseEngagementText } from "./index.js"
 
-export default function engagementPlansView(get: <S>(state: State<S>) => S): Html.View {
+export default Html.withState({ activationId: "engagement-plans" }, (get) => {
   const levels = get(engagementLevels)
   
   return Html.div([Html.cssClasses([
@@ -21,7 +21,7 @@ export default function engagementPlansView(get: <S>(state: State<S>) => S): Htm
       Html.withState(increaseEngagementButton)
     ])
   ])
-}
+})
 
 
 function increaseEngagementButton(get: <S>(state: State<S>) => S): Html.View {

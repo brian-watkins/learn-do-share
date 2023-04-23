@@ -1,12 +1,10 @@
-// import * as Html from "@/display/markup"
 import * as Html from "loop/display"
 import { learningArea } from "./learningArea.js"
 import { GetState } from "loop"
 
-// export function learningAreaContentView(area: LearningArea): Html.View {
 export function learningAreaContentView(get: GetState): Html.View {
   const area = get(learningArea)
-  return Html.p([
+  return Html.div([
     Html.id("learning-area-content"),
     Html.cssClasses([
       "w-136",
@@ -16,6 +14,6 @@ export function learningAreaContentView(get: GetState): Html.View {
       "text-xl"
     ]),
     Html.property("innerHTML", area.content)
-  ], [ Html.text("Hello this is content!")])
+  ], [])
 }
 

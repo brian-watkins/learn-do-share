@@ -1,7 +1,6 @@
 import { Backstage } from "@/api/backstage/adapter.js";
 import { User } from "@/api/common/user.js";
 import { LearningAreaReader } from "./learningAreaReader.js"
-import { BackstageRenderer, InitialStateResult, templateResult, redirectResult, RenderContext, viewResult } from "@/api/common/render.js";
 import { decorate, markdownToHTML, TagDecorator } from "../util/markdownParser.js";
 import { EngagementNote, EngagementNoteContents } from "./engagementNotes/index.js";
 import { EngagementPlan } from "./engagementPlans/index.js";
@@ -9,11 +8,7 @@ import { EngagementNoteDeleteRequested } from "./engagementNotes/deleteNote.js";
 import { EngagementNoteCreationRequested } from "./engagementNotes/saveNote.js";
 import { EngagementPlanWriter, WriteEngagementPlan } from "./engagementPlans/saveEngagementPlan.js";
 import { DeleteEngagementPlans } from "./engagementPlans/deleteEngagementPlans.js";
-import { Model } from "./model.js";
 import { LearningArea } from "./learningArea.js";
-import { render } from "loop/display";
-import App from "./display.js"
-import { init } from "./storage.js";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>
@@ -64,66 +59,6 @@ const update = (adapters: Adapters) => async (user: User | null, message: DataMe
   }
 }
 
-export interface EngageContext {
-  learningAreaId: string
-}
-
-const initialState = (adapters: Adapters) => async (context: RenderContext<EngageContext>): Promise<InitialStateResult<Model>> => {
-  const learningArea = await adapters.learningAreaReader.read(context.attributes.learningAreaId)
-
-  if (learningArea == null) {
-    return redirectResult("/index.html")
-  }
-
-  learningArea.content = markdownToHTML(learningArea.content, contentTagStyles())
-
-  if (context.user === null) {
-    return templateResult("engage.html", {
-      type: "informative",
-      learningArea
-    })
-  } else {
-    const plans = await adapters.engagementPlanReader.read(context.user, learningArea)
-    const levels = plans
-      .map(plan => plan.level)
-
-    const engagementNoteData = await adapters.engagementNoteReader.read(context.user, learningArea)
-
-    const notes = engagementNoteData
-      .map(displayableNote)
-
-    const model: Model = {
-      type: "personalized",
-      learningArea,
-      engagementLevels: levels,
-      engagementNotes: notes,
-      user: context.user
-    }
-
-    init(model)
-    
-    // I need to provide the data to the state first
-    const view = await App()
-
-    // I need to *also* send the data 
-    return viewResult("engage.html", render(view), model)
-
-    // return templateResult("engage.html", {
-    //   type: "personalized",
-    //   learningArea,
-    //   engagementLevels: levels,
-    //   engagementNotes: notes,
-    //   user: context.user
-    // })
-  }
-}
-
-export function initRenderer(adapters: Adapters): BackstageRenderer<EngageContext, Model> {
-  return {
-    initialState: initialState(adapters)
-  }
-}
-
 export function initBackstage(adapters: Adapters): Backstage<any> {
   return {
     messageHandler: update(adapters)
@@ -135,16 +70,6 @@ function displayableNote(noteData: EngagementNote): EngagementNote {
     ...noteData,
     content: markdownToHTML(noteData.content, noteContentTagStyles())
   }
-}
-
-export function contentTagStyles(): Array<TagDecorator> {
-  return [
-    decorate("a", { classname: "text-sky-800 underline visited:text-sky-600", rel: "external", target: "_blank" }),
-    decorate("h1", { classname: "font-bold text-2xl" }),
-    decorate("h3", { classname: "font-bold" }),
-    decorate("ul", { classname: "list-disc list-inside" }),
-    decorate("p", { classname: "pb-4" })
-  ]
 }
 
 export function noteContentTagStyles(): Array<TagDecorator> {

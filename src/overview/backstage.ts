@@ -31,15 +31,17 @@ export interface Adapters {
 const initialState = (adapters: Adapters) => async (context: RenderContext<null>): Promise<InitialStateResult<AppModel>> => {
   const learningAreas = await adapters.learningAreasReader.read()
 
+  let model: AppModel
+
   if (context.user === null) {
-    return viewResult("index.html", render(app({
+    model = {
       state: { type: "informative" },
       learningAreas: learningAreas,
-    })))
+    }
   } else {
     const plans = await adapters.engagementPlanReader.readAll(context.user)
     const noteCounts = await adapters.engagementNoteCounter.countByLearningArea(context.user)
-    const state: AppModel = {
+    model = {
       state: {
         type: "personalized",
         user: context.user,
@@ -48,9 +50,9 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
       },
       learningAreas: learningAreas,
     }
-
-    return viewResult("index.html", render(app(state)))
   }
+
+  return viewResult("index.html", await render(app(model)))
 }
 
 function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key: string]: Array<EngagementLevel> } {

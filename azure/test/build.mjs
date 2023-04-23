@@ -17,7 +17,9 @@ await esbuild.build({
         "rehype-stringify",
         "remark-parse",
         "remark-rehype",
-        "hast-util-select"
+        "hast-util-select",
+        "date-fns",
+        "loop"
     ],
     logLevel: "info"
 })
@@ -58,7 +60,8 @@ await esbuild.build({
         "remark-rehype",
         "hast-util-select",
         "node-fetch",
-        "loop"
+        "loop",
+        "date-fns"
     ],
     logLevel: "info"
 })

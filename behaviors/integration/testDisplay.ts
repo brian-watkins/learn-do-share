@@ -16,7 +16,7 @@ export class TestDisplay {
   }
 
   async goto(url: string): Promise<void> {
-    await this.page?.goto(url)
+    await this.page?.goto(url, { waitUntil: "networkidle" })
   }
 
   async stop(): Promise<void> {
