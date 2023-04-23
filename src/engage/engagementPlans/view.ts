@@ -3,14 +3,17 @@ import * as Style from "../../style.js"
 import { meta, State, trigger } from "loop"
 import { engagementLevels, increaseEngagementLevelRule, increaseEngagementText } from "./index.js"
 
-export default Html.withState({ activationId: "engagement-plans" }, (get) => {
+export default Html.withState((get) => {
   const levels = get(engagementLevels)
-  
-  return Html.div([Html.cssClasses([
-    "flex",
-    "flex-col",
-    "gap-4"
-  ])], [
+
+  return Html.div([
+    Html.id("engagement-plans"),
+    Html.cssClasses([
+      "flex",
+      "flex-col",
+      "gap-4"
+    ])
+  ], [
     Html.div([
       Html.cssClasses([
         "flex",

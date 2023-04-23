@@ -6,7 +6,7 @@ import { container, meta, ok, state, State, useProvider, withInitialValue, write
 import { headingBox } from "../../viewElements.js"
 
 
-export default Html.withState({ activationId: "engagement-notes" }, (get) => {
+export default Html.withState((get) => {
   const notes = get(engagementNotes)
 
   return Html.div([

@@ -21,10 +21,12 @@ appInsights.trackPageView({ name: "engage" });
 
 init(window._display_initial_state)
 
-const display = createDisplay()
-import("./engagementNotes/view.js").then((engagementNotesModule) => {
-  display.activateIsland(engagementNotesModule.default)
-})
-import("./engagementPlans/view.js").then((engagementPlansModule) => {
-  display.activateIsland(engagementPlansModule.default)
-})
+if (window._display_initial_state.type === "personalized") {
+  const display = createDisplay()
+  import("./engagementNotes/view.js").then((engagementNotesModule) => {
+    display.mount(document.getElementById("engagement-notes")!, engagementNotesModule.default)
+  })
+  import("./engagementPlans/view.js").then((engagementPlansModule) => {
+    display.mount(document.getElementById("engagement-plans")!, engagementPlansModule.default)
+  })
+}

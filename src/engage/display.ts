@@ -39,8 +39,7 @@ function contentView(get: <S>(state: State<S>) => S): Html.View {
   const userSession = get(session)
   switch (userSession.type) {
     case "public-session":
-      const statefulElement = Html.withState(learningAreaContentView)
-      return statefulElement
+      return Html.withState(learningAreaContentView)
     case "personalized-session":
       return contentArea([
         Html.withState(learningAreaContentView),

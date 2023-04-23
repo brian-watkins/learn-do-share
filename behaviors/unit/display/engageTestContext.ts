@@ -7,7 +7,7 @@ import { DefaultBodyType, ResponseTransformer, rest, SetupWorker } from "msw"
 import { TestEngagementNote } from "./fakes/note.js"
 import { init } from "@/src/engage/storage.js"
 import { Model } from "@/src/engage/model.js"
-import { createDisplay, Display } from "loop/display"
+import { createDisplay } from "loop/display"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -19,7 +19,7 @@ export class EngageTestContext {
   private user: TestUser | null = null
   private notes: Array<TestEngagementNote> = []
   private engagementLevels: Array<EngagementLevel> = []
-  private app: Display | null = null
+  private unmountApp: (() => void) | undefined
   public handlers: Array<any> = []
   private mockServiceWorker: SetupWorker | null = null
 
@@ -32,17 +32,15 @@ export class EngageTestContext {
     init(this.getInitialState())
     
     const view = appDisplay()
-    this.app = createDisplay()
-    const mountPoint = document.getElementById("test-app")
-    if (mountPoint) {
-      this.app.mountView(mountPoint, view)
-    } else {
-      console.log("NO MOUNT POINT!??!")
-    }
+    const app = createDisplay()
+    const mountPoint = document.createElement("div")
+    mountPoint.id = "test-app"
+    document.body.appendChild(mountPoint)
+    this.unmountApp = app.mount(mountPoint, view)
   }
 
   stop() {
-    this.app?.destroy()
+    this.unmountApp?.()
     this.mockServiceWorker?.resetHandlers()
   }
 
