@@ -11,7 +11,7 @@ let VITE_SERVER: ViteDevServer | null = null
 
 const SWA_SERVER = new TestProcess("node_modules/.bin/swa", [
   "start", `http://localhost:${vitePort}`,
-  "--api-location", `http://localhost:${funcPort}`,
+  "--api-devserver-url", `http://127.0.0.1:${funcPort}`,
   "--verbose", "silent",
 ])
 

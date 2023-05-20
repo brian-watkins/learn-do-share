@@ -54,7 +54,7 @@ export function waitForPort(port: string | number): Promise<void> {
   return new Promise((resolve, reject) => {
     waitOn({
       resources: [
-        `tcp:localhost:${port}`
+        `tcp:127.0.0.1:${port}`
       ]
     }, (err) => {
       if (err) {
