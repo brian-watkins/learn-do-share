@@ -1,6 +1,6 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import { learningArea } from "./learningArea.js"
-import { GetState } from "loop"
+import { GetState } from "state-party"
 
 export function learningAreaContentView(get: GetState): Html.View {
   const area = get(learningArea)

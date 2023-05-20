@@ -19,7 +19,9 @@ await esbuild.build({
         "remark-rehype",
         "hast-util-select",
         "date-fns",
-        "loop"
+        "party-supplies",
+        "display-party",
+        "state-party"
     ],
     logLevel: "info"
 })
@@ -37,7 +39,9 @@ await esbuild.build({
     external: [
         "@azure/functions",
         "@azure/cosmos",
-        "loop"
+        "party-supplies",
+        "display-party",
+        "state-party"
     ],
     logLevel: "info"
 })
@@ -60,7 +64,9 @@ await esbuild.build({
         "remark-parse",
         "remark-rehype",
         "hast-util-select",
-        "loop",
+        "party-supplies",
+        "display-party",
+        "state-party",
         "date-fns"
     ],
     logLevel: "info"

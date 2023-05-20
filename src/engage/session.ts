@@ -1,5 +1,5 @@
 import { User } from "@/api/common/user.js";
-import { state } from "loop";
+import { derived } from "state-party";
 
 export interface PublicSession {
   type: "public-session"
@@ -12,7 +12,7 @@ export interface PersonalizedSession {
 
 export type Session = PublicSession | PersonalizedSession
 
-export const session = state<Session>(() => ({
+export const session = derived<Session>(() => ({
   type: "public-session"
 }))
 

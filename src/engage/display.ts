@@ -1,9 +1,9 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import { learningArea, LearningArea, learningAreaCategoryView, learningAreaTitleView } from "./learningArea.js"
 import { learningAreaContentView } from "./learningAreaContent.js"
 import { footer, header, linkBox } from "../viewElements.js"
 import { userAccountView } from "../user.js"
-import { meta, State } from "loop"
+import { State } from "state-party"
 import engagementPlansView from "./engagementPlans/view.js"
 import engagementNotesView from "./engagementNotes/view.js"
 import { session } from "./session.js"
@@ -52,8 +52,8 @@ function contentView(get: <S>(state: State<S>) => S): Html.View {
 }
 
 function pageError(get: <S>(state: State<S>) => S): Html.View {
-  const hasError = get(meta(engagementLevels)).type === "error" ||
-    get(meta(engagementNotes)).type === "error"
+  const hasError = get(engagementLevels.meta).type === "error" ||
+    get(engagementNotes.meta).type === "error"
 
   if (!hasError) {
     return Html.div([], [])

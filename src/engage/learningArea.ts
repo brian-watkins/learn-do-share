@@ -1,5 +1,5 @@
-import { state, State } from "loop"
-import * as Html from "loop/display"
+import { State, derived } from "state-party"
+import * as Html from "display-party"
 import * as Style from "../style.js"
 import { pageTitle } from "../viewElements.js"
 
@@ -12,7 +12,7 @@ export interface LearningArea {
   category: LearningAreaCategory
 }
 
-export const learningArea = state<LearningArea>(() => ({
+export const learningArea = derived<LearningArea>(() => ({
   id: "", title: "", content: "", category: ""
 }))
 

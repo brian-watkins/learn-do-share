@@ -1,6 +1,6 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import * as Style from "../../style.js"
-import { meta, State, trigger } from "loop"
+import { State, trigger } from "state-party"
 import { engagementLevels, increaseEngagementLevelRule, increaseEngagementText } from "./index.js"
 
 export default Html.withState((get) => {
@@ -28,7 +28,7 @@ export default Html.withState((get) => {
 
 
 function increaseEngagementButton(get: <S>(state: State<S>) => S): Html.View {
-  const isSaving = get(meta(engagementLevels)).type === "pending"
+  const isSaving = get(engagementLevels.meta).type === "pending"
 
   return Html.button([
     Style.link(),

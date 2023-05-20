@@ -1,4 +1,4 @@
-import { container, withReducer } from "loop"
+import { container, withReducer } from "state-party"
 
 export interface EngagementNote {
   id: string

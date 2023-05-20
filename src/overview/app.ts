@@ -1,5 +1,5 @@
 import { learningAreasView, LearningArea, learningAreaView } from "./learningAreas.js"
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import * as Style from "../style.js"
 import { userAccountView } from "../user.js"
 import { PersonalizedLearningArea, personalizedLearningAreaView } from "./personalizedLearningAreas.js"

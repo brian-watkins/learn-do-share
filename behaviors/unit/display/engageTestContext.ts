@@ -7,7 +7,8 @@ import { DefaultBodyType, ResponseTransformer, rest, SetupWorker } from "msw"
 import { TestEngagementNote } from "./fakes/note.js"
 import { init } from "@/src/engage/storage.js"
 import { Model } from "@/src/engage/model.js"
-import { createDisplay } from "loop/display"
+import { createDisplay } from "display-party"
+import { Store } from "state-party"
 
 export interface BackstageResponseOptions {
   status?: number
@@ -29,10 +30,11 @@ export class EngageTestContext {
     this.mockServiceWorker = await getServiceWorker()
     this.mockServiceWorker.use(...this.handlers)
 
-    init(this.getInitialState())
+    const store = new Store()
+    init(store, this.getInitialState())
     
     const view = appDisplay()
-    const app = createDisplay()
+    const app = createDisplay(store)
     const mountPoint = document.createElement("div")
     mountPoint.id = "test-app"
     document.body.appendChild(mountPoint)

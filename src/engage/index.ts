@@ -1,6 +1,7 @@
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 import { init } from "./storage.js"
-import { createDisplay } from 'loop/display';
+import { createDisplay } from 'display-party';
+import { Store } from 'state-party';
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -19,10 +20,11 @@ appInsights.addTelemetryInitializer(function (envelope) {
 });
 appInsights.trackPageView({ name: "engage" });
 
-init(window._display_initial_state)
+const store = new Store()
+init(store, window._display_initial_state)
 
 if (window._display_initial_state.type === "personalized") {
-  const display = createDisplay()
+  const display = createDisplay(store)
   import("./engagementNotes/view.js").then((engagementNotesModule) => {
     display.mount(document.getElementById("engagement-notes")!, engagementNotesModule.default)
   })

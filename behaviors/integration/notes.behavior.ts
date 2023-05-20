@@ -158,25 +158,52 @@ export default
       .script({
         suppose: [
           thereAreLearningAreas([FakeLearningArea(1)]),
-          fact("there is a note for a user", (testContext) => {
+          fact("there are notes for a user", (testContext) => {
             testContext
               .withEngagementNotes([
-                FakeEngagementNote("person@email.com", FakeLearningArea(1), 1)
+                FakeEngagementNote("person@email.com", FakeLearningArea(1), 1),
+                FakeEngagementNote("person@email.com", FakeLearningArea(1), 2),
+                FakeEngagementNote("person@email.com", FakeLearningArea(1), 3)
               ])
           }),
           someoneIsAuthenticated("person@email.com"),
         ],
         perform: [
           visitTheLearningArea(FakeLearningArea(1)),
-          step("delete the note", async (testContext) => {
+          step("delete the second note", async (testContext) => {
             await testContext.display
-              .selectElementWithText("Delete Note")
+              .selectAll("[data-engagement-note]")
+              .getElement(1)
+              .selectDescendantWithText("Delete Note")
               .click()
             await testContext.display.waitForRequestsToComplete()
           })
         ],
         observe: [
-          observeNoteCount(0)
+          observeNoteCount(2),
+          effect("the third note is still shown", observeTextsInNote(0, [
+            FakeEngagementNote("person@email.com", FakeLearningArea(1), 3).content
+          ])),
+          effect("the first note is still shown", observeTextsInNote(1, [
+            FakeEngagementNote("person@email.com", FakeLearningArea(1), 1).content
+          ])),
+        ]
+      }).andThen({
+        perform: [
+          step("delete the second note", async (testContext) => {
+            await testContext.display
+              .selectAll("[data-engagement-note]")
+              .getElement(1)
+              .selectDescendantWithText("Delete Note")
+              .click()
+            await testContext.display.waitForRequestsToComplete()
+          })
+        ],
+        observe: [
+          observeNoteCount(1),
+          effect("the third note is still shown", observeTextsInNote(0, [
+            FakeEngagementNote("person@email.com", FakeLearningArea(1), 3).content
+          ])),
         ]
       }).andThen({
         perform: [
@@ -184,7 +211,7 @@ export default
           selectLearningArea(FakeLearningArea(1))
         ],
         observe: [
-          observeNoteCount(0)
+          observeNoteCount(1)
         ]
       }),
     example(testContext())

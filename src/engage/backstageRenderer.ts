@@ -2,10 +2,11 @@ import { BackstageRenderer, InitialStateResult, redirectResult, RenderContext, v
 import { decorate, markdownToHTML, TagDecorator } from "../util/markdownParser.js";
 import { EngagementNote } from "./engagementNotes/index.js";
 import { Model } from "./model.js";
-import { render } from "loop/display";
+import { render } from "display-party";
 import App from "./display.js"
 import { init } from "./storage.js";
 import { Adapters } from "./backstage.js";
+import { Store } from "state-party";
 
 export interface EngageContext {
   learningAreaId: string
@@ -47,8 +48,9 @@ function initialState(adapters: Adapters): (context: RenderContext<EngageContext
       }
     }
 
-    init(model)
-    return viewResult("engage.html", await render(App()), model)
+    const store = new Store()
+    init(store, model)
+    return viewResult("engage.html", await render(store, App()), model)
   }
 }
 

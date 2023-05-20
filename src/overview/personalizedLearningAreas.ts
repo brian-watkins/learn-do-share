@@ -1,5 +1,5 @@
 import { LearningArea, learningAreaTitleView } from "./learningAreas.js"
-import * as Html from 'loop/display'
+import * as Html from 'display-party'
 import * as Style from "../style.js"
 import { cardBox } from "../viewElements.js"
 import { learningAreaCategoryTitle } from "./learningAreaCategory.js"

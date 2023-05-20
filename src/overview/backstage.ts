@@ -3,7 +3,8 @@ import app, { AppModel } from "./app.js";
 import { User } from "@/api/common/user.js";
 import { LearningArea } from "./learningAreas.js";
 import { EngagementLevel, EngagementPlan } from "../engage/engagementPlans/index.js";
-import { render } from "loop/display";
+import { render } from "display-party";
+import { Store } from "state-party";
 
 export interface EngagementPlanReader {
   readAll(user: User): Promise<Array<EngagementPlan>>
@@ -52,7 +53,7 @@ const initialState = (adapters: Adapters) => async (context: RenderContext<null>
     }
   }
 
-  return viewResult("index.html", await render(app(model)))
+  return viewResult("index.html", await render(new Store(), app(model)))
 }
 
 function toEngagementPlanMap(plans: Array<EngagementPlan>): { [key: string]: Array<EngagementLevel> } {

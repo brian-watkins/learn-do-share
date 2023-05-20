@@ -1,4 +1,4 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import * as Style from "../style.js"
 import { LearningAreaCategory, learningAreaCategoryTitle } from "./learningAreaCategory.js"
 import { cardBox } from "../viewElements.js"

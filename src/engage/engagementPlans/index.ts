@@ -1,4 +1,4 @@
-import { container, rule, state, State, withReducer } from "loop"
+import { container, derived, rule, State, withReducer } from "state-party"
 import { LearningArea } from "../learningArea.js"
 
 export enum EngagementLevel {
@@ -80,8 +80,7 @@ function nextEngagementLevel(levels: Array<EngagementLevel>): EngagementLevel {
   return EngagementLevel.Learning
 }
 
-export const increaseEngagementLevelRule = rule(engagementLevels, (get) => {
-  const current = get(engagementLevels)
+export const increaseEngagementLevelRule = rule(engagementLevels, ({current}) => {
   const nextLevel = nextEngagementLevel(current)
   if (nextLevel === EngagementLevel.None) {
     return clearEngagementLevels()
@@ -90,7 +89,7 @@ export const increaseEngagementLevelRule = rule(engagementLevels, (get) => {
   }
 })
 
-export const increaseEngagementText: State<string> = state(get => {
+export const increaseEngagementText: State<string> = derived(get => {
   const levels = get(engagementLevels)
   switch (nextEngagementLevel(levels)) {
     case EngagementLevel.Learning:

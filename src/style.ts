@@ -1,4 +1,4 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import { LearningAreaCategory } from "./overview/learningAreaCategory.js"
 
 export function bannerText(): Html.ViewAttribute {

@@ -1,8 +1,8 @@
-import * as Html from "loop/display"
+import * as Html from "display-party"
 import { Colors, focusWithinBorderColor, mediumTextColor, textColor } from "../../style.js"
 import { format, parseISO } from "date-fns"
 import { createNote, deleteNote, EngagementNote, engagementNotes } from "./index.js"
-import { container, meta, ok, state, State, useProvider, withInitialValue, writeMessage } from "loop"
+import { container, derived, State, withInitialValue, write } from "state-party"
 import { headingBox } from "../../viewElements.js"
 
 
@@ -25,22 +25,33 @@ export default Html.withState((get) => {
   ])
 })
 
-const noteText = container(withInitialValue(""))
+interface WritingText {
+  type: "writing"
+  value: string
+}
 
-useProvider({
-  provide: (get, set) => {
-    get(engagementNotes)
-    set(meta(noteText), ok(""))
+interface SavingText {
+  type: "saving"
+  value: string
+}
+
+type TextContent = WritingText | SavingText
+
+const noteText = container<TextContent>(withInitialValue<TextContent>({ type: "writing", value: "" }).withQuery(({get, current}, next) => {
+  if (get(engagementNotes.meta).type === "pending") {
+    return { type: "saving", value: current.value }
   }
-})
 
-const isSavingNote = state(get => {
-  return get(meta(engagementNotes)).type === "pending"
-})
+  if (get(engagementNotes.meta).type === "ok" && current.type === "saving") {
+    return { type: "writing", value: "" }
+  }
+
+  return next ?? current
+}))
 
 function noteInputView(get: <S>(state: State<S>) => S): Html.View {
-  const noteContent = get(noteText)
-  const isSaving = get(isSavingNote)
+  const noteContent = get(noteText).value
+  const isSaving = get(engagementNotes.meta).type === "pending"
 
   return Html.div([
     noteBox(),
@@ -69,7 +80,7 @@ function noteInputView(get: <S>(state: State<S>) => S): Html.View {
       Html.textarea([
         Html.data("note-input"),
         ...(noteContent.length === 0 ? [Html.property("value", noteContent)] : []),
-        Html.onInput((value: string) => writeMessage(noteText, value)),
+        Html.onInput((value) => write(noteText, { type: "writing", value })),
         Html.disabled(isSaving),
         Html.cssClasses([
           "focus:outline-none",
@@ -98,16 +109,16 @@ function noteInputView(get: <S>(state: State<S>) => S): Html.View {
         "disabled:no-underline",
         "hover:underline",
       ]),
-      Html.onClick(writeMessage(engagementNotes, createNote(noteContent))),
-      Html.disabled(noteContent.length == 0 || isSaving)
+      Html.onClick(write(engagementNotes, createNote(noteContent))),
+      Html.disabled(noteContent.length === 0 || isSaving)
     ], [
       Html.text("Save Note")
     ])
   ])
 }
 
-const deletingNote = state(get => {
-  const notesStatus = get(meta(engagementNotes))
+const deletingNote = derived(get => {
+  const notesStatus = get(engagementNotes.meta)
   if (notesStatus.type === "pending" && notesStatus.message.type === "delete-note") {
     return notesStatus.message.note
   } else {
@@ -117,7 +128,8 @@ const deletingNote = state(get => {
 
 function engagementNoteView(note: EngagementNote): Html.View {
   return Html.div([
-    Html.data("engagement-note"),
+    Html.data("engagement-note", note.id),
+    Html.key(note.id),
     noteBox(),
     Html.cssClasses([
       "px-6",
@@ -145,7 +157,7 @@ function engagementNoteView(note: EngagementNote): Html.View {
           "hover:text-sky-600",
           "hover:underline",
         ]),
-        Html.onClick(writeMessage(engagementNotes, deleteNote(note))),
+        Html.onClick(write(engagementNotes, deleteNote(note))),
         Html.disabled(get(deletingNote)?.id === note.id)
       ], [
         Html.text("Delete Note")
